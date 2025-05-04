@@ -8,7 +8,7 @@ interface MobileLayoutProps {
 
 export default function MobileLayout({ children }: MobileLayoutProps) {
     return (
-        <div className="layout">
+        <div className="layout font-[family-name:var(--font-geist-sans)] ">
             <header className="layout-header">
                 <h1>Medical System</h1>
             </header>

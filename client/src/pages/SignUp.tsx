@@ -1,8 +1,8 @@
 
-export default function LandingPage() {
+export default function SignUp() {
   return (
     <div className="font-[family-name:var(--font-geist-sans)] ">
-      <p>LandingPage</p>
+      <p>SignUp</p>
     </div>
   )
 }

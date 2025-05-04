@@ -23,21 +23,18 @@ function App() {
         <Routes>
           {/* Unprotected Routes */}
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Home />} />
+          <Route path="/welcome" element={<Home />} />
           {isMobile ? (
-            <MobileLayout />
+            <Route path="/" element={<ProtectedRoute><MobileLayout /></ProtectedRoute>}>
+              {/* Protected Routes */}
+              <Route index element={<Dashboard />} />
+            </Route>
           ) : (
-            <DesktopLayout />
+            <Route path="/" element={<ProtectedRoute><DesktopLayout /></ProtectedRoute>}>
+              {/* Protected Routes */}
+              <Route index element={<Dashboard />} />
+            </Route>
           )}
-          {/* Protected Routes */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
         </Routes>
       </Router>
     </AppContext.Provider>
