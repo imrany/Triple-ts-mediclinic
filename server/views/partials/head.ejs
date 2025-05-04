@@ -1,0 +1,81 @@
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <% if (head) { %>
+        <link rel="shortcut icon" href="<%= head.favicon %>" type="image/x-icon">
+        <meta name="description" content="<%= head.description %>">
+        <meta name="keywords" content="<%= head.keywords %>">
+        <title><%= head.title %></title>
+        <link rel="apple-touch-icon" href="<%= head.icon %>" />
+        <meta name="apple-mobile-web-app-title" content="<%= head.title %>" />
+        <!-- Google -->
+        <link rel="canonical" href="<%= head.url %>" />
+        <meta name="image" content="<%= head.image %>"/>
+        <meta itemProp="name" content="<%= head.title %>" />
+        <meta itemProp="description" content="<%= head.description %>" />
+        <meta itemProp="image" content="<%= head.image %>" />
+        <!-- Twitter -->
+        <meta name="twitter:card" content="<%= head.title %>" />
+        <meta name="twitter:title" content="<%= head.title %>" />
+        <meta name="twitter:description" content="<%= head.description %>" />
+        <meta name="twitter:site" content="<%= head.url %>" />
+        <meta name="twitter:creator" content="@matano_imran" />
+        <meta name="twitter:image:src" content="<%= head.image %>" />
+        <meta name="twitter:image" content="<%= head.image %>" />
+        <!-- Facebook -->
+        <meta name="og:title" property="og:title" content="<%= head.title %>" />
+        <meta name="og:url" property="og:url" content="<%= head.url %>" />
+        <meta name="og:description" property="og:description" content="<%= head.description %>" />
+        <meta name="image" property="og:image" content="<%= head.image %>" />
+        <meta name="og:image" property="og:image" content="<%= head.image %>" />
+        <meta name="og:site_name" property="og:site_name" content="<%= head.title %>" />
+        <meta name="og:type" property="og:type" content="website" />
+        <meta name="author" content="<%= head.title %>" />
+        <meta name="msvalidate.01" content="0C9605AF449480F57421EECCA9EB2B8A" />
+        <meta name="google-site-verification" content="9y9dretKdifnWDdkbkT9Qm1PtWMIe3qz6R09Xkm8Cdc" />
+        <script>
+            window.location.replace('<%= head.url %>');
+        </script>
+    <% } else { %>
+        <link rel="shortcut icon" href="<%= appUrl %>/favicon.ico" type="image/x-icon">
+        <meta name="description" content="Villebiz is your premier e-commerce platform, dedicated to providing a seamless and enjoyable shopping experience for businesses and individuals alike.">
+        <meta name="keywords" content="villebiz,Villebiz,Market,Ecommerce, Products, Seller,Buyer,Sell,Buy">
+        <title>Villebiz</title>
+        <link rel="apple-touch-icon" href="<%= appUrl %>/icons/web-app-manifest-180x180.png" />
+        <meta name="apple-mobile-web-app-title" content="villebiz" />
+        <!-- Google -->
+        <link rel="canonical" href="<%= appUrl %>" />
+        <meta name="image" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png"/>
+        <meta itemProp="name" content="villebiz" />
+        <meta itemProp="description" content="Villebiz is your premier e-commerce platform, dedicated to providing a seamless and enjoyable shopping experience for businesses and individuals alike." />
+        <meta itemProp="image" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png" />
+        <!-- Twitter -->
+        <meta name="twitter:card" content="villebiz" />
+        <meta name="twitter:title" content="villebiz" />
+        <meta name="twitter:description" content="Villebiz is your premier e-commerce platform, dedicated to providing a seamless and enjoyable shopping experience for businesses and individuals alike." />
+        <meta name="twitter:site" content="<%= appUrl %>" />
+        <meta name="twitter:creator" content="@matano_imran" />
+        <meta name="twitter:image:src" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png" />
+        <meta name="twitter:image" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png" />
+        <!-- Facebook -->
+        <meta name="og:title" property="og:title" content="villebiz" />
+        <meta name="og:url" property="og:url" content="<%= appUrl %>" />
+        <meta name="og:description" property="og:description" content="Villebiz is your premier e-commerce platform, dedicated to providing a seamless and enjoyable shopping experience for businesses and individuals alike." />
+        <meta name="image" property="og:image" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png" />
+        <meta name="og:image" property="og:image" content="<%= appUrl %>/icons/villebiz-square-icon-384x384.png" />
+        <meta name="og:site_name" property="og:site_name" content="villebiz" />
+        <meta name="og:type" property="og:type" content="website" />
+        <meta name="author" content="villebiz" />
+        <meta name="google-site-verification" content="8A0uuQVsKdJe9s5wQ9rNWTankUwPtEjQXAk_FP-JJWI" />
+        <meta name="msvalidate.01" content="D9C35CD5C261BEF99AFB9F462A41FAFD" />
+        <script>
+            window.location.replace('<%= url %>');
+        </script>
+    <% } %>
+    <link rel="manifest" href="<%= appUrl %>/manifest.json">
+    <!-- PWA -->
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="theme-color" content="#FAFAFA" />
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="#FAFAFA"/>
+</head>
