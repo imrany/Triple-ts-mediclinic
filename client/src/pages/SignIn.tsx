@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Loader2, Lock, Eye, EyeOff, Facebook } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,7 +21,7 @@ type FormValues = {
     password: string;
 };
 
-export default function Login() {
+export default function SignIn() {
     const [showPassword, setShowPassword] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const navigate = useNavigate();
@@ -42,16 +42,16 @@ export default function Login() {
     };
 
     return (
-        <div className="font-[family-name:var(--font-geist-sans)] ">
+        <div className="font-[family-name:var(--font-geist-sans)] bg-gradient-to-b from-green-50 to-white ">
             {loading ? (
                 <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
                     <Loader2 className="animate-spin w-12 h-12 text-green-500" />
                     <p className="mt-4 text-lg font-medium">Get well soon!</p>
                 </div>
             ) : (
-                <div className="flex h-screen w-full bg-gray-50">
+                <div className="flex h-screen w-full">
                     {!isMobile&&(<div
-                        className="hidden lg:block w-1/2"
+                        className="hidden lg:block w-4/7"
                         style={{
                             backgroundImage: "url(/doctor.jpg)",
                             backgroundRepeat: "no-repeat",
@@ -59,8 +59,8 @@ export default function Login() {
                             backgroundPosition: "center"
                         }}
                     ></div>)}
-                    <div className="flex flex-col justify-center items-center w-full lg:w-1/2 px-6 sm:px-12">
-                        <Card className="w-full max-w-md shadow-lg">
+                    <div className="flex flex-col justify-center items-center w-full lg:w-3/7 sm:px-4">
+                        <Card className="w-full shadow-none rounded-none bg-transparent border-none ">
                             <CardHeader>
                                 <div className="flex items-center justify-center">
                                     <div className="bg-green-800 p-3 rounded-full shadow-md">

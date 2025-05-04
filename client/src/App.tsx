@@ -6,7 +6,9 @@ import Dashboard from './pages/Desktop/Dashboard';
 import useIsMobile from './hooks/useIsMobile';
 import MobileLayout from './layouts/MobileLayout';
 import DesktopLayout from './layouts/DesktopLayout';
-import Login from './pages/Login';
+import NotFound from './pages/NotFound';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = localStorage.getItem('authToken'); // Replace with your auth logic
@@ -22,19 +24,21 @@ function App() {
       <Router>
         <Routes>
           {/* Unprotected Routes */}
-          <Route path="/login" element={<Login />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
           <Route path="/welcome" element={<Home />} />
           {isMobile ? (
-            <Route path="/" element={<ProtectedRoute><MobileLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<ProtectedRoute><MobileLayout /></ProtectedRoute>}>
               {/* Protected Routes */}
               <Route index element={<Dashboard />} />
             </Route>
           ) : (
-            <Route path="/" element={<ProtectedRoute><DesktopLayout /></ProtectedRoute>}>
+            <Route path="/dashboard" element={<ProtectedRoute><DesktopLayout /></ProtectedRoute>}>
               {/* Protected Routes */}
               <Route index element={<Dashboard />} />
             </Route>
           )}
+          <Route path="*" element={<NotFound/>}/>
         </Routes>
       </Router>
     </AppContext.Provider>
