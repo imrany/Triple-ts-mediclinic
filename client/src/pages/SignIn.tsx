@@ -16,6 +16,7 @@ import {
 import useIsMobile from "@/hooks/useIsMobile";
 import { useState } from "react";
 import { useAppContext } from "@/context";
+import { toast } from "sonner";
 
 type FormValues = {
     email: string;
@@ -51,6 +52,13 @@ export default function SignIn() {
     //         if(parseRes.error){
     //             console.log(parseRes.error)
     //             setLoading(false);
+                    // toast(`Something went wrong!`, {
+                    //     description: `${parseRes.error}`,
+                    //     action: {
+                    //       label: "Undo",
+                    //       onClick: () => onSubmit(data)
+                    //     },
+                    // })
     //         }else{
     //             console.log(parseRes);
     //             setTimeout(() => {
@@ -66,6 +74,13 @@ export default function SignIn() {
     //     }catch(error:any){
     //         console.log(error.message)
     //         setLoading(false);
+                // toast(`Something went wrong!`, {
+                //     description: `${error.message}`,
+                //     action: {
+                //         label: "Undo",
+                //         onClick: () => onSubmit(data)
+                //     },
+                // })
     //     }
     // };
 

@@ -8,6 +8,7 @@ import SignIn from './pages/SignIn';
 import LandingPage from './pages/LandingPage';
 import ForgotPassword from './pages/ForgotPassword';
 import Layout from './layout/Layout';
+import { Toaster } from "@/components/ui/sonner"
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = localStorage.getItem('authData'); // Replace with your auth logic
@@ -37,6 +38,7 @@ function App() {
             <Route index element={<Dashboard />} />
           </Route>
           <Route path="*" element={<NotFound/>}/>
+          <Toaster />
         </Routes>
       </Router>
     </AppContext.Provider>
