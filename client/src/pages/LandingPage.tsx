@@ -17,7 +17,7 @@ import Hero from "@/components/Hero";
 
 export default function LandingPage() {
     return (
-        <div className="font-[family-name:var(--font-geist-sans)] bg-green-50 min-h-screen">
+        <div className="font-[family-name:var(--font-geist-sans)] bg-pink-50 min-h-screen">
             <NavBar/>
             <Hero/>
 
@@ -33,8 +33,8 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Feature 1 */}
-                        <div className="bg-green-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                            <Calendar className="h-12 w-12 text-green-800 mb-4" />
+                        <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                            <Calendar className="h-12 w-12 text-pink-800 mb-4" />
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Online Appointments</h3>
                             <p className="text-gray-600">
                                 Schedule appointments with ease through our intuitive online booking system.
@@ -43,8 +43,8 @@ export default function LandingPage() {
                         </div>
 
                         {/* Feature 2 */}
-                        <div className="bg-green-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                            <Users className="h-12 w-12 text-green-800 mb-4" />
+                        <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                            <Users className="h-12 w-12 text-pink-800 mb-4" />
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Specialists</h3>
                             <p className="text-gray-600">
                                 Access to a diverse team of specialist doctors across various medical disciplines
@@ -53,8 +53,8 @@ export default function LandingPage() {
                         </div>
 
                         {/* Feature 3 */}
-                        <div className="bg-green-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-                            <Shield className="h-12 w-12 text-green-800 mb-4" />
+                        <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
+                            <Shield className="h-12 w-12 text-pink-800 mb-4" />
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Digital Records</h3>
                             <p className="text-gray-600">
                                 Secure access to your medical history, test results, and
@@ -66,7 +66,7 @@ export default function LandingPage() {
             </div>
 
             {/* How It Works */}
-            <div className="py-16 bg-green-50">
+            <div className="py-16 bg-pink-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900">How It Works</h2>
@@ -78,7 +78,7 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Step 1 */}
                         <div className="flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-green-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+                            <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
                                 1
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Create Account</h3>
@@ -89,7 +89,7 @@ export default function LandingPage() {
 
                         {/* Step 2 */}
                         <div className="flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-green-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+                            <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
                                 2
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Book Appointment</h3>
@@ -100,7 +100,7 @@ export default function LandingPage() {
 
                         {/* Step 3 */}
                         <div className="flex flex-col items-center text-center">
-                            <div className="w-16 h-16 bg-green-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
+                            <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
                                 3
                             </div>
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Receive Care</h3>
@@ -112,7 +112,7 @@ export default function LandingPage() {
 
                     <div className="mt-12 text-center">
                         <Link to="/signup">
-                            <Button className="bg-green-800 hover:bg-green-700 text-white">
+                            <Button className="bg-pink-800 hover:bg-pink-700 text-white">
                                 Start Your Health Journey
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
@@ -133,48 +133,48 @@ export default function LandingPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Doctor 1 */}
-                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <img src="/api/placeholder/300/300" alt="Dr. Emily Johnson" className="w-full h-64 object-cover" />
                             <div className="p-4">
                                 <h3 className="text-xl font-semibold text-gray-900">Dr. Emily Johnson</h3>
-                                <p className="text-green-800 font-medium">Cardiologist</p>
+                                <p className="text-pink-800 font-medium">Cardiologist</p>
                                 <p className="text-gray-600 mt-2">Specializing in preventive cardiology with over 15 years of experience.</p>
                             </div>
                         </div>
 
                         {/* Doctor 2 */}
-                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <img src="/api/placeholder/300/300" alt="Dr. Michael Chen" className="w-full h-64 object-cover" />
                             <div className="p-4">
                                 <h3 className="text-xl font-semibold text-gray-900">Dr. Michael Chen</h3>
-                                <p className="text-green-800 font-medium">Neurologist</p>
+                                <p className="text-pink-800 font-medium">Neurologist</p>
                                 <p className="text-gray-600 mt-2">Expert in neurodegenerative disorders and headache management.</p>
                             </div>
                         </div>
 
                         {/* Doctor 3 */}
-                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <img src="/api/placeholder/300/300" alt="Dr. Sarah Martinez" className="w-full h-64 object-cover" />
                             <div className="p-4">
                                 <h3 className="text-xl font-semibold text-gray-900">Dr. Sarah Martinez</h3>
-                                <p className="text-green-800 font-medium">Pediatrician</p>
+                                <p className="text-pink-800 font-medium">Pediatrician</p>
                                 <p className="text-gray-600 mt-2">Dedicated to children's health with a focus on developmental care.</p>
                             </div>
                         </div>
 
                         {/* Doctor 4 */}
-                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <img src="/api/placeholder/300/300" alt="Dr. James Wilson" className="w-full h-64 object-cover" />
                             <div className="p-4">
                                 <h3 className="text-xl font-semibold text-gray-900">Dr. James Wilson</h3>
-                                <p className="text-green-800 font-medium">Orthopedic Surgeon</p>
+                                <p className="text-pink-800 font-medium">Orthopedic Surgeon</p>
                                 <p className="text-gray-600 mt-2">Specialized in sports medicine and joint replacement procedures.</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="mt-12 text-center">
-                        <Button variant="outline" className="border-green-800 text-green-800 hover:bg-green-50">
+                        <Button variant="outline" className="border-pink-800 text-pink-800 hover:bg-pink-50">
                             View All Specialists
                             <ArrowRight className="ml-2 h-4 w-4" />
                         </Button>
@@ -183,7 +183,7 @@ export default function LandingPage() {
             </div>
 
             {/* Testimonials */}
-            <div id="testimonials" className="py-16 bg-green-50">
+            <div id="testimonials" className="py-16 bg-pink-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900">Patient Testimonials</h2>
@@ -208,7 +208,7 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center">
                                 <div className="mr-4">
-                                    <div className="h-10 w-10 rounded-full bg-green-200 flex items-center justify-center text-green-800 font-bold">
+                                    <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
                                         RB
                                     </div>
                                 </div>
@@ -234,7 +234,7 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center">
                                 <div className="mr-4">
-                                    <div className="h-10 w-10 rounded-full bg-green-200 flex items-center justify-center text-green-800 font-bold">
+                                    <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
                                         LT
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@ export default function LandingPage() {
                             </p>
                             <div className="flex items-center">
                                 <div className="mr-4">
-                                    <div className="h-10 w-10 rounded-full bg-green-200 flex items-center justify-center text-green-800 font-bold">
+                                    <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
                                         MK
                                     </div>
                                 </div>
@@ -275,7 +275,7 @@ export default function LandingPage() {
             </div>
 
             {/* Call to Action */}
-            <div className="py-16 bg-green-800 text-white">
+            <div className="py-16 bg-pink-800 text-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                     <h2 className="text-3xl font-bold mb-4">Ready to prioritize your health?</h2>
                     <p className="text-lg mb-8 max-w-3xl mx-auto">
@@ -283,12 +283,12 @@ export default function LandingPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
                         <Link to="/signup">
-                            <Button className="bg-white text-green-800 hover:bg-gray-100 px-6 py-3 text-lg">
+                            <Button className="bg-white text-pink-800 hover:bg-gray-100 px-6 py-3 text-lg">
                                 Create Account
                             </Button>
                         </Link>
                         <Link to="/learn-more">
-                            <Button variant="outline" className="border-white text-white hover:bg-green-700 px-6 py-3 text-lg">
+                            <Button variant="outline" className="border-white text-white hover:bg-pink-700 px-6 py-3 text-lg">
                                 Learn More
                             </Button>
                         </Link>
@@ -312,7 +312,7 @@ export default function LandingPage() {
                             <div className="space-y-8">
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
-                                        <PhoneCall className="h-6 w-6 text-green-800" />
+                                        <PhoneCall className="h-6 w-6 text-pink-800" />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Phone</h3>
@@ -322,7 +322,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
-                                        <Mail className="h-6 w-6 text-green-800" />
+                                        <Mail className="h-6 w-6 text-pink-800" />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Email</h3>
@@ -332,7 +332,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
-                                        <Clock className="h-6 w-6 text-green-800" />
+                                        <Clock className="h-6 w-6 text-pink-800" />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Hours</h3>
@@ -343,7 +343,7 @@ export default function LandingPage() {
                                 </div>
                                 <div className="flex items-start">
                                     <div className="flex-shrink-0">
-                                        <MapPin className="h-6 w-6 text-green-800" />
+                                        <MapPin className="h-6 w-6 text-pink-800" />
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Location</h3>
@@ -355,7 +355,7 @@ export default function LandingPage() {
                         </div>
 
                         {/* Contact Form */}
-                        <div className="lg:col-span-2 bg-green-50 p-6 rounded-lg shadow-sm">
+                        <div className="lg:col-span-2 bg-pink-50 p-6 rounded-lg shadow-sm">
                             <form className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
@@ -366,7 +366,7 @@ export default function LandingPage() {
                                             type="text"
                                             id="name"
                                             name="name"
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-800 focus:ring focus:ring-green-200 focus:ring-opacity-50 p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
                                             placeholder="John Doe"
                                         />
                                     </div>
@@ -378,7 +378,7 @@ export default function LandingPage() {
                                             type="email"
                                             id="email"
                                             name="email"
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-800 focus:ring focus:ring-green-200 focus:ring-opacity-50 p-2"
+                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
                                             placeholder="john@example.com"
                                         />
                                     </div>
@@ -391,7 +391,7 @@ export default function LandingPage() {
                                         type="text"
                                         id="subject"
                                         name="subject"
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-800 focus:ring focus:ring-green-200 focus:ring-opacity-50 p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
                                         placeholder="How can we help?"
                                     />
                                 </div>
@@ -403,12 +403,12 @@ export default function LandingPage() {
                                         id="message"
                                         name="message"
                                         rows={4}
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-800 focus:ring focus:ring-green-200 focus:ring-opacity-50 p-2"
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
                                         placeholder="Tell us more about your inquiry..."
                                     />
                                 </div>
                                 <div>
-                                    <Button type="submit" className="w-full bg-green-800 hover:bg-green-700 text-white py-2">
+                                    <Button type="submit" className="w-full bg-pink-800 hover:bg-pink-700 text-white py-2">
                                         Send Message
                                     </Button>
                                 </div>

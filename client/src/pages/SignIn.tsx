@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Loader2, Lock, Eye, EyeOff } from "lucide-react";
@@ -15,6 +14,8 @@ import {
     CardDescription,
 } from "@/components/ui/card";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useState } from "react";
+import { useAppContext } from "@/context";
 
 type FormValues = {
     email: string;
@@ -22,30 +23,74 @@ type FormValues = {
 };
 
 export default function SignIn() {
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const isMobile=useIsMobile()
+    const { api_url }=useAppContext()
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm<FormValues>();
 
-    const onSubmit = (data: FormValues) => {
-        setLoading(true);
-        console.log(data);
-        setTimeout(() => {
+    // const onSubmit = async(data: FormValues) => {
+    //     try{
+    //         setLoading(true);
+    //         const response=await fetch(`${api_url}/api/sign-in`,{
+    //             method:"POST",
+    //             headers:{
+    //                 "content-type":"application/json"
+    //             },
+    //             body:JSON.stringify({
+    //                 email:data.email,
+    //                 password:data.password
+    //             })
+    //         })
+    //         const parseRes=await response.json()
+    //         if(parseRes.error){
+    //             console.log(parseRes.error)
+    //             setLoading(false);
+    //         }else{
+    //             console.log(parseRes);
+    //             setTimeout(() => {
+    //                 setLoading(false);
+    //                 navigate(`/dashboard`);
+    //             }, 3000);
+    //             const authData={
+    //                 email:"example@gmail.com",
+    //                 token:"12345"
+    //             }
+    //             localStorage.setItem('authData',JSON.stringify(authData))
+    //         }
+    //     }catch(error:any){
+    //         console.log(error.message)
+    //         setLoading(false);
+    //     }
+    // };
+
+    const onSubmit = async(data: FormValues) => {
+        try{
+            setLoading(true);
+            setTimeout(() => {
+                const authData={
+                    email:data.email,
+                    token:"12345"
+                }
+                localStorage.setItem('authData',JSON.stringify(authData))
+                navigate(`/dashboard`);
+            }, 3000);
+        }catch(error:any){
+            console.log(error.message)
             setLoading(false);
-            navigate(`/dashboard`);
-        }, 3000);
+        }
     };
 
     return (
-        <div className="font-[family-name:var(--font-geist-sans)] bg-gradient-to-b from-green-50 to-white ">
+        <div className="font-[family-name:var(--font-geist-sans)] bg-gradient-to-b from-pink-50 to-white ">
             {loading ? (
                 <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
-                    <Loader2 className="animate-spin w-12 h-12 text-green-500" />
+                    <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
                     <p className="mt-4 text-lg font-medium">Get well soon!</p>
                 </div>
             ) : (
@@ -63,7 +108,7 @@ export default function SignIn() {
                         <Card className="w-full shadow-none rounded-none bg-transparent border-none ">
                             <CardHeader>
                                 <div className="flex items-center justify-center">
-                                    <div className="bg-green-800 p-3 rounded-full shadow-md">
+                                    <div className="bg-pink-800 p-3 rounded-full shadow-md">
                                         <Lock className="text-white w-6 h-6" />
                                     </div>
                                 </div>
@@ -118,11 +163,11 @@ export default function SignIn() {
                                             <Checkbox id="remember" />
                                             <Label htmlFor="remember">Remember me</Label>
                                         </div>
-                                        <Link to="/forgot" className="text-sm text-blue-500">
+                                        <Link to="/forgot-password" className="text-sm text-blue-500">
                                             Forgot password?
                                         </Link>
                                     </div>
-                                    <Button type="submit" className="w-full bg-green-800 hover:bg-green-800">
+                                    <Button type="submit" className="w-full bg-pink-800 hover:bg-pink-800">
                                         {loading ? <Loader2 className="animate-spin" /> : "Sign In"}
                                     </Button>
                                 </form>
@@ -150,8 +195,8 @@ export default function SignIn() {
                                 </p>
                                 <p className="text-center text-xs mt-2">
                                     By continuing, you agree to our{" "}
-                                    <span className="text-green-800">Terms of Service</span> and{" "}
-                                    <span className="text-green-800">Privacy Policy</span>.
+                                    <span className="text-pink-800">Terms of Service</span> and{" "}
+                                    <span className="text-pink-800">Privacy Policy</span>.
                                 </p>
                             </CardContent>
                         </Card>

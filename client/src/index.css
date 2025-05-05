@@ -25,6 +25,23 @@ html{
   scroll-behavior: smooth;
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+.no-scrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.no-scrollbar::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
 :root {
   --font-geist-sans:font-geist-sans;
   --font-geist-mono:font-geist-mono;
@@ -34,7 +51,7 @@ html{
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  /* background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
