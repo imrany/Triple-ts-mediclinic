@@ -38,9 +38,9 @@ function App() {
             <Route index element={<Dashboard />} />
           </Route>
           <Route path="*" element={<NotFound/>}/>
-          <Toaster />
         </Routes>
       </Router>
+      <Toaster />
     </AppContext.Provider>
   );
 }

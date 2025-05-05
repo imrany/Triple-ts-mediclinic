@@ -377,8 +377,8 @@ export default function SignUp() {
                                                         {...registerPatient("phone", { 
                                                             required: "Phone number is required",
                                                             pattern: {
-                                                                value: /^[0-9()-\s+]{10,15}$/,
-                                                                message: "Invalid phone number"
+                                                                value: /^(?:254|0)?7\d{8}$/,
+                                                                message: "Invalid phone number. Use format 254703733390 or 0703733390"
                                                             }
                                                         })}
                                                         className={patientErrors.phone ? "border-red-500 pl-10" : "pl-10"}
@@ -638,12 +638,12 @@ export default function SignUp() {
                                                     <Input
                                                         id="doctorPhone"
                                                         type="tel"
-                                                        placeholder="(123) 456-7890"
+                                                        placeholder="254703733495"
                                                         {...registerDoctor("phone", { 
                                                             required: "Phone number is required",
                                                             pattern: {
-                                                                value: /^[0-9()-\s+]{10,15}$/,
-                                                                message: "Invalid phone number"
+                                                                value: /^(?:254|0)?7\d{8}$/,
+                                                                message: "Invalid phone number. Use format 254703733390 or 0703733390"
                                                             }
                                                         })}
                                                         className={doctorErrors.phone ? "border-red-500 pl-10" : "pl-10"}
