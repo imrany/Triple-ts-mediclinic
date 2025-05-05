@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Loader2, Lock, Eye, EyeOff, User, Mail, Phone } from "lucide-react";
+import { Loader2, Lock, Eye, EyeOff, User, Mail, Phone, Stethoscope, User2, Calendar, Briefcase, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,10 +21,13 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useAppContext } from "@/context";
 
-type FormValues = {
+type PatientFormValues = {
     firstName: string;
     lastName: string;
     email: string;
@@ -32,6 +35,26 @@ type FormValues = {
     confirmPassword: string;
     phone: string;
     gender: string;
+    dateOfBirth: string;
+    address: string;
+    emergencyContact: string;
+    termsAccepted: boolean;
+};
+
+type DoctorFormValues = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    phone: string;
+    gender: string;
+    specialization: string;
+    licenseNumber: string;
+    yearsOfExperience: string;
+    education: string;
+    biography: string;
+    availableForEmergency: boolean;
     termsAccepted: boolean;
 };
 
@@ -39,17 +62,19 @@ export default function SignUp() {
     const [showPassword, setShowPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const [activeTab, setActiveTab] = React.useState("patient");
     const navigate = useNavigate();
     const isMobile = useIsMobile();
     const { api_url } = useAppContext();
     
+    // Patient form
     const {
-        register,
-        handleSubmit,
-        watch,
-        setValue,
-        formState: { errors }
-    } = useForm<FormValues>({
+        register: registerPatient,
+        handleSubmit: handleSubmitPatient,
+        watch: watchPatient,
+        setValue: setValuePatient,
+        formState: { errors: patientErrors }
+    } = useForm<PatientFormValues>({
         defaultValues: {
             firstName: "",
             lastName: "",
@@ -58,20 +83,50 @@ export default function SignUp() {
             confirmPassword: "",
             phone: "",
             gender: "",
+            dateOfBirth: "",
+            address: "",
+            emergencyContact: "",
             termsAccepted: false
         }
     });
 
-    const password = watch("password");
+    // Doctor form
+    const {
+        register: registerDoctor,
+        handleSubmit: handleSubmitDoctor,
+        watch: watchDoctor,
+        setValue: setValueDoctor,
+        formState: { errors: doctorErrors }
+    } = useForm<DoctorFormValues>({
+        defaultValues: {
+            firstName: "",
+            lastName: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+            phone: "",
+            gender: "",
+            specialization: "",
+            licenseNumber: "",
+            yearsOfExperience: "",
+            education: "",
+            biography: "",
+            availableForEmergency: false,
+            termsAccepted: false
+        }
+    });
 
-    const onSubmit = async(data: FormValues) => {
+    const patientPassword = watchPatient("password");
+    const doctorPassword = watchDoctor("password");
+
+    const onSubmitPatient = async(data: PatientFormValues) => {
         if (data.password !== data.confirmPassword) {
             return;
         }
         
         try {
             setLoading(true);
-            const response = await fetch(`${api_url}/api/sign-up`, {
+            const response = await fetch(`${api_url}/api/sign-up/patient`, {
                 method: "POST",
                 headers: {
                     "content-type": "application/json"
@@ -82,7 +137,57 @@ export default function SignUp() {
                     email: data.email,
                     password: data.password,
                     phone: data.phone,
-                    gender: data.gender
+                    gender: data.gender,
+                    dateOfBirth: data.dateOfBirth,
+                    address: data.address,
+                    emergencyContact: data.emergencyContact,
+                    userType: "patient"
+                })
+            });
+            
+            const parseRes = await response.json();
+            if (parseRes.error) {
+                console.log(parseRes.error);
+                setLoading(false);
+            } else {
+                console.log(parseRes);
+                setTimeout(() => {
+                    setLoading(false);
+                    navigate(`/signin`);
+                }, 2000);
+            }
+        } catch (error: any) {
+            console.log(error.message);
+            setLoading(false);
+        }
+    };
+    
+    const onSubmitDoctor = async(data: DoctorFormValues) => {
+        if (data.password !== data.confirmPassword) {
+            return;
+        }
+        
+        try {
+            setLoading(true);
+            const response = await fetch(`${api_url}/api/sign-up/doctor`, {
+                method: "POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    email: data.email,
+                    password: data.password,
+                    phone: data.phone,
+                    gender: data.gender,
+                    specialization: data.specialization,
+                    licenseNumber: data.licenseNumber,
+                    yearsOfExperience: data.yearsOfExperience,
+                    education: data.education,
+                    biography: data.biography,
+                    availableForEmergency: data.availableForEmergency,
+                    userType: "doctor"
                 })
             });
             
@@ -103,12 +208,28 @@ export default function SignUp() {
         }
     };
 
-    const handleGenderChange = (value: string) => {
-        setValue("gender", value);
+    const handlePatientGenderChange = (value: string) => {
+        setValuePatient("gender", value);
     };
 
-    const handleTermsChange = (checked: boolean) => {
-        setValue("termsAccepted", checked);
+    const handleDoctorGenderChange = (value: string) => {
+        setValueDoctor("gender", value);
+    };
+    
+    const handlePatientTermsChange = (checked: boolean) => {
+        setValuePatient("termsAccepted", checked);
+    };
+    
+    const handleDoctorTermsChange = (checked: boolean) => {
+        setValueDoctor("termsAccepted", checked);
+    };
+    
+    const handleDoctorEmergencyChange = (checked: boolean) => {
+        setValueDoctor("availableForEmergency", checked);
+    };
+    
+    const handleTabChange = (value: string) => {
+        setActiveTab(value);
     };
 
     return (
