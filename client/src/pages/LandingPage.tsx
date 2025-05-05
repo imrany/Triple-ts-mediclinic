@@ -27,7 +27,10 @@ export default function LandingPage() {
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900">Our Services</h2>
                         <p className="mt-4 text-lg text-gray-600">
-                            Comprehensive healthcare solutions designed for your needs
+                            <li>
+                                Sulturing - 1500, Suturing removal - 500, Implant - removal - 500,
+                                Wound Cleaning/dressing - minor 200 : extensive 500, implant insertatiion - 700, injections - 200, Circumcision - 2000.
+                            </li>
                         </p>
                     </div>
 
@@ -134,41 +137,50 @@ export default function LandingPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                         {/* Doctor 1 */}
                         <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Emily Johnson" className="w-full h-64 object-cover" />
+                            <img src="/api/placeholder/300/300" alt="Dr. Dorothy Kendi" className="w-full h-64 object-cover" />
                             <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Emily Johnson</h3>
-                                <p className="text-green-800 font-medium">Cardiologist</p>
-                                <p className="text-gray-600 mt-2">Specializing in preventive cardiology with over 15 years of experience.</p>
+                                <h3 className="text-xl font-semibold text-gray-900">Dr. Dorothy Kendi</h3>
+                                <p className="text-green-800 font-medium">Radiologist</p>
+                                <p className="text-gray-600 mt-2">Specializing in Radiology field with over 15 years of experience.</p>
                             </div>
                         </div>
 
                         {/* Doctor 2 */}
                         <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Michael Chen" className="w-full h-64 object-cover" />
+                            <img src="/api/placeholder/300/300" alt="Dr. Mercy Gakii" className="w-full h-64 object-cover" />
                             <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Michael Chen</h3>
-                                <p className="text-green-800 font-medium">Neurologist</p>
-                                <p className="text-gray-600 mt-2">Expert in neurodegenerative disorders and headache management.</p>
+                                <h3 className="text-xl font-semibold text-gray-900">Dr. Mercy Gakii</h3>
+                                <p className="text-green-800 font-medium">Nurse</p>
+                                <p className="text-gray-600 mt-2">Expert in nusing patients and delivering good services</p>
                             </div>
                         </div>
 
                         {/* Doctor 3 */}
                         <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Sarah Martinez" className="w-full h-64 object-cover" />
+                            <img src="/api/placeholder/300/300" alt="Dr. Ken Murimi" className="w-full h-64 object-cover" />
                             <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Sarah Martinez</h3>
-                                <p className="text-green-800 font-medium">Pediatrician</p>
-                                <p className="text-gray-600 mt-2">Dedicated to children's health with a focus on developmental care.</p>
+                                <h3 className="text-xl font-semibold text-gray-900">Dr. Ken Murimi</h3>
+                                <p className="text-green-800 font-medium">Clinician</p>
+                                <p className="text-gray-600 mt-2">Dedicated to performing clinical tests dedicated for optimal Health Diagnosis</p>
                             </div>
                         </div>
 
                         {/* Doctor 4 */}
                         <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. James Wilson" className="w-full h-64 object-cover" />
+                            <img src="/api/placeholder/300/300" alt="Dr. Zawadi elviner" className="w-full h-64 object-cover" />
                             <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. James Wilson</h3>
-                                <p className="text-green-800 font-medium">Orthopedic Surgeon</p>
-                                <p className="text-gray-600 mt-2">Specialized in sports medicine and joint replacement procedures.</p>
+                                <h3 className="text-xl font-semibold text-gray-900">Dr. Zawadi elviner</h3>
+                                <p className="text-green-800 font-medium">Lab technician</p>
+                                <p className="text-gray-600 mt-2">Specialized in performing Blood Test which are necessarry for general blood screening for over 15 years of experience.</p>
+                            </div>
+                        </div>
+                        {/* Doctor 5 */}
+                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                            <img src="/api/placeholder/300/300" alt="Dr. Regina Kawira" className="w-full h-64 object-cover" />
+                            <div className="p-4">
+                                <h3 className="text-xl font-semibold text-gray-900">Dr. Regina Kawira</h3>
+                                <p className="text-green-800 font-medium">Pharm Technician </p>
+                                <p className="text-gray-600 mt-2">Specialized in Phamarcy and Prescribing Medicines To patients for over 10 years of experience.</p>
                             </div>
                         </div>
                     </div>
@@ -316,7 +328,7 @@ export default function LandingPage() {
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-                                        <p className="mt-1 text-gray-600">+1 (800) 123-4567</p>
+                                        <p className="mt-1 text-gray-600">0112782133</p>
                                         <p className="text-gray-600">Monday to Friday, 8am to 6pm</p>
                                     </div>
                                 </div>
@@ -347,8 +359,8 @@ export default function LandingPage() {
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Location</h3>
-                                        <p className="mt-1 text-gray-600">123 Healthcare Avenue</p>
-                                        <p className="text-gray-600">Medical District, NY 10001</p>
+                                        <p className="mt-1 text-gray-600">P.O Box 302-60400. CHUKA PLOT 834</p>
+                                        <p className="text-gray-600">Mitheru, Tharaka Nithi County</p>
                                     </div>
                                 </div>
                             </div>
