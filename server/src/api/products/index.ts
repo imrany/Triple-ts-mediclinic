@@ -6,8 +6,6 @@ import { accessSheet, writeDataToSheet, deleteRows, updateRow } from "../../lib/
 import { parse, isDate } from 'date-fns';
 import axios from "axios"
 import { config } from "dotenv"
-import { Location } from '../../types';
-import { sock } from '../..';
 config()
 
 const productRange = 'products!A1:Z10000'; // Adjust the range according to your sheet
@@ -18,27 +16,6 @@ const APP_URL=process.env.APP_URL as string;
 const API_URL=process.env.API_URL as string;
 const VILLEBIZ_BUSINESS_GROUP=process.env.VILLEBIZ_BUSINESS_GROUP as string;
 
-async function reply(text: string, from: string, reaction: string|null, location: Location|null, msg: any) {
-    const messageOptions: any = {
-        text: text,
-        quoted: msg,
-        react: msg && msg.key ? {
-            text: reaction || '✅',
-            key: msg.key
-        } : undefined
-    };
-
-    if (location) {
-        messageOptions.location = {
-            degreesLatitude: location.degreesLatitude,
-            degreesLongitude: location.degreesLongitude,
-            name: location.name,
-            address: location.address
-        };
-    }
-
-    return (await sock).sendMessage(from, messageOptions);
-}
 
 export async function migrateProductsToPG(req: Request, res: Response) {
     try {
@@ -298,25 +275,6 @@ export async function addProduct(req: Request, res: Response) {
             res.json({
                 message: "Product added successfully"
             });
-            
-            try {
-                await axios.post(`${API_URL}/api/send_notification`, {
-                    title: `${business_name.trim().replace(/_/g, ' ')} added a new product`,
-                    body: `Here's ${product_name}, priced at Kes ${product_price}`,
-                    link: `${APP_URL}/products/REF-${product_reference}`,
-                    icon: `${API_URL}/api/thumbnail?id=${product_photo_id}&sz=w128`
-                });
-
-                await reply(
-                    `${business_name.trim().replace(/_/g, ' ')} added a new product.\n\n*${product_name.trim()}*, priced at *Kes ${product_price}*.\n\n${API_URL}/products/REF-${product_reference}`, 
-                    `${VILLEBIZ_BUSINESS_GROUP}`,
-                    '🎉',
-                    null,
-                    null
-                );
-            } catch (notificationError) {
-                console.error('Error sending notifications:', notificationError);
-            }
         });
     } catch (error: any) {
         console.error('Error:', error);
@@ -549,31 +507,6 @@ export async function updateProductByRef(req: Request, res: Response) {
         
         if (data) {
             // Send notification
-            try {
-                await axios.post(`${API_URL}/api/send_notification`, {
-                    title: `${businessRow[1]} has updated a product`,
-                    body: availability === "not available" 
-                        ? `${product_name || currentRowData[3]} is now out of stock!` 
-                        : `${businessRow[1].trim().replace(/_/g, ' ')} updated ${product_name || currentRowData[3]}, price Kes ${product_price || currentRowData[5]}`,
-                    link: `${APP_URL}/products/${reference}`,
-                    icon: `${API_URL}/api/thumbnail?id=${JSON.parse(product_photo.trim())[0] || JSON.parse(currentRowData[1].trim())[0]}&sz=w128`
-                });
-
-                // Send WhatsApp message
-                await reply(
-                    `${availability === "not available" 
-                        ? `${product_name || currentRowData[3]} is now out of stock!` 
-                        : `${businessRow[1].trim().replace(/_/g, ' ')} updated *${(product_name || currentRowData[3]).trim()}*, price *Kes ${product_price || currentRowData[5]}*.\n\n${API_URL}/products/${reference}`
-                    }`,
-                    `${VILLEBIZ_BUSINESS_GROUP}`,
-                    '🎉',
-                    null,
-                    null
-                );
-            } catch (notificationError) {
-                console.error('Error sending notifications:', notificationError);
-            }
-
             return res.json({message:`Product details updated successfully`});
         } else {
             return res.status(404).json({error:`No product found with reference ${reference}`});

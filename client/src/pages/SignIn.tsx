@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
     Card,
     CardContent,
@@ -35,76 +34,56 @@ export default function SignIn() {
         formState: { errors }
     } = useForm<FormValues>();
 
-    // const onSubmit = async(data: FormValues) => {
-    //     try{
-    //         setLoading(true);
-    //         const response=await fetch(`${api_url}/api/sign-in`,{
-    //             method:"POST",
-    //             headers:{
-    //                 "content-type":"application/json"
-    //             },
-    //             body:JSON.stringify({
-    //                 email:data.email,
-    //                 password:data.password
-    //             })
-    //         })
-    //         const parseRes=await response.json()
-    //         if(parseRes.error){
-    //             console.log(parseRes.error)
-    //             setLoading(false);
-                    // toast(`Something went wrong!`, {
-                    //     description: `${parseRes.error}`,
-                    //     action: {
-                    //       label: "Undo",
-                    //       onClick: () => onSubmit(data)
-                    //     },
-                    // })
-    //         }else{
-    //             console.log(parseRes);
-    //             setTimeout(() => {
-    //                 setLoading(false);
-    //                 navigate(`/dashboard`);
-    //             }, 3000);
-    //             const authData={
-    //                 email:"example@gmail.com",
-    //                 token:"12345"
-    //             }
-    //             localStorage.setItem('authData',JSON.stringify(authData))
-    //         }
-    //     }catch(error:any){
-    //         console.log(error.message)
-    //         setLoading(false);
-                // toast(`Something went wrong!`, {
-                //     description: `${error.message}`,
-                //     action: {
-                //         label: "Undo",
-                //         onClick: () => onSubmit(data)
-                //     },
-                // })
-    //     }
-    // };
-
     const onSubmit = async(data: FormValues) => {
         try{
             setLoading(true);
-            setTimeout(() => {
-                const authData={
+            const response=await fetch(`${api_url}/api/sign-in`,{
+                method:"POST",
+                headers:{
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify({
                     email:data.email,
-                    token:"12345"
+                    password:data.password
+                })
+            })
+            const parseRes=await response.json()
+            if(parseRes.error){
+                console.log(parseRes.error)
+                setLoading(false);
+                    toast(`Something went wrong!`, {
+                        description: `${parseRes.error}`,
+                        action: {
+                          label: "Undo",
+                          onClick: () => onSubmit(data)
+                        },
+                    })
+            }else{
+                console.log(parseRes);
+                const authData={
+                    email:parseRes.email,
+                    token:parseRes.token
                 }
                 localStorage.setItem('authData',JSON.stringify(authData))
                 navigate(`/dashboard`);
-            }, 3000);
+            }
         }catch(error:any){
             console.log(error.message)
             setLoading(false);
+                toast(`Something went wrong!`, {
+                    description: `${error.message}`,
+                    action: {
+                        label: "Undo",
+                        onClick: () => onSubmit(data)
+                    },
+                })
         }
     };
 
     return (
-        <div className="font-[family-name:var(--font-geist-sans)] bg-gradient-to-b from-pink-50 to-white ">
+        <div className="font-[family-name:var(--font-geist-sans)]">
             {loading ? (
-                <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
+                <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white ">
                     <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
                     <p className="mt-4 text-lg font-medium">Get well soon!</p>
                 </div>

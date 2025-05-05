@@ -316,7 +316,7 @@ export default function LandingPage() {
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-                                        <p className="mt-1 text-gray-600">+1 (800) 123-4567</p>
+                                        <p className="mt-1 text-gray-600">+254112782133</p>
                                         <p className="text-gray-600">Monday to Friday, 8am to 6pm</p>
                                     </div>
                                 </div>
@@ -347,8 +347,8 @@ export default function LandingPage() {
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Location</h3>
-                                        <p className="mt-1 text-gray-600">123 Healthcare Avenue</p>
-                                        <p className="text-gray-600">Medical District, NY 10001</p>
+                                        <p className="mt-1 text-gray-600">P.O Box 302-60400.CHUKA</p>
+                                        <p className="text-gray-600">Mitheru Market, Tharaka Nithi County</p>
                                     </div>
                                 </div>
                             </div>

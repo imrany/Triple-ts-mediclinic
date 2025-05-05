@@ -3,7 +3,6 @@ import axios from "axios"
 import { config } from "dotenv";
 import { accessSheet, writeDataToSheet, updateRow } from "../../../lib/google-apis/sheets";
 import { mapArraytoObj } from "../../../lib/google-apis/mapArrayToObj";
-import { sock } from '../../..';
 import { pool } from '../../../postgres';
 config()
 
@@ -20,14 +19,6 @@ const businessRange = "businesses!A1:W10000"; // Adjust the range according to y
 const productRange = "products!A1:Z10000"; // Adjust the range according to your sheet
 const orderRange = "orders!A1:X10000"; // Adjust the range according to your sheet
 const spreadsheetId = process.env.RECORDS_SPREADSHEET_ID as string
-
-async function reply (text:string, from:string, msg?:any){
-    return (await sock).sendMessage(from, {
-        text: text
-    }, {
-        quoted: msg
-    })
-}
 
 export async function migrateTransactionsToPG(_: Request, res: Response) {
     try {
@@ -420,12 +411,6 @@ export async function storeTransaction(req: Request,res:Response) {
             
             if (data.error) {
                 console.log(data.error);
-            }
-
-            await reply(`*Payment Confirmation*\n\nDear ${orderRows[rowIndex][10]},\n\nThank you for your purchase! We are delighted to confirm that your order has been successfully paid. 🎉\n\nYour order is now being processed and will be delivered within 1-3 business days. You can track your order and get more details by clicking the link below:\n\n${APP_URL}/orders/${orderRows[rowIndex][0]}\n\nIf you have any questions or need further assistance, please don't hesitate to reach out.\n\nThank you for choosing us!\n\nBest regards, The Villebiz Team ${APP_URL}`, `${Phone}@s.whatsapp.net`);
-
-            if (business_phone!=="") {
-                await reply(`*Order Reference Confirmation*\n\nHello ${business_name},\n\nThis is to notify you that the order with reference ${ExternalReference} has been successfully paid. Please proceed with the necessary actions to fulfill the order.\n\nThank you!`, `${business_phone}@s.whatsapp.net`);
             }
 
             return res.json({
