@@ -28,7 +28,7 @@ function UnProtectedRoute({ children }: { children: JSX.Element }) {
 
 function App() {
   const [state, setState] = useState<string>('default value');
-  const [user, setUser] = useState('default value');
+  const user='default value';
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
