@@ -20,7 +20,7 @@ export default function Account() {
       sms: true,
       marketing: false
     },
-    avatar: "/api/placeholder/150/150"
+    avatar: `https://imageplaceholder.net/150x150?text=JD`
   });
 
   const handleLogout = () => {
