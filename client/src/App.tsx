@@ -9,6 +9,7 @@ import LandingPage from './pages/LandingPage';
 import ForgotPassword from './pages/ForgotPassword';
 import Layout from './layout/Layout';
 import { Toaster } from "@/components/ui/sonner"
+import Account from './pages/Account';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = localStorage.getItem('authData'); // Replace with your auth logic
@@ -36,6 +37,7 @@ function App() {
           <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Protected Routes */}
             <Route index element={<Dashboard />} />
+            <Route path="account" element={<Account />} />
           </Route>
           <Route path="*" element={<NotFound/>}/>
         </Routes>

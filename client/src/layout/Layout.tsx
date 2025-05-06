@@ -11,10 +11,11 @@ export default function Layout({ children }: LayoutProps) {
   
   const navItems = [
     { path: "/dashboard", label: "Dashboard" },
-    { path: "/appointments", label: "Appointments" },
-    { path: "/patients", label: "Patients" },
-    { path: "/doctors", label: "Doctors" },
-    { path: "/settings", label: "Settings" }
+    { path: "/dashboard/appointments", label: "Appointments" },
+    { path: "/dashboard/patients", label: "Patients" },
+    { path: "/dashboard/doctors", label: "Doctors" },
+    { path: "/dashboard/account", label: "Account" },
+    { path: "/dashboard/settings", label: "Settings" }
   ];
   
   const toggleSidebar = () => {
@@ -86,7 +87,7 @@ export default function Layout({ children }: LayoutProps) {
         )}
 
         {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6  bg-gradient-to-b from-blue-50 to-white no-scrollbar">
+        <main className={`flex-1 overflow-y-auto p-4 md:p-6 no-scrollbar ${location.pathname === "/dashboard" ? "bg-gradient-to-b from-blue-50 to-white" : ""}`}>
           <div className="max-w-7xl mx-auto">
             {children || <Outlet />}
           </div>
