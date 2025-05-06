@@ -28,10 +28,12 @@ function UnProtectedRoute({ children }: { children: JSX.Element }) {
 function App() {
   const [state, setState] = useState<string>('default value');
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
+  const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
+  const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const api_url=`http://localhost:8000`
 
   return (
-    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen }}>
+    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen }}>
       <Router>
         <Routes>
           {/* Unprotected Routes */}

@@ -14,39 +14,10 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import Hero from "@/components/Hero";
-import { Doctors } from "@/types";
+import { Doctor } from "@/types";
+import { doctors } from "@/data";
 
 export default function LandingPage() {
-    const doctors:Doctors[]=[
-        {
-            name:"Dr. Mercy Gakii",
-            specialization:"Nurse",
-            experience:"10 years",
-            image:"https://innolectinc.com/wp-content/uploads/2013/09/Business-professions-doctor-female-african-american.jpg",
-            bio:"Expert in nursing patients and delivering good services.",
-        },
-        {
-            name:"Dr. John Mwenda",
-            specialization:"Surgeon",
-            experience:"20 years",
-            image:"https://thumbs.dreamstime.com/b/smiling-african-doctor-stethoscope-posing-over-white-background-young-studio-179033372.jpg",
-            bio:"Expert in surgical procedures and patient care.",
-        },
-        {
-            name:"Dr. Peter Muriuki",
-            specialization:"Pharmacist",
-            experience:"8 years",
-            image:"https://thumbs.dreamstime.com/b/african-doctor-23634637.jpg",
-            bio:"Expert in medication management and patient counseling.",
-        },
-        {
-            name:"Dr. Zawadi elviner",
-            specialization:"Lab",
-            experience:"15 years",
-            image:"https://thumbs.dreamstime.com/b/african-american-doctor-woman-mature-afro-isolated-white-background-93838492.jpg",
-            bio:"Expert in performing Blood Test which are necessarry for general blood screening for over 15 years of experience.",
-        }
-    ]
     return (
         <div className="font-[family-name:var(--font-geist-sans)] bg-pink-50 min-h-screen">
             <NavBar/>
@@ -165,7 +136,7 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {doctors&&doctors.map(doctor=>(
+                        {doctors&&doctors.map((doctor:Doctor)=>(
                         <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                             <img src={doctor.image} alt={doctor.name} className="w-full h-64 object-cover" />
                             <div className="p-4">

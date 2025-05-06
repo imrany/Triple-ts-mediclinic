@@ -1,5 +1,10 @@
 import { ReactNode, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 interface LayoutProps {
   children?: ReactNode;
@@ -87,11 +92,11 @@ export default function Layout({ children }: LayoutProps) {
         )}
 
         {/* Main content */}
-        <main className={`flex-1 overflow-y-auto p-4 md:p-6 no-scrollbar ${location.pathname === "/dashboard" ? "bg-gradient-to-b from-blue-50 to-white" : ""}`}>
-          <div className="max-w-7xl mx-auto">
-            {children || <Outlet />}
-          </div>
-        </main>
+          <main className={`flex-1 overflow-y-auto p-4 md:p-6 no-scrollbar ${location.pathname === "/dashboard" ? "bg-gradient-to-b from-blue-50 to-white" : ""}`}>
+            <div className="max-w-7xl mx-auto">
+              {children || <Outlet />}
+            </div>
+          </main>
       </div>
     </div>
   );

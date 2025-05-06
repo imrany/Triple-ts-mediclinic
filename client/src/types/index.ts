@@ -1,15 +1,14 @@
-export type Doctors={
-    name:string;
-    specialization:string;
-    experience:string;
-    image:string;
-    bio:string;
-}
 export type Doctor = {
     id: number;
     name: string;
     department: string;
     available: boolean;
+    email:string;
+    phone:string;
+    experience:number;
+    image:string;
+    bio:string;
+    specialization:string;
 };
 
 export type Department = {

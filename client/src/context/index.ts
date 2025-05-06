@@ -6,6 +6,10 @@ interface AppContextType {
     setState: React.Dispatch<React.SetStateAction<string>>;
     isNewAppointmentModalOpen:boolean, 
     setIsNewAppointmentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isNewDoctorModalOpen:boolean,
+    setIsNewDoctorModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isNewPatientModalOpen:boolean,
+    setIsNewPatientModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);
