@@ -1,10 +1,5 @@
 import { ReactNode, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable"
 
 interface LayoutProps {
   children?: ReactNode;

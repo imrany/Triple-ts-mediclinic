@@ -59,7 +59,7 @@ export default function Account() {
 
       {/* Main Content */}
       <div className="flex-grow flex flex-col max-w-6xl mx-auto w-full px-4 pb-4 gap-6">
-        <div className="mb-6 border-b border-gray-200">
+        <div className="border-b border-gray-200">
           <ul className="flex flex-wrap -mb-px">
             {['profile', 'notifications', 'billing'].map((tab) => (
               <li className="mr-2" key={tab}>
@@ -75,20 +75,20 @@ export default function Account() {
 
               </li>
             ))}
-            <div className="ml-auto flex items-center space-x-4">
+            <div className="ml-auto flex items-center space-x-1">
               <button
                 onClick={handleLogout}
-                className="flex items-center p-2 rounded-md text-red-600 hover:bg-red-50"
+                className="flex items-center text-sm px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
               >
-                <LogOut size={18} className="mr-1" />
+                <LogOut size={15} className="mr-1" />
                 <span>Logout</span>
               </button>
 
               <button
                 onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center p-2 rounded-md text-red-600 hover:bg-red-50"
+                className="flex text-sm items-center px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
               >
-                <Trash2 size={18} className="mr-1" />
+                <Trash2 size={15} className="mr-1" />
                 <span>Delete</span>
               </button>
             </div>
@@ -99,7 +99,7 @@ export default function Account() {
         <div className="flex-grow">
           {/* Profile Tab */}
           {activeTab === "profile" && (
-            <div className="pb-6">
+            <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold mb-6">Profile Information</h2>
 
               <div className="mb-8">
@@ -172,7 +172,7 @@ export default function Account() {
 
           {/* Notifications Tab */}
           {activeTab === "notifications" && (
-            <div className="pb-6">
+            <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold mb-6">Notification Preferences</h2>
 
               <div className="space-y-6">
@@ -280,7 +280,7 @@ export default function Account() {
 
           {/* Billing Tab */}
           {activeTab === "billing" && (
-            <div className="pb-6">
+            <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-xl font-semibold mb-6">Billing Information</h2>
 
               <div className="mb-8 p-4 border rounded-md bg-pink-50">

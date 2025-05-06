@@ -200,7 +200,7 @@ export default function DoctorsPage() {
         </div>
       </div>
       <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between">
-        <button className="text-sm px-3 py-1 bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100">Schedule</button>
+        <button className="text-sm px-3 py-1 bg-pink-50 text-pink-600 rounded-md hover:bg-pink-100">Schedule</button>
         <button className="text-sm px-3 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100">Message</button>
         <button className="text-sm px-3 py-1 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100">View</button>
       </div>
@@ -217,7 +217,7 @@ export default function DoctorsPage() {
         </div>
         <button 
           onClick={() => setIsNewDoctorModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center"
+          className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
@@ -233,7 +233,7 @@ export default function DoctorsPage() {
           value={doctors.length} 
           description="All registered specialists" 
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>}
-          color="bg-blue-500"
+          color="bg-pink-500"
         />
         <StatCard 
           title="Available Doctors" 
@@ -356,7 +356,7 @@ export default function DoctorsPage() {
               <input
                 type="text"
                 id="search"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
                 placeholder="Search doctors by name or email"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -367,7 +367,7 @@ export default function DoctorsPage() {
             <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">Department</label>
             <select
               id="department"
-              className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
             >
@@ -381,7 +381,7 @@ export default function DoctorsPage() {
             <label htmlFor="availability" className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
             <select
               id="availability"
-              className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
               value={availabilityFilter}
               onChange={(e) => setAvailabilityFilter(e.target.value)}
             >
@@ -402,25 +402,25 @@ export default function DoctorsPage() {
           <span className="text-sm text-gray-500">Sort by:</span>
           <button 
             onClick={() => handleSort('name')}
-            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'name' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'name' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Name {sortBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
           </button>
           <button 
             onClick={() => handleSort('department')}
-            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'department' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'department' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Department {sortBy === 'department' && (sortOrder === 'asc' ? '↑' : '↓')}
           </button>
           <button 
             onClick={() => handleSort('experience')}
-            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'experience' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'experience' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Experience {sortBy === 'experience' && (sortOrder === 'asc' ? '↑' : '↓')}
           </button>
           <button 
             onClick={() => handleSort('rating')}
-            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'rating' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`text-sm px-3 py-1 rounded-md ${sortBy === 'rating' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Rating {sortBy === 'rating' && (sortOrder === 'asc' ? '↑' : '↓')}
           </button>
@@ -441,7 +441,7 @@ export default function DoctorsPage() {
             <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 mr-1">
               Previous
             </button>
-            <button className="px-3 py-1 rounded-md bg-blue-500 text-white mr-1">1</button>
+            <button className="px-3 py-1 rounded-md bg-pink-500 text-white mr-1">1</button>
             <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 mr-1">2</button>
             <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 mr-1">3</button>
             <button className="px-3 py-1 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200">
@@ -465,7 +465,7 @@ export default function DoctorsPage() {
               setSelectedDepartment('All');
               setAvailabilityFilter('All');
             }} 
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700"
           >
             Clear all filters
           </button>

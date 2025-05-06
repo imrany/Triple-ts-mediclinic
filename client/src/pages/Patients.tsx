@@ -93,7 +93,7 @@ export default function PatientsPage() {
           title="Total Patients" 
           value={patientsData.length}
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
-          color="bg-blue-500"
+          color="bg-pink-500"
         />
         <StatCard 
           title="Active Patients" 
@@ -208,7 +208,7 @@ export default function PatientsPage() {
             <div className="relative">
               <input
                 type="text"
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-64"
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 w-full md:w-64"
                 placeholder="Search patients..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -222,7 +222,7 @@ export default function PatientsPage() {
             
             {/* Filter Dropdown */}
             <select
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -232,7 +232,7 @@ export default function PatientsPage() {
             </select>
             
             {/* Add Patient Button */}
-            <button className="bg-blue-500 text-white rounded-lg px-4 py-2 flex items-center justify-center hover:bg-blue-600 transition">
+            <button className="bg-pink-500 text-white rounded-lg px-4 py-2 flex items-center justify-center hover:bg-pink-600 transition">
               <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
@@ -273,7 +273,7 @@ export default function PatientsPage() {
                   </td>
                   <td className="py-3 px-2">
                     <div className="flex space-x-2">
-                      <button className="p-1 text-blue-600 hover:text-blue-800">
+                      <button className="p-1 text-pink-600 hover:text-pink-800">
                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -321,7 +321,7 @@ export default function PatientsPage() {
                   onClick={() => paginate(i + 1)}
                   className={`px-3 py-1 rounded-lg ${
                     currentPage === i + 1
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-pink-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -351,7 +351,7 @@ export default function PatientsPage() {
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-lg font-medium text-gray-800">Recent Medical Records</h2>
-          <button className="text-sm text-blue-600 hover:text-blue-800">View All Records</button>
+          <button className="text-sm text-pink-600 hover:text-pink-800">View All Records</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full table-auto">
@@ -376,7 +376,7 @@ export default function PatientsPage() {
                         ? 'bg-red-100 text-red-800' 
                         : record.type === 'Checkup' 
                           ? 'bg-green-100 text-green-800' 
-                          : 'bg-blue-100 text-blue-800'
+                          : 'bg-pink-100 text-pink-800'
                     }`}>
                       {record.type}
                     </span>
@@ -384,7 +384,7 @@ export default function PatientsPage() {
                   <td className="py-3 px-2">{record.diagnosis}</td>
                   <td className="py-3 px-2">{record.doctor}</td>
                   <td className="py-3 px-2">
-                    <button className="text-blue-600 hover:text-blue-800">
+                    <button className="text-pink-600 hover:text-pink-800">
                       View Details
                     </button>
                   </td>
@@ -399,8 +399,8 @@ export default function PatientsPage() {
       <div className="bg-white rounded-xl shadow-md p-6">
         <h2 className="text-lg font-medium text-gray-800 mb-4">Patient Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mb-2">
+          <button className="flex flex-col items-center justify-center p-4 bg-pink-50 rounded-lg hover:bg-pink-100 transition">
+            <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </svg>

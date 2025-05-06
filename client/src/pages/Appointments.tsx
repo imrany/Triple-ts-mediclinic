@@ -126,7 +126,7 @@ export default function AppointmentsPage() {
           </div>
           
           <div className="flex items-center">
-            <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center mr-2">
+            <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center mr-2">
               {appointment.doctor.split(' ')[1][0]}
             </div>
             <div>
@@ -154,7 +154,7 @@ export default function AppointmentsPage() {
                 Cancel
               </button>
             )}
-            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+            <button className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600">
               Edit Details
             </button>
           </div>
@@ -227,7 +227,7 @@ export default function AppointmentsPage() {
           </button>
           <button 
             onClick={() => setIsFilterPanelOpen(false)}
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
           >
             Apply Filters
           </button>
@@ -253,7 +253,7 @@ export default function AppointmentsPage() {
             >
               <div className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center font-medium mr-3">
+                  <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-800 flex items-center justify-center font-medium mr-3">
                     {appointment.patient.split(' ')[0][0] + appointment.patient.split(' ')[1][0]}
                   </div>
                   <div>
@@ -275,7 +275,7 @@ export default function AppointmentsPage() {
             <p className="text-gray-500">No appointments found for this date with the selected filters.</p>
             <button 
               onClick={() => setIsNewAppointmentModalOpen(true)}
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 inline-flex items-center"
+              className="mt-4 px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600 inline-flex items-center"
             >
               <Plus size={16} className="mr-1" />
               Schedule New Appointment
@@ -299,19 +299,19 @@ export default function AppointmentsPage() {
         <div className="flex items-center space-x-2">
           <button 
             onClick={() => setView('day')}
-            className={`px-4 py-2 rounded-lg ${view === 'day' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`px-4 py-2 rounded-lg ${view === 'day' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Day
           </button>
           <button 
             onClick={() => setView('week')}
-            className={`px-4 py-2 rounded-lg ${view === 'week' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`px-4 py-2 rounded-lg ${view === 'week' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Week
           </button>
           <button 
             onClick={() => setView('month')}
-            className={`px-4 py-2 rounded-lg ${view === 'month' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
+            className={`px-4 py-2 rounded-lg ${view === 'month' ? 'bg-pink-100 text-pink-800' : 'bg-gray-100 text-gray-800'}`}
           >
             Month
           </button>
@@ -335,7 +335,7 @@ export default function AppointmentsPage() {
           </button>
           <button 
             onClick={() => setIsNewAppointmentModalOpen(true)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 inline-flex items-center"
+            className="bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 inline-flex items-center"
           >
             <Plus size={18} className="mr-1" />
             <span>New</span>

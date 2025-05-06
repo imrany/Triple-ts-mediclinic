@@ -42,6 +42,10 @@ html{
   background-color: transparent;
 }
 
+button{
+  @apply cursor-pointer;
+}
+
 :root {
   --font-geist-sans:font-geist-sans;
   --font-geist-mono:font-geist-mono;
