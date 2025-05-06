@@ -1,6 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Loader2, Eye, EyeOff, Unlock } from "lucide-react";
+import { Loader2, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,6 @@ type FormValues = {
 };
 
 export default function ForgotPassword() {
-    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const {
