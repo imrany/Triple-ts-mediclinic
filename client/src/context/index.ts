@@ -4,6 +4,8 @@ interface AppContextType {
     state: string;
     api_url:string;
     setState: React.Dispatch<React.SetStateAction<string>>;
+    isNewAppointmentModalOpen:boolean, 
+    setIsNewAppointmentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);

@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import NewAppointmentModal from '@/components/Modals/NewAppointment';
+import { useAppContext } from '@/context';
+import { departments, doctors } from '@/data';
+import React, { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
 // Mock data for the dashboard
@@ -53,10 +56,11 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
+  const { setIsNewAppointmentModalOpen }=useAppContext()
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
   
-  const StatCard = ({ title, value, description, icon, color }:{title:string, value:string, description:string, icon:any, color:string}) => (
+  const StatCard: React.FC<{ title: string; value: string; description: string; icon: React.ReactNode; color: string }> = ({ title, value, description, icon, color }) => (
     <div className="bg-white rounded-xl shadow-md p-6 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-gray-500 font-medium">{title}</h3>
@@ -71,7 +75,7 @@ export default function Dashboard() {
     </div>
   );
 
-  const NotificationItem = ({ message, time, type }:{ message:string, time:string, type:string }) => {
+  const NotificationItem: React.FC<{ message: string; time: string; type: string }> = ({ message, time, type }) => {
     const getTypeStyles = () => {
       switch (type) {
         case 'info':
@@ -103,7 +107,7 @@ export default function Dashboard() {
     );
   };
 
-  const AppointmentRow = ({ patient, time, doctor, department, status }:{ patient:string, time:string, doctor:string, department:string, status:string }) => (
+  const AppointmentRow: React.FC<{ patient: string; time: string; doctor: string; department: string; status: string }> = ({ patient, time, doctor, department, status }) => (
     <tr className="border-b border-gray-100 last:border-0">
       <td className="py-3 px-2">{patient}</td>
       <td className="py-3 px-2">{time}</td>
@@ -355,7 +359,7 @@ export default function Dashboard() {
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <h2 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+          <button onClick={() => setIsNewAppointmentModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
             <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
             </div>
@@ -381,6 +385,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
+      <NewAppointmentModal departments={departments} doctors={doctors} />
     </div>
   );
 }
