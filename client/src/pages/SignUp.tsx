@@ -554,7 +554,8 @@ export default function SignUp() {
                                             
                                             <Button 
                                                 type="submit" 
-                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white"
+                                                disabled
+                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed"
                                             >
                                                 {loading ? <Loader2 className="animate-spin" /> : "Create Patient Account"}
                                             </Button>
@@ -871,7 +872,8 @@ export default function SignUp() {
                                             
                                             <Button 
                                                 type="submit" 
-                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white"
+                                                disabled
+                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed"
                                             >
                                                 {loading ? <Loader2 className="animate-spin" /> : "Create Doctor Account"}
                                             </Button>

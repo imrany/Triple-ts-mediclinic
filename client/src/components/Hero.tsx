@@ -30,9 +30,9 @@ export default function Hero() {
                     </div>
                     <div className="md:w-1/2 flex justify-center">
                         <img
-                            src="/api/placeholder/600/400"
+                            src="/doctor.jpg"
                             alt="Medical professionals"
-                            className="rounded-lg shadow-xl"
+                            className="rounded-lg shadow-xl w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] object-cover"
                         />
                     </div>
                 </div>

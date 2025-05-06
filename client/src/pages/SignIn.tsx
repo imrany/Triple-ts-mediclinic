@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/card";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useState } from "react";
-import { useAppContext } from "@/context";
-import { toast } from "sonner";
+// import { useAppContext } from "@/context";
+// import { toast } from "sonner";
 
 type FormValues = {
     email: string;
@@ -27,58 +27,72 @@ export default function SignIn() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const isMobile=useIsMobile()
-    const { api_url }=useAppContext()
+    // const { api_url }=useAppContext()
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm<FormValues>();
 
-    const onSubmit = async(data: FormValues) => {
-        try{
-            setLoading(true);
-            const response=await fetch(`${api_url}/api/sign-in`,{
-                method:"POST",
-                headers:{
-                    "content-type":"application/json"
-                },
-                body:JSON.stringify({
-                    email:data.email,
-                    password:data.password
-                })
-            })
-            const parseRes=await response.json()
-            if(parseRes.error){
-                console.log(parseRes.error)
-                setLoading(false);
-                    toast(`Something went wrong!`, {
-                        description: `${parseRes.error}`,
-                        action: {
-                          label: "Undo",
-                          onClick: () => onSubmit(data)
-                        },
-                    })
-            }else{
-                console.log(parseRes);
-                const authData={
-                    email:parseRes.email,
-                    token:parseRes.token
-                }
-                localStorage.setItem('authData',JSON.stringify(authData))
-                navigate(`/dashboard`);
-            }
-        }catch(error:any){
-            console.log(error.message)
+    // const onSubmit = async(data: FormValues) => {
+    //     try{
+    //         setLoading(true);
+    //         const response=await fetch(`${api_url}/api/sign-in`,{
+    //             method:"POST",
+    //             headers:{
+    //                 "content-type":"application/json"
+    //             },
+    //             body:JSON.stringify({
+    //                 email:data.email,
+    //                 password:data.password
+    //             })
+    //         })
+    //         const parseRes=await response.json()
+    //         if(parseRes.error){
+    //             console.log(parseRes.error)
+    //             setLoading(false);
+    //                 toast(`Something went wrong!`, {
+    //                     description: `${parseRes.error}`,
+    //                     action: {
+    //                       label: "Undo",
+    //                       onClick: () => onSubmit(data)
+    //                     },
+    //                 })
+    //         }else{
+    //             console.log(parseRes);
+    //             const authData={
+    //                 email:parseRes.email,
+    //                 token:parseRes.token
+    //             }
+    //             localStorage.setItem('authData',JSON.stringify(authData))
+    //             navigate(`/dashboard`);
+    //         }
+    //     }catch(error:any){
+    //         console.log(error.message)
+    //         setLoading(false);
+    //             toast(`Something went wrong!`, {
+    //                 description: `${error.message}`,
+    //                 action: {
+    //                     label: "Undo",
+    //                     onClick: () => onSubmit(data)
+    //                 },
+    //             })
+    //     }
+    // };
+
+    const onSubmit = async (data: FormValues) => {
+        setLoading(true);
+        console.log(data)
+        setTimeout(() => {
             setLoading(false);
-                toast(`Something went wrong!`, {
-                    description: `${error.message}`,
-                    action: {
-                        label: "Undo",
-                        onClick: () => onSubmit(data)
-                    },
-                })
-        }
-    };
+            const authData = {
+                email: data.email,
+                token: "dummy"
+            }
+            localStorage.setItem('authData', JSON.stringify(authData))
+            navigate(`/dashboard`);
+        }, 2000)
+    }
 
     return (
         <div className="font-[family-name:var(--font-geist-sans)]">

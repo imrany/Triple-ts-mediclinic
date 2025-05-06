@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { 
   User, 
-  Settings, 
   Shield, 
   Bell, 
   CreditCard, 
   LogOut, 
   Trash2, 
-  ChevronRight, 
   Mail, 
   Lock, 
-  Save, 
   Eye, 
   EyeOff
 } from "lucide-react";
@@ -35,8 +32,8 @@ export default function Account() {
   });
 
   const handleLogout = () => {
-    alert("Logging out...");
-    // In a real app, you would handle logout logic here
+    localStorage.removeItem("authData")
+    window.location.reload()
   };
   
   const handleSaveChanges = () => {
@@ -50,7 +47,7 @@ export default function Account() {
     // In a real app, you would handle account deletion logic here
   };
   
-  const updateNotification = (type) => {
+  const updateNotification = (type: keyof typeof userData.notifications) => {
     setUserData({
       ...userData,
       notifications: {

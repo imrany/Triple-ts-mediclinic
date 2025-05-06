@@ -14,8 +14,39 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
 import Hero from "@/components/Hero";
+import { Doctors } from "@/types";
 
 export default function LandingPage() {
+    const doctors:Doctors[]=[
+        {
+            name:"Dr. Mercy Gakii",
+            specialization:"Nurse",
+            experience:"10 years",
+            image:"https://innolectinc.com/wp-content/uploads/2013/09/Business-professions-doctor-female-african-american.jpg",
+            bio:"Expert in nursing patients and delivering good services.",
+        },
+        {
+            name:"Dr. John Mwenda",
+            specialization:"Surgeon",
+            experience:"20 years",
+            image:"https://thumbs.dreamstime.com/b/smiling-african-doctor-stethoscope-posing-over-white-background-young-studio-179033372.jpg",
+            bio:"Expert in surgical procedures and patient care.",
+        },
+        {
+            name:"Dr. Peter Muriuki",
+            specialization:"Pharmacist",
+            experience:"8 years",
+            image:"https://thumbs.dreamstime.com/b/african-doctor-23634637.jpg",
+            bio:"Expert in medication management and patient counseling.",
+        },
+        {
+            name:"Dr. Zawadi elviner",
+            specialization:"Lab",
+            experience:"15 years",
+            image:"https://thumbs.dreamstime.com/b/african-american-doctor-woman-mature-afro-isolated-white-background-93838492.jpg",
+            bio:"Expert in performing Blood Test which are necessarry for general blood screening for over 15 years of experience.",
+        }
+    ]
     return (
         <div className="font-[family-name:var(--font-geist-sans)] bg-pink-50 min-h-screen">
             <NavBar/>
@@ -27,15 +58,14 @@ export default function LandingPage() {
                     <div className="text-center mb-12">
                         <h2 className="text-3xl font-bold text-gray-900">Our Services</h2>
                         <p className="mt-4 text-lg text-gray-600">
-                            <li>
-                                Sulturing - 1500, Suturing removal - 500, Implant - removal - 500,
-                                Wound Cleaning/dressing - minor 200 : extensive 500, implant insertatiion - 700, injections - 200, Circumcision - 2000.
-                            </li>
+                            We offer a wide range of healthcare services tailored to meet your needs.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Feature 1 */}
+                        {/* Sulturing - 1500, Suturing removal - 500, Implant - removal - 500,
+                                Wound Cleaning/dressing - minor 200 : extensive 500, implant insertatiion - 700, injections - 200, Circumcision - 2000. */}
                         <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
                             <Calendar className="h-12 w-12 text-pink-800 mb-4" />
                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Online Appointments</h3>
@@ -135,54 +165,16 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {/* Doctor 1 */}
+                        {doctors&&doctors.map(doctor=>(
                         <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Dorothy Kendi" className="w-full h-64 object-cover" />
+                            <img src={doctor.image} alt={doctor.name} className="w-full h-64 object-cover" />
                             <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Dorothy Kendi</h3>
-                                <p className="text-pink-800 font-medium">Radiologist</p>
-                                <p className="text-gray-600 mt-2">Specializing in Radiology field with over 15 years of experience.</p>
+                                <h3 className="text-xl font-semibold text-gray-900">{doctor.name}</h3>
+                                <p className="text-pink-800 font-medium">{doctor.specialization}</p>
+                                <p className="text-gray-600 mt-2">{doctor.bio}</p>
                             </div>
                         </div>
-
-                        {/* Doctor 2 */}
-                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Mercy Gakii" className="w-full h-64 object-cover" />
-                            <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Mercy Gakii</h3>
-                                <p className="text-pink-800 font-medium">Nurse</p>
-                                <p className="text-gray-600 mt-2">Expert in nusing patients and delivering good services</p>
-                            </div>
-                        </div>
-
-                        {/* Doctor 3 */}
-                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Ken Murimi" className="w-full h-64 object-cover" />
-                            <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Ken Murimi</h3>
-                                <p className="text-pink-800 font-medium">Clinician</p>
-                                <p className="text-gray-600 mt-2">Dedicated to performing clinical tests dedicated for optimal Health Diagnosis</p>
-                            </div>
-                        </div>
-
-                        {/* Doctor 4 */}
-                        <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Zawadi elviner" className="w-full h-64 object-cover" />
-                            <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Zawadi elviner</h3>
-                                <p className="text-pink-800 font-medium">Lab technician</p>
-                                <p className="text-gray-600 mt-2">Specialized in performing Blood Test which are necessarry for general blood screening for over 15 years of experience.</p>
-                            </div>
-                        </div>
-                        {/* Doctor 5 */}
-                        <div className="bg-green-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                            <img src="/api/placeholder/300/300" alt="Dr. Regina Kawira" className="w-full h-64 object-cover" />
-                            <div className="p-4">
-                                <h3 className="text-xl font-semibold text-gray-900">Dr. Regina Kawira</h3>
-                                <p className="text-green-800 font-medium">Pharm Technician </p>
-                                <p className="text-gray-600 mt-2">Specialized in Phamarcy and Prescribing Medicines To patients for over 10 years of experience.</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
 
                     <div className="mt-12 text-center">
@@ -300,7 +292,7 @@ export default function LandingPage() {
                             </Button>
                         </Link>
                         <Link to="/learn-more">
-                            <Button variant="outline" className="border-white text-white hover:bg-pink-700 px-6 py-3 text-lg">
+                            <Button variant="outline" className="border-white bg-pink-700 text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-lg">
                                 Learn More
                             </Button>
                         </Link>

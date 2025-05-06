@@ -91,11 +91,11 @@ export default function Footer() {
                         <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
                         <ul className="space-y-3">
                             <li className="flex items-start">
-                                <MapPin className="h-5 w-5 text-green-500 mr-2 mt-1 flex-shrink-0" />
+                                <MapPin className="h-5 w-5 text-pink-500 mr-2 mt-1 flex-shrink-0" />
                                 <span className="text-gray-400">CHUKA PLOT 834, Mitheru , Tharaka Nithi County, P.O Box 302-60400</span>
                             </li>
                             <li className="flex items-center">
-                                <Phone className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                                <Phone className="h-5 w-5 text-pink-500 mr-2 flex-shrink-0" />
                                 <a href="tel:+254112782133" className="text-gray-400 hover:text-white transition-colors">+254112782133</a>
                             </li>
                             <li className="flex items-center">
