@@ -4,10 +4,12 @@ import {
   LogOut,
   Trash2,
 } from "lucide-react";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export default function Account() {
   const [activeTab, setActiveTab] = useState("profile");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const isMobile=useIsMobile()
 
   // Mock user data
   const [userData, setUserData] = useState({
@@ -50,15 +52,15 @@ export default function Account() {
   };
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)] text-gray-800 flex flex-col min-h-screen">
+    <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile?"py-6":"pb-6"}`}>
       {/* Header */}
-      <div className="pt-4 px-6">
+      <div className="">
         <h1 className="text-2xl font-bold">Account</h1>
         <p className="text-gray-500">Manage your account settings and preferences</p>
       </div>
 
       {/* Main Content */}
-      <div className="flex-grow flex flex-col max-w-6xl mx-auto w-full px-4 pb-4 gap-6">
+      <div className="flex-grow flex flex-col max-w-6xl mx-auto w-full pb-4 gap-6">
         <div className="border-b border-gray-200">
           <ul className="flex flex-wrap -mb-px">
             {['profile', 'notifications', 'billing'].map((tab) => (
@@ -75,7 +77,7 @@ export default function Account() {
 
               </li>
             ))}
-            <div className="ml-auto flex items-center space-x-1">
+            {!isMobile&&(<div className="ml-auto flex items-center space-x-1">
               <button
                 onClick={handleLogout}
                 className="flex items-center text-sm px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
@@ -91,7 +93,7 @@ export default function Account() {
                 <Trash2 size={15} className="mr-1" />
                 <span>Delete</span>
               </button>
-            </div>
+            </div>)}
           </ul>
         </div>
 

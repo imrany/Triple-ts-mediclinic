@@ -1,3 +1,4 @@
+import useIsMobile from '@/hooks/useIsMobile';
 import { useState } from 'react';
 import { PieChart, Pie, BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -47,6 +48,7 @@ export default function PatientsPage() {
   const [filterStatus, setFilterStatus] = useState('All');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [patientsPerPage] = useState(5);
+  const isMobile=useIsMobile()
   
   // Filter patients based on search and status
   const filteredPatients = patientsData.filter(patient => {
@@ -80,7 +82,7 @@ export default function PatientsPage() {
   );
   
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile?"py-6":"pb-6"}`}>
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Patients Management</h1>

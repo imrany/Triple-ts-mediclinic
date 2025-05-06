@@ -1,6 +1,8 @@
 import { useAppContext } from '@/context';
 import { departments, doctors } from '@/data';
+import useIsMobile from '@/hooks/useIsMobile';
 import { Doctor } from '@/types';
+import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 
@@ -70,14 +72,22 @@ export default function DoctorsPage() {
   const [availabilityFilter, setAvailabilityFilter] = useState('All');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const isMobile=useIsMobile()
   
   // Add experience property to doctors data
   const doctorsWithExperience = doctors.map(doctor => ({
-    ...doctor,
+    id: doctor.id,
+    name:doctor.name,
+    specialization:doctor.specialization,
+    email:doctor.email,
+    phone:doctor.phone,
+    department:doctor.department,
+    image:doctor.image,
+    bio:doctor.name,
     experience: Math.floor(Math.random() * 20) + 1, // Random experience between 1-20 years
     available: Math.random() > 0.3, // 70% doctors are available
     patients: Math.floor(Math.random() * 100) + 20, // Random number of patients
-    rating: (Math.random() * 1.5 + 3.5).toFixed(1) // Random rating between 3.5-5.0
+    rating: (Math.random() * 1.5 + 3.5) // Random rating between 3.5-5.0
   }));
 
   // Filter and sort doctors
@@ -119,8 +129,8 @@ export default function DoctorsPage() {
           : b.patients - a.patients;
       } else if (sortBy === 'rating') {
         return sortOrder === 'asc'
-          ? parseFloat(a.rating) - parseFloat(b.rating)
-          : parseFloat(b.rating) - parseFloat(a.rating);
+          ? a.rating - b.rating
+          : b.rating - a.rating;
       } else if (sortBy === 'experience') {
         return sortOrder === 'asc'
           ? a.experience - b.experience
@@ -162,7 +172,7 @@ export default function DoctorsPage() {
     </div>
   );
   
-  const DoctorCard = ({ doctor }:{ doctor:any }) => (
+  const DoctorCard = ({ doctor }:{ doctor:Doctor }) => (
     <div className="bg-white rounded-xl shadow-md p-4 flex flex-col h-full">
       <div className="flex items-start space-x-4">
         <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
@@ -208,7 +218,7 @@ export default function DoctorsPage() {
   );
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile?"py-6":"pb-6"}`}>
       {/* Page Header */}
       <div className="mb-6 flex justify-between items-center">
         <div>
@@ -219,10 +229,8 @@ export default function DoctorsPage() {
           onClick={() => setIsNewDoctorModalOpen(true)}
           className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center"
         >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
-          </svg>
-          Add New Doctor
+          <Plus className="w-4 h-4 mr-1" /> 
+          {!isMobile&&(<p>Add New Doctor</p>)}
         </button>
       </div>
 

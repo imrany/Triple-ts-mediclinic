@@ -16,8 +16,9 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/dashboard/appointments", label: "Appointments" },
     { path: "/dashboard/patients", label: "Patients" },
     { path: "/dashboard/doctors", label: "Doctors" },
+    { path: "/dashboard/calendar", label: "Calendar" },
     { path: "/dashboard/account", label: "Account" },
-    { path: "/dashboard/settings", label: "Settings" }
+    { path: "/dashboard/settings", label: "Settings" },
   ];
 
   const toggleSidebar = () => {

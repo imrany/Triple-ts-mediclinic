@@ -1,7 +1,7 @@
 // Mock data for appointments
 export const appointmentsData = [
   {
-    id: 1,
+    id: "1",
     patient: "Emma Wilson",
     time: "09:00 AM",
     date: "2025-05-06",
@@ -11,7 +11,7 @@ export const appointmentsData = [
     notes: "Follow-up checkup",
   },
   {
-    id: 2,
+    id: "2",
     patient: "Michael Brown",
     time: "10:15 AM",
     date: "2025-05-06",
@@ -21,7 +21,7 @@ export const appointmentsData = [
     notes: "Initial consultation",
   },
   {
-    id: 3,
+    id: "3",
     patient: "Sophia Davis",
     time: "11:30 AM",
     date: "2025-05-06",
@@ -31,7 +31,7 @@ export const appointmentsData = [
     notes: "Vaccination",
   },
   {
-    id: 4,
+    id: "4",
     patient: "James Miller",
     time: "01:45 PM",
     date: "2025-05-06",
@@ -41,7 +41,7 @@ export const appointmentsData = [
     notes: "Post-surgery checkup",
   },
   {
-    id: 5,
+    id: "5",
     patient: "Olivia Taylor",
     time: "03:00 PM",
     date: "2025-05-06",
@@ -51,7 +51,7 @@ export const appointmentsData = [
     notes: "Skin examination",
   },
   {
-    id: 6,
+    id: "6",
     patient: "Noah Johnson",
     time: "09:30 AM",
     date: "2025-05-07",
@@ -61,7 +61,7 @@ export const appointmentsData = [
     notes: "ECG test",
   },
   {
-    id: 7,
+    id: "7",
     patient: "Ava Martinez",
     time: "11:00 AM",
     date: "2025-05-07",
@@ -71,7 +71,7 @@ export const appointmentsData = [
     notes: "Eye examination",
   },
   {
-    id: 8,
+    id: "8",
     patient: "William Lee",
     time: "02:30 PM",
     date: "2025-05-07",
@@ -81,7 +81,7 @@ export const appointmentsData = [
     notes: "MRI results discussion",
   },
   {
-    id: 9,
+    id: "9",
     patient: "Isabella Clark",
     time: "04:15 PM",
     date: "2025-05-07",
@@ -91,7 +91,7 @@ export const appointmentsData = [
     notes: "Annual checkup",
   },
   {
-    id: 10,
+    id: "10",
     patient: "Benjamin Adams",
     time: "10:45 AM",
     date: "2025-05-08",
@@ -101,7 +101,7 @@ export const appointmentsData = [
     notes: "X-ray review",
   },
   {
-    id: 11,
+    id: "11",
     patient: "Mia Rodriguez",
     time: "01:00 PM",
     date: "2025-05-08",
@@ -111,7 +111,7 @@ export const appointmentsData = [
     notes: "Allergy testing",
   },
   {
-    id: 12,
+    id: "12",
     patient: "Alexander Walker",
     time: "03:30 PM",
     date: "2025-05-08",
@@ -124,7 +124,7 @@ export const appointmentsData = [
 
 export const doctors = [
   {
-    id: 1,
+    id: "1",
     name: "Dr. Mercy Gakii",
     specialization: "Nurse",
     available: true,
@@ -135,9 +135,11 @@ export const doctors = [
     image:
       "https://innolectinc.com/wp-content/uploads/2013/09/Business-professions-doctor-female-african-american.jpg",
     bio: "Expert in nursing patients and delivering good services.",
+    patients:[],
+    rating:6
   },
   {
-    id: 2,
+    id: "2",
     name: "Dr. John Mwenda",
     specialization: "Surgeon",
     available: true,
@@ -148,9 +150,11 @@ export const doctors = [
     image:
       "https://thumbs.dreamstime.com/b/smiling-african-doctor-stethoscope-posing-over-white-background-young-studio-179033372.jpg",
     bio: "Expert in surgical procedures and patient care.",
+    patients:[],
+    rating:5
   },
   {
-    id: 3,
+    id: "3",
     name: "Dr. Peter Muriuki",
     specialization: "Pharmacist",
     available: true,
@@ -160,9 +164,11 @@ export const doctors = [
     department:"Pharmacy",
     image: "https://thumbs.dreamstime.com/b/african-doctor-23634637.jpg",
     bio: "Expert in medication management and patient counseling.",
+    patients:[],
+    rating:2
   },
   {
-    id: 4,
+    id: "4",
     name: "Dr. Zawadi elviner",
     specialization: "Lab",
     available: true,
@@ -173,15 +179,25 @@ export const doctors = [
     image:
       "https://thumbs.dreamstime.com/b/african-american-doctor-woman-mature-afro-isolated-white-background-93838492.jpg",
     bio: "Expert in performing Blood Test which are necessarry for general blood screening for over 15 years of experience.",
+    patients:[],
+    rating:5
   },
+];
+
+export const patients = [
+    { id: 'p1', name: 'John Smith', email: 'john@example.com', phone: '254712345677' },
+    { id: 'p2', name: 'Emma Johnson', email: 'emma@example.com', phone: '254723456787' },
+    { id: 'p3', name: 'Michael Brown', email: 'michael@example.com', phone: '254734567897' },
+    { id: 'p4', name: 'Sophia Davis', email: 'sophia@example.com', phone: '254745678907' },
 ];
 
 // Mock data for departments
 export const departments = [
-  { id: 1, name: "Cardiology" },
-  { id: 2, name: "Neurology" },
-  { id: 3, name: "Pediatrics" },
-  { id: 4, name: "Orthopedics" },
-  { id: 5, name: "Dermatology" },
-  { id: 6, name: "Ophthalmology" },
+  { id: "1", name: "Cardiology" },
+  { id: "2", name: "Neurology" },
+  { id: "3", name: "Pediatrics" },
+  { id: "4", name: "Orthopedics" },
+  { id: "5", name: "Dermatology" },
+  { id: "6", name: "Ophthalmology" },
 ];
+

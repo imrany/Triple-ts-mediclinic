@@ -1,8 +1,10 @@
+import useIsMobile from '@/hooks/useIsMobile';
 import { useState } from 'react';
 // import { useAppContext } from '@/context';
 
 export default function Settings() {
     // const { user } = useAppContext();
+    const isMobile=useIsMobile()
 
     // State for different settings categories
     const [activeTab, setActiveTab] = useState('display');
@@ -368,7 +370,7 @@ export default function Settings() {
 
     // Main render return statement that was missing
     return (
-        <div className="container mx-auto px-4 pb-6 max-w-6xl">
+        <div className={`container mx-auto max-w-6xl ${isMobile?"py-6":"pb-6"}`}>
             <div>
                 <h1 className="text-2xl font-bold">Settings</h1>
                 <p className="text-gray-500">Manage your general settings and preferences</p>

@@ -1,5 +1,5 @@
 export type Doctor = {
-    id: number;
+    id: string;
     name: string;
     department: string;
     available: boolean;
@@ -9,9 +9,26 @@ export type Doctor = {
     image:string;
     bio:string;
     specialization:string;
+    patients:any;
+    rating:number
 };
 
 export type Department = {
-    id: number;
+    id: string;
     name: string;
 };
+
+export interface Appointment {
+    id: string;
+    title: string;
+    patientId: string;
+    patientName: string;
+    doctorId: string;
+    doctorName: string;
+    date: Date;
+    startTime: string;
+    endTime: string;
+    type: string;
+    notes: string;
+    status: string;
+}

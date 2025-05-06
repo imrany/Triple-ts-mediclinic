@@ -3,6 +3,7 @@ import { Calendar, Clock, Filter, Plus, Search, ChevronLeft, ChevronRight, MoreH
 import { useAppContext } from '@/context';
 import NewAppointmentModal from '@/components/Modals/NewAppointment';
 import { appointmentsData, departments, doctors } from '@/data';
+import useIsMobile from '@/hooks/useIsMobile';
 
 export default function AppointmentsPage() {
   const [currentDate, setCurrentDate] = useState(new Date('2025-05-06'));
@@ -16,6 +17,7 @@ export default function AppointmentsPage() {
   });
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const { setIsNewAppointmentModalOpen }=useAppContext()
+  const isMobile=useIsMobile()
 
   // Format date for display
   const formatDate = (date:any) => {
@@ -287,7 +289,7 @@ export default function AppointmentsPage() {
   );
 
   return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
+    <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile?"py-6":"pb-6"}`}>
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Appointments</h1>
