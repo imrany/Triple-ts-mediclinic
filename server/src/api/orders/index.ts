@@ -5,8 +5,6 @@ import { parse, isDate } from 'date-fns';
 import axios from "axios"
 import { config } from "dotenv"
 import writeLog from "../../lib/writeLog";
-import { sock } from "../..";
-import { Location } from "../../types";
 import { pool } from "../../postgres";
 config()
 
@@ -17,28 +15,6 @@ const spreadsheetId = process.env.RECORDS_SPREADSHEET_ID as string
 const APP_URL = process.env.APP_URL as string
 const API_URL = process.env.API_URL as string
 const MESSAGING_SERVER =process.env.MESSAGING_SERVER as string
-
-async function reply(text: string, from: string, reaction: string | null, location: Location | null, msg: any) {
-    const messageOptions: any = {
-        text: text,
-        quoted: msg,
-        react: msg && msg.key ? {
-            text: reaction || '✅',
-            key: msg.key
-        } : undefined
-    };
-
-    if (location) {
-        messageOptions.location = {
-            degreesLatitude: location.degreesLatitude,
-            degreesLongitude: location.degreesLongitude,
-            name: location.name,
-            address: location.address
-        };
-    }
-
-    return (await sock).sendMessage(from, messageOptions);
-}
 
 export async function migrateOrdersToPG(_:Request, res:Response) {
     try {
@@ -396,21 +372,6 @@ export async function addOrder(req: Request, res: Response) {
         if (data.error) {
             console.log(data.error);
         }
-
-        await axios.post(`${API_URL}/api/send_notification`, {
-            title: `Order placed confirmation`,
-            body: `${full_name} has placed ${order_status} order on a product worth Kes ${total_price}, please check your email`,
-            link: `${APP_URL}/orders/${order_reference}`,
-            email: business_email,
-        });
-
-        await reply(
-            `Dear customer,\n\nThank you for placing an order with us! We are excited to process your order, but we noticed that the payment is still pending. 🎉\n\nTo complete your purchase, please click the link below and proceed with the payment:\n\n${APP_URL}/orders/${order_reference}\n\nOnce your payment is confirmed, we will process your order and arrange for delivery within 1-3 business days.\n\nIf you have any questions or need further assistance, please don't hesitate to reach out.\n\nThank you for choosing us!\n\nBest regards, The Villebiz Team ${APP_URL}`, 
-            `${phone_number}@s.whatsapp.net`,
-            "✨",
-            null,
-            null
-        );
     } catch (error: any) {
         writeLog(error);
         console.error('Error:', error); // Log error
@@ -634,7 +595,6 @@ export async function sendNotice(req: Request,res:Response) {
             if(response.data.error){
                 console.log(response.data.error)
             }
-            await reply(notice, `${to}@s.whatsapp.net`,reaction, null, null)
             return res.json({msg:"Notice sent successfully"});
         } else {
             return res.status(404).json({ error: `No record found for reference ${reference}` });
@@ -780,23 +740,6 @@ export async function updateOrderByRef(req: Request,res:Response) {
             
             if (data.error) {
                 console.log(data.error);
-            }
-            await axios.post(`${API_URL}/api/send_notification`,{
-                title:`Order update`,
-                body:`${rows[rowIndexToUpdate][10]} has updated ${order_status} order on a product worth Kes ${total_price}`,
-                link:`${APP_URL}/orders/${rows[rowIndexToUpdate][0]}`,
-                email:rows[rowIndexToUpdate][18]
-            })
-            try {
-                await reply(
-                    `Dear customer, You've updated ${order_status} order.\nClick here to view your order: ${APP_URL}/orders/${rows[rowIndexToUpdate][0]} 🌟`, 
-                    `${phone_number}@s.whatsapp.net`,
-                    null,
-                    null, 
-                    null,
-                )
-            } catch (notificationError) {
-                console.error('Error sending whatsapp notifications:', notificationError);
             }
         }else{
             return res.status(404).json({error:`No record found`})

@@ -32,7 +32,7 @@ export default function Footer() {
                     {/* Column 1: About */}
                     <div>
                         <div className="flex items-center mb-4">
-                            <Heart className="h-6 w-6 text-green-500" />
+                            <Heart className="h-6 w-6 text-pink-500" />
                             <span className="ml-2 text-xl font-bold">Triple TS Medclinic</span>
                         </div>
                         <p className="text-gray-400">
@@ -96,14 +96,14 @@ export default function Footer() {
                             </li>
                             <li className="flex items-center">
                                 <Phone className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-                                <a href="tel:+15551234567" className="text-gray-400 hover:text-white transition-colors">+254112782133</a>
+                                <a href="tel:+254112782133" className="text-gray-400 hover:text-white transition-colors">+254112782133</a>
                             </li>
                             <li className="flex items-center">
-                                <Mail className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
+                                <Mail className="h-5 w-5 text-pink-500 mr-2 flex-shrink-0" />
                                 <a href="mailto:info@tripletsmedclinic.com" className="text-gray-400 hover:text-white transition-colors">info@tripletsmedclinic.com</a>
                             </li>
                             <li className="flex items-start">
-                                <Clock className="h-5 w-5 text-green-500 mr-2 mt-1 flex-shrink-0" />
+                                <Clock className="h-5 w-5 text-pink-500 mr-2 mt-1 flex-shrink-0" />
                                 <div className="text-gray-400">
                                     <p>Mon-Fri: 8:00 AM - 8:00 PM</p>
                                     <p>Saturday: 9:00 AM - 5:00 PM</p>
@@ -124,18 +124,18 @@ export default function Footer() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="Your email address"
-                                    className="w-full px-4 py-2 rounded bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full px-4 py-2 rounded bg-gray-800 text-white placeholder-gray-500 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-500"
                                 />
                             </div>
                             <button
                                 onClick={handleSubscribe}
-                                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition-colors"
+                                className="w-full bg-pink-600 hover:bg-pink-700 text-white font-medium py-2 px-4 rounded transition-colors"
                             >
                                 Subscribe
                             </button>
                         </div>
                         {subscribed && (
-                            <p className="text-green-500 mt-2 text-sm">Thank you for subscribing!</p>
+                            <p className="text-pink-500 mt-2 text-sm">Thank you for subscribing!</p>
                         )}
                     </div>
                 </div>

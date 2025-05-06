@@ -7,67 +7,208 @@ import axios from "axios";
 import schedule from "node-schedule";
 import { accessSheet, writeDataToSheet, updateRow, deleteRows } from "../../lib/google-apis/sheets";
 import { isDate, parse } from "date-fns";
-import { addToGroup } from "../../whatsapp/handles";
 import { mapArraytoObj } from "../../lib/google-apis/mapArrayToObj";
 config();
 
 const spreadsheetId = process.env.RECORDS_SPREADSHEET_ID as string;
 const APP_URL = process.env.APP_URL as string;
 const MESSAGING_SERVER = process.env.MESSAGING_SERVER as string;
-const VILLEBIZ_BUSINESS_GROUP = process.env.VILLEBIZ_BUSINESS_GROUP as string;
 const userRange = 'users!A1:R10000';
 const businessRange = 'businesses!A1:W10000';
 const productsRange = 'products!A1:Z10000';
 const ordersRange = 'orders!A1:X10000';
 
-export async function migrateUsersToPg(_: Request, res: Response) {
+export async function signUpPatient(req: Request, res: Response) {
     try {
-        const rows: any = await accessSheet(spreadsheetId, userRange);
-        const data = mapArraytoObj(rows);
-        try {
-            for (const user of data) {
-                const query = `
-                    INSERT INTO users (
-                        user_reference, photo, username, email, password, full_name, phone_number, 
-                        location_name, location_lat_long, type, created_at, 
-                        last_login, status, agreed_to_terms_and_conditions, email_marketing_consent, whatsapp_consent, whatsapp_number
-                    ) VALUES (
-                        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
-                    ) ON CONFLICT (email) DO NOTHING;
-                `;
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            phone,
+            gender,
+            dateOfBirth,
+            address,
+            emergencyContact,
+            termsAccepted
+        } = req.body;
 
-                const values = [
-                    user["user reference"] || "",
-                    user["photo"] || "",
-                    user["username"] || "",
-                    user["email"] || "",
-                    user["password"] || "",
-                    user["full name"] || "",
-                    user["phone number"] || "",
-                    user["location name"] || "",
-                    user["location lat_long"] || "",
-                    user["type"] || "user",
-                    user["Created at"] || null,
-                    user["Last Login"] || null,
-                    user["Status"] || "active",
-                    user["Agreed ToTerms and Conditions"] || true,
-                    user["Email Marketing Consent"] || true,
-                    user["Whatsapp Notification Consent"] || false,
-                    user["Whatsapp Number"] || 0,
-                ];
-
-                await pool.query(query, values);
+        if (
+            firstName &&
+            lastName &&
+            email &&
+            password &&
+            confirmPassword &&
+            phone &&
+            gender &&
+            dateOfBirth &&
+            address &&
+            emergencyContact &&
+            termsAccepted
+        ) {
+            if (password !== confirmPassword) {
+                return res.status(400).json({ error: "Passwords do not match" });
             }
 
-            res.json({ message: "Users migrated successfully to PostgreSQL database." });
-        } catch (error) {
-            await pool.query("ROLLBACK");
-            console.error("Error during migration:", error);
-            res.status(500).json({ error: "Failed to migrate users to PostgreSQL database." });
+            const salt = await genSalt(10);
+            const hashedPassword = await hash(password, salt);
+
+            const rows: any = await accessSheet(spreadsheetId, userRange);
+            const emailExists = rows.some((row: any) => row.includes(email));
+            const phoneExists = rows.some((row: any) => row.includes(phone));
+
+            if (emailExists) {
+                return res.status(400).json({ error: "A user with this email already exists." });
+            } else if (phoneExists) {
+                return res.status(400).json({ error: "A user with this phone number already exists." });
+            }
+
+            const type = "patient";
+            const range = `users!A${rows.length + 1}`;
+            const currentDate = new Date().toISOString();
+
+            const values = [
+                [
+                    `PATIENT-${rows.length + 2}`,
+                    "",
+                    `${firstName} ${lastName}`,
+                    email,
+                    hashedPassword,
+                    `${firstName} ${lastName}`,
+                    phone,
+                    address,
+                    "",
+                    "0",
+                    type,
+                    currentDate,
+                    currentDate,
+                    "active",
+                    termsAccepted,
+                    gender,
+                    dateOfBirth,
+                    emergencyContact
+                ]
+            ];
+
+            const result = await writeDataToSheet(spreadsheetId, range, values);
+            if (result) {
+                return res.json({
+                    data: {
+                        email,
+                        token: generateToken(`PATIENT-${rows.length + 2}`)
+                    }
+                });
+            } else {
+                return res.status(500).json({ error: "Sign up failed, try again" });
+            }
+        } else {
+            return res.status(400).json({ error: "Enter all the required fields" });
         }
     } catch (error: any) {
         console.error("Error:", error);
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export async function signUpDoctor(req: Request, res: Response) {
+    try {
+        const {
+            firstName,
+            lastName,
+            email,
+            password,
+            confirmPassword,
+            phone,
+            gender,
+            specialization,
+            licenseNumber,
+            yearsOfExperience,
+            education,
+            biography,
+            availableForEmergency,
+            termsAccepted
+        } = req.body;
+
+        if (
+            firstName &&
+            lastName &&
+            email &&
+            password &&
+            confirmPassword &&
+            phone &&
+            gender &&
+            specialization &&
+            licenseNumber &&
+            yearsOfExperience &&
+            education &&
+            biography &&
+            termsAccepted
+        ) {
+            if (password !== confirmPassword) {
+                return res.status(400).json({ error: "Passwords do not match" });
+            }
+
+            const salt = await genSalt(10);
+            const hashedPassword = await hash(password, salt);
+
+            const rows: any = await accessSheet(spreadsheetId, userRange);
+            const emailExists = rows.some((row: any) => row.includes(email));
+            const phoneExists = rows.some((row: any) => row.includes(phone));
+
+            if (emailExists) {
+                return res.status(400).json({ error: "A user with this email already exists." });
+            } else if (phoneExists) {
+                return res.status(400).json({ error: "A user with this phone number already exists." });
+            }
+
+            const type = "doctor";
+            const range = `users!A${rows.length + 1}`;
+            const currentDate = new Date().toISOString();
+
+            const values = [
+                [
+                    `DOCTOR-${rows.length + 2}`,
+                    "",
+                    `${firstName} ${lastName}`,
+                    email,
+                    hashedPassword,
+                    `${firstName} ${lastName}`,
+                    phone,
+                    specialization,
+                    "",
+                    "0",
+                    type,
+                    currentDate,
+                    currentDate,
+                    "active",
+                    termsAccepted,
+                    gender,
+                    licenseNumber,
+                    yearsOfExperience,
+                    education,
+                    biography,
+                    availableForEmergency
+                ]
+            ];
+
+            const result = await writeDataToSheet(spreadsheetId, range, values);
+            if (result) {
+                return res.json({
+                    data: {
+                        email,
+                        token: generateToken(`DOCTOR-${rows.length + 2}`)
+                    }
+                });
+            } else {
+                return res.status(500).json({ error: "Sign up failed, try again" });
+            }
+        } else {
+            return res.status(400).json({ error: "Enter all the required fields" });
+        }
+    } catch (error: any) {
+        console.error("Error:", error);
+        return res.status(500).json({ error: error.message });
     }
 }
 
@@ -92,43 +233,6 @@ const generateToken = (id: string, period?: string) => {
         expiresIn: period || "10d",
     });
 };
-
-export async function addAllUsersToVillebizWhatsappGroup(_: Request, res: Response) {
-    try {
-        const result: any = await accessSheet(spreadsheetId, userRange);
-        const data = mapArraytoObj(result);
-
-        // Ensure date format consistency and parse dates if necessary
-        data.forEach((item: any) => {
-            if (typeof item['Created at'] === 'string' && !isDate(new Date(item['Created at']))) {
-                // Parse non-ISO date format (e.g., 'dd/MM/yyyy')
-                const parsedDate = parse(item['Created at'], 'dd/MM/yyyy', new Date());
-                item['Created at'] = parsedDate.toISOString().slice(0, 10); // Convert to ISO format
-            }
-        });
-
-        // Sort data by 'Created at' date in descending order
-        data.sort((a: any, b: any) => new Date(b['Created at']).getTime() - new Date(a['Created at']).getTime());
-
-        data.map(async(user: any) => {
-            const whatsapp_number = user["Whatsapp Number"] || user["phone number"];
-            if (user["Status"] !== "Banned" && whatsapp_number) {
-                try {
-                    const add = await addToGroup(VILLEBIZ_BUSINESS_GROUP, [`${whatsapp_number}@s.whatsapp.net`]);
-                    console.log(add);
-                } catch(error) {
-                    console.log(error);
-                    return res.status(500).json({error: "Failed to add user to the villebiz whatsapp group", details: error});
-                }
-            }
-        });
-
-        return res.json({message: `All ${result.length - 1} users were added to the Villebiz Whatsapp group`});
-    } catch (error: any) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: error.message });
-    }
-}
 
 export async function getUsers(_: Request, res: Response) {
     try {
@@ -506,7 +610,7 @@ export async function signUp(req: Request, res: Response) {
 
                 if (whatsapp_consent && whatsapp_number) {
                     try {
-                        const add = await addToGroup(VILLEBIZ_BUSINESS_GROUP, [`${whatsapp_number}@s.whatsapp.net`]);
+                        const add = "add user";
                         console.log(add);
                     } catch (error) {
                         console.log(error);

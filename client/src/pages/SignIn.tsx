@@ -1,4 +1,3 @@
-import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Loader2, Lock, Eye, EyeOff } from "lucide-react";
@@ -6,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import {
     Card,
     CardContent,
@@ -15,6 +13,9 @@ import {
     CardDescription,
 } from "@/components/ui/card";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useState } from "react";
+import { useAppContext } from "@/context";
+import { toast } from "sonner";
 
 type FormValues = {
     email: string;
@@ -22,30 +23,68 @@ type FormValues = {
 };
 
 export default function SignIn() {
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [loading, setLoading] = React.useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const isMobile=useIsMobile()
+    const { api_url }=useAppContext()
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm<FormValues>();
 
-    const onSubmit = (data: FormValues) => {
-        setLoading(true);
-        console.log(data);
-        setTimeout(() => {
+    const onSubmit = async(data: FormValues) => {
+        try{
+            setLoading(true);
+            const response=await fetch(`${api_url}/api/sign-in`,{
+                method:"POST",
+                headers:{
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify({
+                    email:data.email,
+                    password:data.password
+                })
+            })
+            const parseRes=await response.json()
+            if(parseRes.error){
+                console.log(parseRes.error)
+                setLoading(false);
+                    toast(`Something went wrong!`, {
+                        description: `${parseRes.error}`,
+                        action: {
+                          label: "Undo",
+                          onClick: () => onSubmit(data)
+                        },
+                    })
+            }else{
+                console.log(parseRes);
+                const authData={
+                    email:parseRes.email,
+                    token:parseRes.token
+                }
+                localStorage.setItem('authData',JSON.stringify(authData))
+                navigate(`/dashboard`);
+            }
+        }catch(error:any){
+            console.log(error.message)
             setLoading(false);
-            navigate(`/dashboard`);
-        }, 3000);
+                toast(`Something went wrong!`, {
+                    description: `${error.message}`,
+                    action: {
+                        label: "Undo",
+                        onClick: () => onSubmit(data)
+                    },
+                })
+        }
     };
 
     return (
-        <div className="font-[family-name:var(--font-geist-sans)] bg-gradient-to-b from-green-50 to-white ">
+        <div className="font-[family-name:var(--font-geist-sans)]">
             {loading ? (
-                <div className="flex flex-col h-screen items-center justify-center bg-gray-100">
-                    <Loader2 className="animate-spin w-12 h-12 text-green-500" />
+                <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white ">
+                    <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
                     <p className="mt-4 text-lg font-medium">Get well soon!</p>
                 </div>
             ) : (
@@ -63,14 +102,14 @@ export default function SignIn() {
                         <Card className="w-full shadow-none rounded-none bg-transparent border-none ">
                             <CardHeader>
                                 <div className="flex items-center justify-center">
-                                    <div className="bg-green-800 p-3 rounded-full shadow-md">
+                                    <div className="bg-pink-800 p-3 rounded-full shadow-md">
                                         <Lock className="text-white w-6 h-6" />
                                     </div>
                                 </div>
                                 <CardTitle className="text-center mt-4 text-2xl font-bold text-gray-800">
                                     Sign in
                                 </CardTitle>
-                                <CardDescription className="text-center">Welcome back</CardDescription>
+                                <CardDescription className="text-center">Welcome to Triple TS Medclinic for better healthcare</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -118,15 +157,15 @@ export default function SignIn() {
                                             <Checkbox id="remember" />
                                             <Label htmlFor="remember">Remember me</Label>
                                         </div>
-                                        <Link to="/forgot" className="text-sm text-blue-500">
+                                        <Link to="/forgot-password" className="text-sm text-pink-800 hover:underline">
                                             Forgot password?
                                         </Link>
                                     </div>
-                                    <Button type="submit" className="w-full bg-green-800 hover:bg-green-800">
+                                    <Button type="submit" className="w-full bg-pink-800 hover:bg-pink-700">
                                         {loading ? <Loader2 className="animate-spin" /> : "Sign In"}
                                     </Button>
                                 </form>
-                                <Separator className="my-4" />
+                                {/* <Separator className="my-4" />
                                 <Button variant="outline" className="w-full flex items-center justify-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="w-5 h-5">
                                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -141,17 +180,17 @@ export default function SignIn() {
                                         <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                                     </svg>
                                     Continue with Facebook
-                                </Button>
+                                </Button> */}
                                 <p className="text-center text-sm mt-4">
                                     Don't have an account?{" "}
-                                    <Link to="/signup" className="text-blue-500">
+                                    <Link to="/signup" className="text-pink-800 hover:underline">
                                         Sign Up
                                     </Link>
                                 </p>
                                 <p className="text-center text-xs mt-2">
                                     By continuing, you agree to our{" "}
-                                    <span className="text-green-800">Terms of Service</span> and{" "}
-                                    <span className="text-green-800">Privacy Policy</span>.
+                                    <span className="text-pink-800">Terms of Service</span> and{" "}
+                                    <span className="text-pink-800">Privacy Policy</span>.
                                 </p>
                             </CardContent>
                         </Card>

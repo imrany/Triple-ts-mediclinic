@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 
 interface AppContextType {
     state: string;
+    api_url:string;
     setState: React.Dispatch<React.SetStateAction<string>>;
 }
 

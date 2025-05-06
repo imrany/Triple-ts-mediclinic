@@ -1,5 +1,4 @@
 import { Request, Response } from "express"
-import * as webpush from "web-push";
 import { db } from "./sqlite"
 import { config } from "dotenv";
 config();
@@ -7,8 +6,6 @@ config();
 const PUBLIC_VAPID_KEY = process.env.PUBLIC_VAPID_KEY as string;
 const PRIVATE_VAPID_KEY = process.env.PRIVATE_VAPID_KEY as string;
 const TRANSPORTER = process.env.TRANSPORTER as string;
-
-webpush.setVapidDetails(`mailto:${TRANSPORTER}`, PUBLIC_VAPID_KEY, PRIVATE_VAPID_KEY);
 
 export async function subscribe(req: Request, res: Response) {
     try {
@@ -85,55 +82,6 @@ export function unSubscribe(req:Request, res:Response){
 export async function sendNotification(req: Request, res: Response) {
     try {
         const { title, body, link, icon, forSellers, forAdmins, email } = req.body; 
-        const notificationPayload = JSON.stringify({ title, body, link, icon });
-
-        // Construct the query based on filters
-        let query = 'WHERE 1=1'; // Default to include all roles, parameterized values will be added below
-        const params: any[] = [];
-        
-        if (!forSellers && !forAdmins && !email) {
-            query += ' AND role IN ("admin", "seller", "user", "guest")';
-        }
-        if (forSellers) {
-            query += ' AND role IN ("admin", "seller")';
-        }
-        if (forAdmins) {
-            query += ' AND role = "admin"';
-        }
-        if (email) {
-            query += ' AND (role = "admin" OR email = ?)';
-            params.push(email);
-        }
-        
-        // Fetch subscriptions
-        const subscriptions = await new Promise<any[]>((resolve, reject) => {
-            db.all(`SELECT DISTINCT endpoint, keys_p256dh, keys_auth FROM subscriptions ${query}`, params, (err, rows) => {
-                if (err) return reject(err);
-                resolve(rows || []);
-            });
-        });
-        if (subscriptions.length === 0) {
-            return res.status(404).json({ message: "No subscriptions found for the specified criteria." });
-        }
-
-        // Send notifications
-        await Promise.all(
-            subscriptions.map(async (subscription) => {
-                const pushSubscription = {
-                    endpoint: subscription.endpoint,
-                    keys: {
-                        p256dh: subscription.keys_p256dh as string,
-                        auth: subscription.keys_auth as string,
-                    },
-                };
-
-                try {
-                    await webpush.sendNotification(pushSubscription as webpush.PushSubscription, notificationPayload);
-                } catch (err: any) {
-                    console.error("Error sending notification:", err);
-                }
-            })
-        );
         return res.status(200).json({ message: "Notifications sent successfully." });
     } catch (error: any) {
         console.log(error);
