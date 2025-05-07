@@ -10,6 +10,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Layout from './layout/Layout';
 import { Toaster } from "@/components/ui/sonner"
 import Account from './pages/Account';
+import Laboratory from './pages/Laboratory';
 import Doctors from './pages/Doctors';
 import Appointments from './pages/Appointments';
 import Patients from './pages/Patients';
@@ -34,10 +35,11 @@ function App() {
   const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
+  const [isNewTestModalOpen, setIsNewTestModalOpen]=useState(false)
   const api_url=`http://localhost:8000`
 
   return (
-    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, isNewMedicationModalOpen, setIsNewMedicationModalOpen, user }}>
+    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, isNewMedicationModalOpen, setIsNewMedicationModalOpen, isNewTestModalOpen, setIsNewTestModalOpen, user }}>
       <Router>
         <Routes>
           {/* Unprotected Routes */}
@@ -53,6 +55,7 @@ function App() {
             <Route path="appointments" element={<Appointments />} />
             <Route path="doctors" element={<Doctors />} />
             <Route path="pharmacy" element={<Pharmacy />} />
+            <Route path="laboratory" element={<Laboratory />} />
             <Route path="settings" element={<Settings />} />
             <Route path="calendar" element={<CalendarPage />} />
           </Route>
