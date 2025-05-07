@@ -151,7 +151,7 @@ export default function Pharmacy() {
     <div className="font-[family-name:var(--font-geist-sans)]">
       {/* Pharmacy Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Pharmacy Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Pharmacy</h1>
         <p className="text-sm text-gray-500">Monitor inventory, prescriptions, and sales in your pharmacy.</p>
       </div>
 
