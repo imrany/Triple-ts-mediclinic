@@ -10,6 +10,8 @@ interface AppContextType {
     setIsNewDoctorModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isNewPatientModalOpen:boolean,
     setIsNewPatientModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isNewMedicationModalOpen:boolean; 
+    setIsNewMedicationModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     user:any
 }
 

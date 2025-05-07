@@ -15,6 +15,7 @@ import Appointments from './pages/Appointments';
 import Patients from './pages/Patients';
 import Settings from './pages/Settings';
 import CalendarPage from './pages/Calendar';
+import Pharmacy from './pages/Pharmacy';
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = localStorage.getItem('authData'); // Replace with your auth logic
@@ -32,10 +33,11 @@ function App() {
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
+  const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
   const api_url=`http://localhost:8000`
 
   return (
-    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, user }}>
+    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, isNewMedicationModalOpen, setIsNewMedicationModalOpen, user }}>
       <Router>
         <Routes>
           {/* Unprotected Routes */}
@@ -50,6 +52,7 @@ function App() {
             <Route path="patients" element={<Patients />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="doctors" element={<Doctors />} />
+            <Route path="pharmacy" element={<Pharmacy />} />
             <Route path="settings" element={<Settings />} />
             <Route path="calendar" element={<CalendarPage />} />
           </Route>
