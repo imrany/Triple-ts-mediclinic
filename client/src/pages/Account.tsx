@@ -169,6 +169,25 @@ export default function Account() {
                   </button>
                 </div>
               </div>
+              {isMobile&&(
+                <div className="mt-[13px] flex items-center space-x-1">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center text-sm px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
+                  >
+                    <LogOut size={15} className="mr-1" />
+                    <span>Logout</span>
+                  </button>
+
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="flex text-sm items-center px-3 py-2 rounded-md text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 size={15} className="mr-1" />
+                    <span>Delete Account</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
