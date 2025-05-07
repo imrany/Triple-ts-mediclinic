@@ -553,9 +553,10 @@ export default function SignUp() {
                                             </div>
                                             
                                             <Button 
-                                                type="submit" 
-                                                disabled
-                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed"
+                                                // type="submit" 
+                                                type="button" 
+                                                disabled={!watchPatient("termsAccepted") || loading}
+                                                className={`w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed`}
                                             >
                                                 {loading ? <Loader2 className="animate-spin" /> : "Create Patient Account"}
                                             </Button>
@@ -871,9 +872,10 @@ export default function SignUp() {
                                             </div>
                                             
                                             <Button 
-                                                type="submit" 
-                                                disabled
-                                                className="w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed"
+                                                // type="submit" 
+                                                type="button" 
+                                                disabled={!watchPatient("termsAccepted") || loading}
+                                                className={`w-full bg-pink-800 hover:bg-pink-700 text-white cursor-not-allowed`}
                                             >
                                                 {loading ? <Loader2 className="animate-spin" /> : "Create Doctor Account"}
                                             </Button>
