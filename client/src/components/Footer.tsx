@@ -1,9 +1,12 @@
+import { useAppContext } from "@/context";
 import { Heart, ArrowUp, Phone, Mail, MapPin, Clock } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export default function Footer() {
     const [email, setEmail] = useState("");
     const [subscribed, setSubscribed] = useState(false);
+    const { orgName }=useAppContext()
     
     const scrollToTop = () => {
         window.scrollTo({
@@ -33,10 +36,10 @@ export default function Footer() {
                     <div>
                         <div className="flex items-center mb-4">
                             <Heart className="h-6 w-6 text-pink-500" />
-                            <span className="ml-2 text-xl font-bold">Triple TS Medclinic</span>
+                            <span className="ml-2 text-xl font-bold">{orgName}</span>
                         </div>
                         <p className="text-gray-400">
-                            Providing quality healthcare services for you and your family since 1995.
+                            Providing quality healthcare services for you and your family since 2021.
                         </p>
                         <div className="flex space-x-4 mt-4">
                             {/* Social Media Icons */}
@@ -66,23 +69,20 @@ export default function Footer() {
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Home</a>
                             </li>
                             <li>
+                                <Link to="/signin" className="text-gray-400 hover:text-white transition-colors">Sign in</Link>
+                            </li>
+                            <li>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a>
                             </li>
                             <li>
-                                <a href="#" className="text-gray-400 hover:text-white transition-colors">Our Services</a>
+                                <a href="#services" className="text-gray-400 hover:text-white transition-colors">Our Services</a>
                             </li>
                             <li>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Doctors</a>
                             </li>
-                            <li>
-                                <a href="#" className="text-gray-400 hover:text-white transition-colors">Appointments</a>
-                            </li>
-                            <li>
-                                <a href="#" className="text-gray-400 hover:text-white transition-colors">Blog</a>
-                            </li>
-                            <li>
+                            {/* <li>
                                 <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                     
@@ -100,7 +100,7 @@ export default function Footer() {
                             </li>
                             <li className="flex items-center">
                                 <Mail className="h-5 w-5 text-pink-500 mr-2 flex-shrink-0" />
-                                <a href="mailto:info@tripletsmedclinic.com" className="text-gray-400 hover:text-white transition-colors">info@tripletsmedclinic.com</a>
+                                <a href="mailto:triple-ts-mediclinic@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">triple-ts-mediclinic@gmail.com</a>
                             </li>
                             <li className="flex items-start">
                                 <Clock className="h-5 w-5 text-pink-500 mr-2 mt-1 flex-shrink-0" />

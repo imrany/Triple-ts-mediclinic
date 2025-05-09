@@ -1,9 +1,9 @@
 import React, { createContext, useContext } from 'react';
 
 interface AppContextType {
-    state: string;
+    orgName: string;
+    setOrgName: React.Dispatch<React.SetStateAction<string>>;
     api_url:string;
-    setState: React.Dispatch<React.SetStateAction<string>>;
     isNewAppointmentModalOpen:boolean, 
     setIsNewAppointmentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isNewDoctorModalOpen:boolean,

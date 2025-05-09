@@ -87,7 +87,7 @@ export default function DoctorsPage() {
     experience: Math.floor(Math.random() * 20) + 1, // Random experience between 1-20 years
     available: Math.random() > 0.3, // 70% doctors are available
     patients: Math.floor(Math.random() * 100) + 20, // Random number of patients
-    rating: (Math.random() * 1.5 + 3.5) // Random rating between 3.5-5.0
+    rating: Math.round(Math.random() * 1.5 + 3.5)  // Random rating between 3.5-5.0
   }));
 
   // Filter and sort doctors

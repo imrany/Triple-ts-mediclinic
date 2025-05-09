@@ -85,7 +85,7 @@ export default function PatientsPage() {
     <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile?"py-6":"pb-6"}`}>
       {/* Page Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Patients Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Patients</h1>
         <p className="text-sm text-gray-500">View and manage all patient information.</p>
       </div>
       

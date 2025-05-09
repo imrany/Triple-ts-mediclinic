@@ -1,3 +1,4 @@
+import { useAppContext } from '@/context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { ReactNode, useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
@@ -7,6 +8,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const { orgName }=useAppContext()
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const isMobile = useIsMobile()
@@ -44,7 +46,7 @@ export default function Layout({ children }: LayoutProps) {
             </button>
 
             {/* Logo */}
-            <h1 className="text-xl md:text-2xl font-bold text-pink-600">Triple TS Medclinic</h1>
+            <h1 className="text-xl md:text-2xl font-bold text-pink-600">{orgName}</h1>
 
             {/* Right side header content - can add user profile, notifications, etc. */}
             <div className="flex items-center">
@@ -65,7 +67,7 @@ export default function Layout({ children }: LayoutProps) {
             } md:translate-x-0 transition duration-200 ease-in-out z-20 bg-white w-64 shadow-lg md:shadow-md overflow-y-auto`}
         >
           <nav className="p-4 space-y-1">
-            <h2 className="text-lg font-semibold text-pink-600 mb-3">Triple TS Medclinic</h2>
+            <h2 className="text-lg font-semibold text-pink-600 mb-3">{orgName}</h2>
             {/* Logo for desktop */}
             {navItems.map((item) => (
               <Link

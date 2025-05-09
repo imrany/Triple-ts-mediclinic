@@ -17,6 +17,7 @@ const userRange = 'users!A1:R10000';
 const businessRange = 'businesses!A1:W10000';
 const productsRange = 'products!A1:Z10000';
 const ordersRange = 'orders!A1:X10000';
+const staffRange='staff!A1:Z10000'
 
 export async function signUpPatient(req: Request, res: Response) {
     try {
@@ -782,6 +783,55 @@ export async function sendMarketingEmails(req: Request, res: Response) {
             message: `Marketing emails sent to ${users.length - failedEmails.length} users.`,
             failedEmails,
         });
+    } catch (error: any) {
+        console.error("Error:", error);
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export async function addStaff(req: Request, res: Response) {
+    try {
+        const { firstName, lastName, departname, phoneNumber, email, gender, yearsOfExperience, dob } = req.body;
+
+        if (!firstName || !lastName || !departname || !phoneNumber || !email || !gender || !yearsOfExperience || !dob) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+
+        const rows: any = await accessSheet(spreadsheetId, staffRange);
+        const emailExists = rows.some((row: any) => row.includes(email));
+        const phoneExists = rows.some((row: any) => row.includes(phoneNumber));
+
+        if (emailExists) {
+            return res.status(400).json({ error: "A staff member with this email already exists." });
+        } else if (phoneExists) {
+            return res.status(400).json({ error: "A staff member with this phone number already exists." });
+        }
+
+        const range = `staffs!A${rows.length + 1}`;
+        const currentDate = new Date().toISOString();
+
+        const values = [
+            [
+                `STAFF-${rows.length + 2}`,
+                firstName,
+                lastName,
+                departname,
+                phoneNumber,
+                email,
+                gender,
+                yearsOfExperience,
+                dob,
+                currentDate,
+                "active"
+            ]
+        ];
+
+        const result = await writeDataToSheet(spreadsheetId, range, values);
+        if (result) {
+            return res.status(200).json({ message: "Staff added successfully" });
+        } else {
+            return res.status(500).json({ error: "Failed to add staff, try again" });
+        }
     } catch (error: any) {
         console.error("Error:", error);
         return res.status(500).json({ error: error.message });

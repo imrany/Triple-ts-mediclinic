@@ -8,7 +8,9 @@ config()
 const cors_option = {
   origin:[
     "http://localhost:3000",
-    "http://localhost:8080"
+    "https://triple-ts-mediclinic.com",
+    "www.triple-ts-mediclinic.com",
+    "https://www.triple-ts-mediclinic.com",
   ],
   methods: ["GET", "POST", "DELETE", "UPDATE", "PATCH", "PUT"]
 }

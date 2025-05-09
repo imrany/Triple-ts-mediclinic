@@ -257,11 +257,11 @@ export default function LandingPage() {
                         Join thousands of satisfied patients who have transformed their healthcare experience with MediCare.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Link to="/signup">
+                        {/* <Link to="/signup">
                             <Button className="bg-white text-pink-800 hover:bg-gray-100 px-6 py-3 text-lg">
                                 Create Account
                             </Button>
-                        </Link>
+                        </Link> */}
                         <Link to="/learn-more">
                             <Button variant="outline" className="border-white bg-pink-700 text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-lg">
                                 Learn More
@@ -301,7 +301,7 @@ export default function LandingPage() {
                                     </div>
                                     <div className="ml-3">
                                         <h3 className="text-lg font-medium text-gray-900">Email</h3>
-                                        <p className="mt-1 text-gray-600">support@medicare.example.com</p>
+                                        <p className="mt-1 text-gray-600">triple-ts-mediclinic@gmail.com</p>
                                         <p className="text-gray-600">We'll respond within 24 hours</p>
                                     </div>
                                 </div>

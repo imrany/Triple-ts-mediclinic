@@ -3,9 +3,11 @@ import { Heart, Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAppContext } from "@/context";
 
 export default function NavBar() {
     const isMobile = useIsMobile();
+    const { orgName }=useAppContext()
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
         <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -14,7 +16,7 @@ export default function NavBar() {
                     <div className="flex items-center">
                         <div className="flex-shrink-0 flex items-center">
                             <Heart className="h-8 w-8 text-pink-800" />
-                            <span className="ml-2 text-xl font-bold text-pink-800">Triple TS Medclinic</span>
+                            <span className="ml-2 text-xl font-bold text-pink-800">{orgName}</span>
                         </div>
 
                         {!isMobile && (
@@ -38,16 +40,21 @@ export default function NavBar() {
                     <div className="flex items-center">
                         {!isMobile ? (
                             <div className="flex space-x-4">
-                                <Link to="/signin">
+                                {/* <Link to="/signin">
                                     <Button variant="outline" className="border-pink-800 text-pink-800 hover:bg-pink-50">
                                         Sign In
                                     </Button>
+                                </Link> */}
+                                <Link to="/signin">
+                                    <Button className="bg-pink-800 hover:bg-pink-700 text-white">
+                                        Sign In
+                                    </Button>
                                 </Link>
-                                <Link to="/signup">
+                                 {/* <Link to="/signup">
                                     <Button className="bg-pink-800 hover:bg-pink-700 text-white">
                                         Register
                                     </Button>
-                                </Link>
+                                </Link> */}
                             </div>
                         ) : (
                             <button
@@ -82,16 +89,21 @@ export default function NavBar() {
                             Contact
                         </a>
                         <div className="pt-3 border-t border-gray-200">
-                            <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
+                            {/* <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
                                 <Button variant="outline" className="w-full mb-2 border-pink-800 text-pink-800 hover:bg-pink-50">
                                     Sign In
                                 </Button>
+                            </Link> */}
+                            <Link to="/signin" onClick={() => setMobileMenuOpen(false)}>
+                                <Button className="w-full bg-pink-800 hover:bg-pink-700 text-white">
+                                    Sign In
+                                </Button>
                             </Link>
-                            <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                            {/* <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
                                 <Button className="w-full bg-pink-800 hover:bg-pink-700 text-white">
                                     Register
                                 </Button>
-                            </Link>
+                            </Link> */}
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AppContext } from './context';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
-import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import LandingPage from './pages/LandingPage';
 import ForgotPassword from './pages/ForgotPassword';
@@ -29,23 +28,23 @@ function UnProtectedRoute({ children }: { children: JSX.Element }) {
 }
 
 function App() {
-  const [state, setState] = useState<string>('default value');
+  const [orgName, setOrgName] = useState<string>('Triple Ts Mediclinic');
   const user='default value';
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
   const [isNewTestModalOpen, setIsNewTestModalOpen]=useState(false)
+  // const api_url=`https://triple-ts-mediclinic.com:8000`
   const api_url=`http://localhost:8000`
 
   return (
-    <AppContext.Provider value={{ state, setState, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, isNewMedicationModalOpen, setIsNewMedicationModalOpen, isNewTestModalOpen, setIsNewTestModalOpen, user }}>
+    <AppContext.Provider value={{ orgName, setOrgName, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, isNewMedicationModalOpen, setIsNewMedicationModalOpen, isNewTestModalOpen, setIsNewTestModalOpen, user }}>
       <Router>
         <Routes>
           {/* Unprotected Routes */}
           <Route path="/" element={<UnProtectedRoute><LandingPage /></UnProtectedRoute>} />
           <Route path="/signin" element={<UnProtectedRoute><SignIn /></UnProtectedRoute>} />
-          <Route path="/signup" element={<UnProtectedRoute><SignUp /></UnProtectedRoute>} />
           <Route path="/forgot-password" element={<UnProtectedRoute><ForgotPassword /></UnProtectedRoute>} />
           <Route path="/dashboard" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             {/* Protected Routes */}
