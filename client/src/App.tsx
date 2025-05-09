@@ -35,7 +35,7 @@ function App() {
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
   const [isNewTestModalOpen, setIsNewTestModalOpen]=useState(false)
-  // const api_url=`https://triple-ts-mediclinic.com:8000`
+  // const api_url=`https://api.triple-ts-mediclinic.com`
   const api_url=`http://localhost:8000`
 
   return (
