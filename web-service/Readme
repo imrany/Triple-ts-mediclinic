@@ -18,6 +18,7 @@ goose -dir migrations postgres "$(cat .env | grep DATABASE_URL | cut -d '=' -f2)
 
 #### Run
 ```bash
+go install github.com/githubnemo/CompileDaemon@latest
 go build -o web-service main.go
 CompileDaemon --command="./web-service"
 ```
