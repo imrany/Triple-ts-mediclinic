@@ -1,5 +1,31 @@
-.env
 goose.exe
 goose
-*.exe
 web-service
+
+# Go build artifacts
+/bin/
+/pkg/
+/*.exe
+/*.out
+/*.test
+
+# Dependencies
+/vendor/
+/go.sum
+
+# Secrets & Configuration
+.env
+.env.local
+/config.yaml
+/config.json
+
+# Editor & System Files
+/.idea/
+/.vscode/
+/*.swp
+
+# Logs & Temp Files
+/logs/
+/*.log
+/tmp/
+/*.tmp
