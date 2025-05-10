@@ -1,0 +1,23 @@
+```bash 
+docker-compose up -d
+```
+
+### Run migration
+```bash
+go get github.com/pressly/goose/v3/cmd/goose@latest
+go build -o goose.exe github.com/pressly/goose/v3/cmd/goose
+```
+
+```bash
+goose -dir migrations postgres "$DATABASE_URL" up
+```
+or 
+```bash
+goose -dir migrations postgres "$(cat .env | grep DATABASE_URL | cut -d '=' -f2)" up
+```
+
+#### Run
+```bash
+go build -o web-service.exe main.go
+CompileDaemon --command="./web-service.exe"
+```
