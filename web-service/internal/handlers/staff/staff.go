@@ -316,7 +316,8 @@ func Login(c *fiber.Ctx) error {
 
 	// Check if staff exists in the database
 	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password FROM staff WHERE email = $1", email)
-	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Password); err != nil {
+	var hashedPassword string
+	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &hashedPassword); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "This account doesn't exist",
 			"details": err.Error(),
@@ -324,9 +325,9 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Check if password is correct
-	if err := bcrypt.CompareHashAndPassword([]byte(s.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "You've enter wrong password",
+			"error": "You've entered the wrong password",
 			"details": err.Error(),
 		})
 	}

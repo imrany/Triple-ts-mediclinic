@@ -1,4 +1,4 @@
-
+-- +goose Up
 CREATE TABLE staff (
     id TEXT PRIMARY KEY,
     first_name TEXT NOT NULL,
@@ -42,8 +42,8 @@ CREATE INDEX idx_patients_email ON patients(email);
 -- Create appointments table
 CREATE TABLE appointments (
     id TEXT PRIMARY KEY,
-    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    staff_id INT NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
+    patient_id TEXT NOT NULL REFERENCES patients(id),
+    staff_id TEXT NOT NULL REFERENCES staff(id),
     appointment_date TIMESTAMP NOT NULL,
     reason TEXT,
     status TEXT DEFAULT 'scheduled',
@@ -57,7 +57,7 @@ CREATE INDEX idx_appointments_appointment_date ON appointments(appointment_date)
 -- Create notifications table
 CREATE TABLE notifications (
     id TEXT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id TEXT NOT NULL REFERENCES staff(id),
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -93,9 +93,9 @@ CREATE INDEX idx_laboratory_price ON laboratory(price);
 -- Create billing table
 CREATE TABLE billing (
     id TEXT PRIMARY KEY,
-    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    patient_id TEXT NOT NULL REFERENCES patients(id),
     phone_number TEXT NOT NULL,
-    appointment_id INT NOT NULL REFERENCES appointments(id) ON DELETE CASCADE,
+    appointment_id TEXT NOT NULL REFERENCES appointments(id),
     amount DECIMAL(10, 2) NOT NULL,
     status TEXT DEFAULT 'unpaid',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -108,8 +108,8 @@ CREATE INDEX idx_billing_status ON billing(status);
 -- Create medical_records table
 CREATE TABLE medical_records (
     id TEXT PRIMARY KEY,
-    patient_id INT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    staff_id INT NOT NULL REFERENCES staff(id) ON DELETE CASCADE,
+    patient_id TEXT NOT NULL REFERENCES patients(id),
+    staff_id TEXT NOT NULL REFERENCES staff(id),
     diagnosis TEXT NOT NULL,
     treatment TEXT NOT NULL,
     prescription TEXT,
