@@ -7,8 +7,8 @@ import useIsMobile from '@/hooks/useIsMobile';
 
 
 export default function CalendarPage() {
-  const { user } = useAppContext();
-  const isDoctor = user?.role === 'doctor' || user?.role === 'Senior Physician';
+  const { staff } = useAppContext();
+  const isDoctor = staff?.specialty === 'doctor' || staff?.specialty === 'Senior Physician';
   const isMobile = useIsMobile()
   // Calendar state
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -146,12 +146,12 @@ export default function CalendarPage() {
 
     // If user is a doctor, only show their appointments
     if (isDoctor) {
-      filtered = filtered.filter(appointment => appointment.doctorId === user.id);
+      filtered = filtered.filter(appointment => appointment.doctorId === staff?.id);
     }
 
     // If user is a patient, only show their appointments
     if (!isDoctor) {
-      filtered = filtered.filter(appointment => appointment.patientId === user.id);
+      filtered = filtered.filter(appointment => appointment.patientId === staff?.id);
     }
 
     setFilteredAppointments(filtered);

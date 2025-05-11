@@ -15,7 +15,7 @@ CREATE TABLE staff (
     end_date DATE,
     status TEXT DEFAULT 'active',
     role TEXT DEFAULT 'user',
-    password BYTEA NOT NULL,
+    password TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     email TEXT UNIQUE NOT NULL

@@ -32,3 +32,32 @@ export interface Appointment {
     notes: string;
     status: string;
 }
+
+
+export interface Staff {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    address: string;
+    dateOfBirth: Date;
+    nationalId: number;
+    department: string;
+    role: string;
+    specialty: string;
+    biography?: string;
+    photo?: string;
+    status: string;
+    startDate: Date;
+    endDate?: Date;
+    createdAt: Date;
+    updatedAt: Date;
+    password?: string;
+}
+
+export type AuthData ={
+    email:string,
+    user_id:string,
+    token:string,
+}

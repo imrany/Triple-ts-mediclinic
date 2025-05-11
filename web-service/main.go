@@ -25,7 +25,7 @@ func main() {
     app.Use(cors.New(cors.Config{
         AllowOrigins: "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com",
         AllowMethods: "GET,POST,PUT,DELETE,PATCH",
-        AllowHeaders: "Origin, Content-Type, Accept",
+        AllowHeaders: "Origin, Content-Type, Accept, Authorization",
     }))
 
     // Routes

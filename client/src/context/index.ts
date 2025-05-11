@@ -1,3 +1,4 @@
+import { AuthData, Staff } from '@/types';
 import React, { createContext, useContext } from 'react';
 
 interface AppContextType {
@@ -14,7 +15,8 @@ interface AppContextType {
     setIsNewMedicationModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isNewTestModalOpen: boolean;
     setIsNewTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    user:any
+    staff:Staff | null,
+    authData: AuthData,
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);

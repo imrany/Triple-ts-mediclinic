@@ -21,9 +21,9 @@ func Connect() {
     if err != nil {
         log.Fatalf("Error connecting to database: %v\n", err)
     }
-    defer db.Close()
+    // defer db.Close()
 
-    log.Println("Connected to PostgreSQL")
+    log.Println("Connected to PostgreSQL", db)
 }
 
 func GetDB() *pgxpool.Pool {

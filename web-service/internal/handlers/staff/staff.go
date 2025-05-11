@@ -4,12 +4,10 @@ import (
 	"context"
 	"log"
 	"time"
-
-	"web-service/config"
+	
 	"web-service/database"
-
+	"web-service/internal/middleware"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,21 +16,21 @@ type Staff struct {
 	FirstName   string  `json:"first_name"`
 	LastName    string  `json:"last_name"`
 	PhoneNumber string  `json:"phone_number"`
-	DateOfBirth string  `json:"date_of_birth"`
+	DateOfBirth time.Time  `json:"date_of_birth"`
 	NationalID  int     `json:"national_id"`
 	Address     string  `json:"address"`
 	Biography   *string `json:"biography,omitempty"`
 	Photo       *string `json:"photo,omitempty"`
 	Department  string  `json:"department"`
 	Specialty   string  `json:"specialty"`
-	StartDate   string  `json:"start_date"`
-	EndDate     *string `json:"end_date,omitempty"`
+	StartDate   time.Time  `json:"start_date"`
+	EndDate     *time.Time `json:"end_date,omitempty"`
 	Status      string  `json:"status"`
 	Role        string  `json:"role"`
-	Password    string  `json:"-"`
+	Password    string `json:"password"`
 	Email       string  `json:"email"`
-	CreatedAt   string  `json:"created_at"`
-	UpdatedAt   string  `json:"updated_at"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
 }
 
 func GetStaffByID(c *fiber.Ctx) error {
@@ -47,7 +45,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, email, created_at, updated_at FROM staff WHERE id = $1 OR national_id = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 	defer rows.Close()
@@ -58,7 +56,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 		var s Staff
 		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Email, &s.CreatedAt, &s.UpdatedAt); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err,
+				"error": err.Error(),
 			})
 		}
 		staff = &s
@@ -76,10 +74,10 @@ func GetStaffByID(c *fiber.Ctx) error {
 
 func GetAllStaff(c *fiber.Ctx) error {
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, specialty, role, created_at FROM staff")
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, phone_number, specialty, role, created_at, email, status, start_date FROM staff")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 	defer rows.Close()
@@ -87,9 +85,9 @@ func GetAllStaff(c *fiber.Ctx) error {
 	var staff []Staff
 	for rows.Next() {
 		var s Staff
-		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.Specialty, &s.Role, &s.CreatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.PhoneNumber, &s.Specialty, &s.Role, &s.CreatedAt, &s.Email, &s.Status, &s.StartDate ); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err,
+				"error": err.Error(),
 			})
 		}
 		staff = append(staff, s)
@@ -98,36 +96,13 @@ func GetAllStaff(c *fiber.Ctx) error {
 	return c.JSON(staff)
 }
 
-func AuthMiddleware(c *fiber.Ctx) error {
-	tokenString := c.Get("Authorization")
-	if tokenString == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Authorization token is required",
-		})
-	}
-
-	// Check if the token starts with "Basic "
-	if len(tokenString) > 6 && tokenString[:6] == "Basic " {
-		tokenString = tokenString[6:] // Remove "Basic " prefix
-	}
-
-	token, err := VerifyToken(tokenString)
-	if err != nil || !token.Valid {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid or expired token",
-		})
-	}
-
-	// Token is valid, proceed to the next handler
-	return c.Next()
-}
-
 func AddStaff(c *fiber.Ctx) error {
 	db := database.GetDB()
 	var s Staff
 	if err := c.BodyParser(&s); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input:" + err.Error(),
+			"error": "Invalid input:",
+			"details": err.Error(),
 		})
 	}
 
@@ -135,16 +110,19 @@ func AddStaff(c *fiber.Ctx) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(s.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to encrypt password:" + err.Error(),
+			"error": "Failed to encrypt password",
+			"details": err.Error(),
 		})
 	}
-	s.Password = string(hashedPassword)
+	hashedPasswordStr := string(hashedPassword) // Convert []byte to string
+	s.Password = string(hashedPasswordStr)
 
 	// Insert staff into the database
 	_, err = db.Exec(context.Background(), "INSERT INTO staff (first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": "Failed to add Staff",
+			"details": err.Error(),
 		})
 	}
 
@@ -166,7 +144,8 @@ func UpdateStaff(c *fiber.Ctx) error {
 	var s Staff
 	if err := c.BodyParser(&s); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input: " + err.Error(),
+			"error": "Invalid input: ",
+			"details": err.Error(),
 		})
 	}
 
@@ -174,7 +153,7 @@ func UpdateStaff(c *fiber.Ctx) error {
 	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14, email = $15 WHERE id = $16 OR national_id = $16", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Email, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
@@ -218,7 +197,7 @@ func GetStaffByEmail(c *fiber.Ctx) error {
 	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role FROM staff WHERE email = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 	defer rows.Close()
@@ -229,7 +208,7 @@ func GetStaffByEmail(c *fiber.Ctx) error {
 		var s Staff
 		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err,
+				"error": err.Error(),
 			})
 		}
 		staff = &s
@@ -258,7 +237,7 @@ func DeleteStaffByEmail(c *fiber.Ctx) error {
 	_, err := db.Exec(context.Background(), "DELETE FROM staff WHERE email = $1", email)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
@@ -279,7 +258,8 @@ func UpdateStaffByEmail(c *fiber.Ctx) error {
 	var s Staff
 	if err := c.BodyParser(&s); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input: " + err.Error(),
+			"error": "Invalid input: ",
+			"details": err.Error(),
 		})
 	}
 
@@ -287,7 +267,7 @@ func UpdateStaffByEmail(c *fiber.Ctx) error {
 	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14 WHERE email = $15", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, email)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
@@ -303,7 +283,7 @@ func DeleteAllStaff(c *fiber.Ctx) error {
 	_, err := db.Exec(context.Background(), "DELETE FROM staff")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": err.Error(),
 		})
 	}
 
@@ -317,7 +297,8 @@ func Login(c *fiber.Ctx) error {
 	var s Staff
 	if err := c.BodyParser(&s); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid input: " + err.Error(),
+			"error": "Invalid input",
+			"details": err.Error(),
 		})
 	}
 
@@ -331,54 +312,35 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Check if staff exists in the database
-	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role FROM staff WHERE email = $1", email)
-	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role); err != nil {
+	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password FROM staff WHERE email = $1", email)
+	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Password); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
-			"error": "staff not found",
+			"error": "This account doesn't exist",
+			"details": err.Error(),
 		})
 	}
 
 	// Check if password is correct
-	if err := bcrypt.CompareHashAndPassword([]byte(s.Password), []byte(s.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(s.Password), []byte(password)); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "Invalid password",
+			"error": "You've enter wrong password",
+			"details": err.Error(),
 		})
 	}
 
-	token, err := generateToken(s.ID)
+	token, err := middleware.GenerateToken(s.ID, s.Role)
 	if err != nil {
-		log.Fatal("Error generating user token: " + err.Error())
+		log.Println("Error generating token: " + err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error":"Error generating user token: " + err.Error(),
+			"error": "Internal server error. Please try again later.",
+			"details": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{
 		"message": "Login successful",
 		"token":  token,
-		"user_id":	 s.ID,
+		"email": s.Email,
+		"user_id": s.ID,
 	})
-}
-
-func generateToken(id string) (string, error){
-	secretKey := config.GetVal("JWT_SECRET")
-	claims := jwt.MapClaims{
-		"id": id,
-		"exp": time.Now().Add(time.Hour * 24 * 2).Unix(), // Token  expires in 2 day (24 hours * 2)
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(secretKey)
-}
-
-func VerifyToken(tokenString string) (*jwt.Token, error) {
-	secretKey := config.GetVal("JWT_SECRET")
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        return secretKey, nil
-    })
-
-    if err != nil {
-        return nil, err
-    }
-
-    return token, nil
 }

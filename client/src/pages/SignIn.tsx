@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/card";
 import useIsMobile from "@/hooks/useIsMobile";
 import { useState } from "react";
-// import { useAppContext } from "@/context";
-// import { toast } from "sonner";
+import { useAppContext } from "@/context";
+import { toast } from "sonner";
 
 type FormValues = {
     email: string;
@@ -27,79 +27,65 @@ export default function SignIn() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const isMobile=useIsMobile()
-    // const { api_url }=useAppContext()
+    const { api_url }=useAppContext()
     const {
         register,
         handleSubmit,
         formState: { errors }
     } = useForm<FormValues>();
 
-    // const onSubmit = async(data: FormValues) => {
-    //     try{
-    //         setLoading(true);
-    //         const response=await fetch(`${api_url}/api/sign-in`,{
-    //             method:"POST",
-    //             headers:{
-    //                 "content-type":"application/json"
-    //             },
-    //             body:JSON.stringify({
-    //                 email:data.email,
-    //                 password:data.password
-    //             })
-    //         })
-    //         const parseRes=await response.json()
-    //         if(parseRes.error){
-    //             console.log(parseRes.error)
-    //             setLoading(false);
-    //                 toast(`Something went wrong!`, {
-    //                     description: `${parseRes.error}`,
-    //                     action: {
-    //                       label: "Undo",
-    //                       onClick: () => onSubmit(data)
-    //                     },
-    //                 })
-    //         }else{
-    //             console.log(parseRes);
-    //             const authData={
-    //                 email:parseRes.email,
-    //                 token:parseRes.token
-    //             }
-    //             localStorage.setItem('authData',JSON.stringify(authData))
-    //             navigate(`/dashboard`);
-    //         }
-    //     }catch(error:any){
-    //         console.log(error.message)
-    //         setLoading(false);
-    //             toast(`Something went wrong!`, {
-    //                 description: `${error.message}`,
-    //                 action: {
-    //                     label: "Undo",
-    //                     onClick: () => onSubmit(data)
-    //                 },
-    //             })
-    //     }
-    // };
-
-    const onSubmit = async (data: FormValues) => {
-        setLoading(true);
-        console.log(data)
-        setTimeout(() => {
-            setLoading(false);
-            const authData = {
-                email: data.email,
-                token: "dummy"
+    const onSubmit = async(data: FormValues) => {
+        try{
+            setLoading(true);
+            const response=await fetch(`${api_url}/api/signin`,{
+                method:"POST",
+                headers:{
+                    "content-type":"application/json"
+                },
+                body:JSON.stringify({
+                    email:data.email,
+                    password:data.password
+                })
+            })
+            const parseRes=await response.json()
+            if(parseRes.error){
+                console.log(parseRes.error)
+                setLoading(false);
+                toast(`Something went wrong!`, {
+                    description: `${parseRes.error}`,
+                    action: {
+                        label: "Undo",
+                        onClick: () => onSubmit(data)
+                    },
+                })
+            }else{
+                const authData={
+                    email:parseRes.email,
+                    token:parseRes.token,
+                    user_id:parseRes.user_id
+                }
+                localStorage.setItem('authData',JSON.stringify(authData))
+                window.location.href=(`/dashboard`);
             }
-            localStorage.setItem('authData', JSON.stringify(authData))
-            navigate(`/dashboard`);
-        }, 2000)
-    }
+        }catch(error:any){
+            console.log(error.message)
+            setLoading(false);
+            toast(`Something went wrong!`, {
+                description: `${error.message}`,
+                action: {
+                    label: "Undo",
+                    onClick: () => onSubmit(data)
+                },
+            })
+        }
+    };
 
     return (
         <div className="font-[family-name:var(--font-geist-sans)]">
             {loading ? (
                 <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white ">
                     <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
-                    <p className="mt-4 text-lg font-medium">Get well soon!</p>
+                    <p className="mt-4 text-lg font-medium">Verifying credentials...</p>
                 </div>
             ) : (
                 <div className="flex h-screen w-full">
@@ -156,6 +142,8 @@ export default function SignIn() {
                                                     id="password"
                                                     type={showPassword ? "text" : "password"}
                                                     placeholder="••••••••"
+                                                    minLength={8}
+                                                    maxLength={24}
                                                     {...register("password", { required: "Password is required" })}
                                                     className={errors.password ? "border-red-500" : ""}
                                                 />
@@ -202,12 +190,12 @@ export default function SignIn() {
                                         </svg>
                                         Continue with Facebook
                                     </Button> */}
-                                    <p className="text-center text-sm mt-4">
+                                    {/* <p className="text-center text-sm mt-4">
                                         Don't have an account?{" "}
                                         <Link to="/signup" className="text-pink-800 hover:underline">
                                             Sign Up
                                         </Link>
-                                    </p>
+                                    </p> */}
                                     <p className="text-center text-xs mt-2">
                                         By continuing, you agree to our{" "}
                                         <span className="text-pink-800">Terms of Service</span> and{" "}
