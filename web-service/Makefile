@@ -4,5 +4,8 @@ build:
 run: build
     ./web-service
 
-watch:
+watch: ensure-compile-daemon
     CompileDaemon --command="./web-service"
+
+ensure-compile-daemon:
+    @which CompileDaemon > /dev/null || go install github.com/githubnemo/CompileDaemon@latest
