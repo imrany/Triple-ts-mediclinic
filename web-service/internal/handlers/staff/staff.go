@@ -43,7 +43,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 	}
 
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, email, created_at, updated_at FROM staff WHERE id = $1 OR national_id = $1", id)
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, email, created_at, updated_at FROM staff WHERE id = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -118,7 +118,7 @@ func AddStaff(c *fiber.Ctx) error {
 	hashedPasswordStr := string(hashedPassword) // Convert []byte to string
 	s.Password = string(hashedPasswordStr)
 
-	s.ID = "#" + uuid.New().String()[:8]
+	s.ID = uuid.New().String()[:8]
 
 	// Insert staff into the database
 	_, err = db.Exec(context.Background(), "INSERT INTO staff (id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)", s.ID, s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email)
@@ -316,8 +316,7 @@ func Login(c *fiber.Ctx) error {
 
 	// Check if staff exists in the database
 	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password FROM staff WHERE email = $1", email)
-	var hashedPassword string
-	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &hashedPassword); err != nil {
+	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Password); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "This account doesn't exist",
 			"details": err.Error(),
@@ -325,9 +324,9 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Check if password is correct
-	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(s.Password), []byte(password)); err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"error": "You've entered the wrong password",
+			"error": "You've enter wrong password",
 			"details": err.Error(),
 		})
 	}

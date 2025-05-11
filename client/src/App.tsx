@@ -44,7 +44,7 @@ function App() {
       const parseRes = await response.json();
       if (parseRes.error) {
         console.log(parseRes.error);
-        localStorage.removeItem('authData');
+        // localStorage.removeItem('authData');
       } else {
         setIsAuthenticated(true);
         const data: Staff = {
