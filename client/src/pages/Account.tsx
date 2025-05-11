@@ -5,8 +5,13 @@ import {
   Trash2,
 } from "lucide-react";
 import useIsMobile from "@/hooks/useIsMobile";
+import { useAppContext } from "@/context";
+import { Staff } from "@/types";
 
 export default function Account() {
+  const { staff }=useAppContext() as { 
+    staff: Staff
+  }
   const [activeTab, setActiveTab] = useState("profile");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isMobile=useIsMobile()
@@ -107,7 +112,7 @@ export default function Account() {
               <div className="mb-8">
                 <div className="flex items-center mb-4">
                   <img
-                    src={userData.avatar}
+                    src={staff.photo?.length!==0&&staff.photo!=="no image"?staff.photo:`https://imageplaceholder.net/150x150`}
                     alt="Profile"
                     className="w-24 h-24 rounded-full border-4 border-gray-100"
                   />
@@ -127,7 +132,7 @@ export default function Account() {
                   </label>
                   <input
                     type="text"
-                    value={userData.name}
+                    value={staff.firstName}
                     onChange={(e) => setUserData({ ...userData, name: e.target.value })}
                     className="w-full p-2 border rounded-md"
                   />
@@ -140,7 +145,7 @@ export default function Account() {
                   <div className="flex">
                     <input
                       type="email"
-                      value={userData.email}
+                      value={staff.email}
                       onChange={(e) => setUserData({ ...userData, email: e.target.value })}
                       className="w-full p-2 border rounded-md"
                     />
@@ -155,6 +160,7 @@ export default function Account() {
                     Bio
                   </label>
                   <textarea
+                    value={staff.biography}
                     className="w-full p-2 border rounded-md h-24"
                     placeholder="Tell us about yourself"
                   ></textarea>

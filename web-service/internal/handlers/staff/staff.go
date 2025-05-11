@@ -9,6 +9,7 @@ import (
 	"web-service/internal/middleware"
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/google/uuid"
 )
 
 type Staff struct {
@@ -117,8 +118,10 @@ func AddStaff(c *fiber.Ctx) error {
 	hashedPasswordStr := string(hashedPassword) // Convert []byte to string
 	s.Password = string(hashedPasswordStr)
 
+	s.ID = "#" + uuid.New().String()[:8]
+
 	// Insert staff into the database
-	_, err = db.Exec(context.Background(), "INSERT INTO staff (first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email)
+	_, err = db.Exec(context.Background(), "INSERT INTO staff (id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)", s.ID, s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to add Staff",
