@@ -16,7 +16,9 @@ interface AppContextType {
     isNewTestModalOpen: boolean;
     setIsNewTestModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     staff:Staff | null,
-    authData: AuthData,
+    authData: AuthData | null,
+    doctors: Staff[],
+    departments:string[]
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);

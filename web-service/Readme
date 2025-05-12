@@ -16,9 +16,18 @@ or
 goose -dir migrations postgres "$(cat .env | grep DATABASE_URL | cut -d '=' -f2)" up
 ```
 
-#### Run
+#### Run Locally on the machine
 ```bash
 go install github.com/githubnemo/CompileDaemon@latest
 go build -o web-service main.go
 CompileDaemon --command="./web-service"
+```
+
+### Build and Run with Docker
+```bash
+docker build -t web-service .
+```
+
+```bash
+docker run -p 8000:8000 web-service
 ```

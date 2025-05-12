@@ -75,7 +75,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 
 func GetAllStaff(c *fiber.Ctx) error {
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, phone_number, specialty, role, created_at, email, status, start_date FROM staff")
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, phone_number, specialty, role, created_at, email, status, start_date, photo FROM staff")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -86,7 +86,7 @@ func GetAllStaff(c *fiber.Ctx) error {
 	var staff []Staff
 	for rows.Next() {
 		var s Staff
-		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.PhoneNumber, &s.Specialty, &s.Role, &s.CreatedAt, &s.Email, &s.Status, &s.StartDate ); err != nil {
+		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.PhoneNumber, &s.Specialty, &s.Role, &s.CreatedAt, &s.Email, &s.Status, &s.StartDate, &s.Photo ); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})

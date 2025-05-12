@@ -132,7 +132,7 @@ export default function Account() {
                   </label>
                   <input
                     type="text"
-                    value={staff.firstName}
+                    value={`${staff.firstName} ${staff.lastName}`}
                     onChange={(e) => setUserData({ ...userData, name: e.target.value })}
                     className="w-full p-2 border rounded-md"
                   />

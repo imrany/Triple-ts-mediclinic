@@ -1,38 +1,29 @@
-export type Doctor = {
-    id: string;
-    name: string;
-    department: string;
-    available: boolean;
-    email:string;
-    phone:string;
-    experience:number;
-    image:string;
-    bio:string;
-    specialization:string;
-    patients:any;
-    rating:number
-};
-
-export type Department = {
-    id: string;
-    name: string;
-};
-
-export interface Appointment {
-    id: string;
-    title: string;
-    patientId: string;
-    patientName: string;
-    doctorId: string;
-    doctorName: string;
-    date: Date;
-    startTime: string;
-    endTime: string;
-    type: string;
-    notes: string;
-    status: string;
+export interface AppointmentData {
+    day:string
+    count:number
 }
 
+export interface Appointment{
+    id: string;
+    patientNationalID: number;
+    patientName: string;
+    patientAddress: string;
+    patientPhoneNumber: string;
+    patientEmail?: string;
+    appointmentDate: string;
+    appointmentTime: string;
+    department: string;
+    staffId: string;
+    notes?: string;
+    status: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface DepartmentStats {
+    name:string,
+    patients:number,
+}
 
 export interface Staff {
     id: string;
@@ -41,7 +32,7 @@ export interface Staff {
     email: string;
     phoneNumber: string;
     address: string;
-    dateOfBirth: Date;
+    dateOfBirth: string;
     nationalId: number;
     department: string;
     role: string;
@@ -49,11 +40,12 @@ export interface Staff {
     biography?: string;
     photo?: string;
     status: string;
-    startDate: Date;
-    endDate?: Date;
-    createdAt: Date;
-    updatedAt: Date;
+    startDate: string;
+    endDate?: string;
+    createdAt: string;
+    updatedAt: string;
     password?: string;
+    experience?:string
 }
 
 export type AuthData ={

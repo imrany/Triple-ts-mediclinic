@@ -1,32 +1,15 @@
 import NewAppointmentModal from '@/components/Modals/NewAppointment';
 import { useAppContext } from '@/context';
-import { departments, doctors } from '@/data';
-import React, { useState } from 'react';
+import { fromSnakeCaseToCamelCase } from '@/lib/utils';
+import { Appointment, AppointmentData, DepartmentStats } from '@/types';
+import React, { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
-
-// Mock data for the dashboard
-const appointmentData = [
-  { day: 'Mon', count: 12 },
-  { day: 'Tue', count: 19 },
-  { day: 'Wed', count: 15 },
-  { day: 'Thu', count: 18 },
-  { day: 'Fri', count: 22 },
-  { day: 'Sat', count: 10 },
-  { day: 'Sun', count: 5 },
-];
+import { toast } from 'sonner';
 
 const patientStats = [
   { name: 'New', value: 45 },
   { name: 'Returning', value: 85 },
   { name: 'Referred', value: 30 },
-];
-
-const departmentStats = [
-  { name: 'Cardiology', patients: 45 },
-  { name: 'Neurology', patients: 28 },
-  { name: 'Pediatrics', patients: 38 },
-  { name: 'Orthopedics', patients: 32 },
-  { name: 'Dermatology', patients: 22 },
 ];
 
 const revenueData = [
@@ -36,14 +19,6 @@ const revenueData = [
   { month: 'Apr', revenue: 28000 },
   { month: 'May', revenue: 30000 },
   { month: 'Jun', revenue: 34000 },
-];
-
-const upcomingAppointments = [
-  { id: 1, patient: 'Emma Wilson', time: '09:00 AM', doctor: 'Dr. Johnson', department: 'Cardiology', status: 'Confirmed' },
-  { id: 2, patient: 'Michael Brown', time: '10:15 AM', doctor: 'Dr. Martinez', department: 'Neurology', status: 'Pending' },
-  { id: 3, patient: 'Sophia Davis', time: '11:30 AM', doctor: 'Dr. Thompson', department: 'Pediatrics', status: 'Confirmed' },
-  { id: 4, patient: 'James Miller', time: '01:45 PM', doctor: 'Dr. Garcia', department: 'Orthopedics', status: 'Confirmed' },
-  { id: 5, patient: 'Olivia Taylor', time: '03:00 PM', doctor: 'Dr. Wilson', department: 'Dermatology', status: 'Pending' },
 ];
 
 const notifications = [
@@ -56,10 +31,119 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
-  const { setIsNewAppointmentModalOpen }=useAppContext()
+  const { setIsNewAppointmentModalOpen, doctors, departments } = useAppContext()
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
-  
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [appointmentData, setAppointData] = useState<AppointmentData[]>([
+    { day: new Date().toLocaleDateString('en-US', { weekday: 'short' }), count: 0 },
+  ])
+  const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([
+    { name: "", patients: 0 }
+  ])
+
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([{
+    id: '1',
+    patientNationalID: 123456789,
+    patientName: 'John Doe',
+    patientAddress: '123 Main St, Cityville',
+    patientPhoneNumber: '555-1234',
+    appointmentDate: new Date().toISOString(),
+    appointmentTime: "",
+    department: 'Cardiology',
+    staffId: 'doc123',
+    status: 'Confirmed',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }]);
+  const { api_url, authData } = useAppContext()
+
+  async function fetchAppointments() {
+    try {
+      const response = await fetch(`${api_url}/api/appointments`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${authData?.token || ''}`
+        }
+      })
+      const parseRes = await response.json()
+      if (parseRes.error) {
+        toast(`Something went wrong!`, {
+          description: `${parseRes.error}`,
+          action: {
+            label: "Undo",
+            onClick: () => fetchAppointments()
+          },
+        });
+      } else {
+        const data=fromSnakeCaseToCamelCase(parseRes)
+        console.log(data)
+        setAppointments(data);
+        const groupedAppointments = data.reduce((acc: Record<string, number>, appointment: Appointment) => {
+          const day = new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
+            weekday: 'short',
+          });
+
+          acc[day] = (acc[day] || 0) + 1;
+          return acc;
+        }, {});
+
+        setAppointData(Object.entries(groupedAppointments).map(([day, count]) => ({
+          day,
+          count: count as number,
+        })));
+
+        const upcomingAppointments:Appointment[] =data
+          .filter((appointment: Appointment) => (appointment.status === "scheduled" || appointment.status === "Pending"))
+          .sort((a: Appointment, b: Appointment) => new window.Date(a.appointmentDate).getTime() - new window.Date(b.appointmentDate).getTime())
+          .map((appointment: Appointment) => ({
+            id: appointment.id,
+            patientName: appointment.patientName,
+            AppointmentTime: appointment.appointmentTime,
+            patientNationalID: appointment.patientNationalID,
+            patientAddress: appointment.patientAddress,
+            patientPhoneNumber: appointment.patientPhoneNumber,
+            patientEmail: appointment.patientEmail,
+            AppointmentDate: appointment.appointmentDate,
+            department: appointment.department,
+            staffId: appointment.staffId,
+            status: appointment.status === "scheduled" ? "Pending" : appointment.status,
+            createdAt: appointment.createdAt,
+            updatedAt: appointment.updatedAt,
+            notes: appointment.notes,
+          }));
+
+        setUpcomingAppointments(upcomingAppointments);
+
+        setDepartmentStats(
+          Object.entries(
+            data.reduce((acc: Record<string, number>, appointment: Appointment) => {
+              const department = appointment.department;
+              acc[department] = (acc[department] || 0) + 1;
+              return acc;
+            }, {})
+          )
+            .map(([name, patients]) => ({ name, patients: patients as number }))
+            .sort((a, b) => b.patients - a.patients)
+        )
+        setNotificationCount(upcomingAppointments.length);
+
+      }
+    } catch (error: any) {
+      console.log(error.message)
+      toast(`Something went wrong!`, {
+        description: `${error.message}`,
+        action: {
+          label: "Undo",
+          onClick: () => fetchAppointments()
+        },
+      })
+    }
+  }
+
+  useEffect(() => {
+    fetchAppointments()
+  }, [])
   const StatCard: React.FC<{ title: string; value: string; description: string; icon: React.ReactNode; color: string }> = ({ title, value, description, icon, color }) => (
     <div className="bg-white rounded-xl shadow-md p-6 flex flex-col">
       <div className="flex justify-between items-center mb-4">
@@ -107,17 +191,16 @@ export default function Dashboard() {
     );
   };
 
-  const AppointmentRow: React.FC<{ patient: string; time: string; doctor: string; department: string; status: string }> = ({ patient, time, doctor, department, status }) => (
+  const AppointmentRow = ({ appointment }:{ appointment:Appointment }) => (
     <tr className="border-b border-gray-100 last:border-0">
-      <td className="py-3 px-2">{patient}</td>
-      <td className="py-3 px-2">{time}</td>
-      <td className="py-3 px-2">{doctor}</td>
-      <td className="py-3 px-2">{department}</td>
+      <td className="py-3 px-2">{appointment.patientName}</td>
+      <td className="py-3 px-2">{appointment.appointmentTime}</td>
+      <td className="py-3 px-2">{appointment.staffId}</td>
+      <td className="py-3 px-2">{appointment.department}</td>
       <td className="py-3 px-2">
-        <span className={`px-2 py-1 text-xs rounded-full ${
-          status === 'Confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
-        }`}>
-          {status}
+        <span className={`px-2 py-1 text-xs rounded-full ${appointment.status === 'Confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+          }`}>
+          {appointment.status}
         </span>
       </td>
     </tr>
@@ -133,31 +216,31 @@ export default function Dashboard() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard 
-          title="Total Patients" 
-          value="1,245" 
-          description="+15% from last month" 
+        <StatCard
+          title="Total Patients"
+          value="1,245"
+          description="+15% from last month"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
           color="bg-blue-500"
         />
-        <StatCard 
-          title="Appointments" 
-          value="86" 
-          description="Today's appointments" 
+        <StatCard
+          title="Appointments"
+          value={appointments.length.toString()}
+          description="Today's appointments"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>}
           color="bg-green-500"
         />
-        <StatCard 
-          title="Available Doctors" 
-          value="32" 
-          description="8 currently on duty" 
+        <StatCard
+          title="Available Doctors"
+          value={doctors.length.toString()}
+          description={`${doctors.filter((doctor: { status: string }) => doctor.status === "active").length} currently on duty`}
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>}
           color="bg-purple-500"
         />
-        <StatCard 
-          title="Revenue" 
-          value="KES 34,580" 
-          description="+8.2% from last week" 
+        <StatCard
+          title="Revenue"
+          value="KES 34,580"
+          description="+8.2% from last week"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
           color="bg-yellow-500"
         />
@@ -170,19 +253,19 @@ export default function Dashboard() {
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-medium text-gray-800">Appointment Analytics</h2>
             <div className="flex space-x-2">
-              <button 
+              <button
                 onClick={() => setTimeframe('week')}
                 className={`px-3 py-1 text-xs rounded-full ${timeframe === 'week' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
               >
                 Week
               </button>
-              <button 
+              <button
                 onClick={() => setTimeframe('month')}
                 className={`px-3 py-1 text-xs rounded-full ${timeframe === 'month' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
               >
                 Month
               </button>
-              <button 
+              <button
                 onClick={() => setTimeframe('year')}
                 className={`px-3 py-1 text-xs rounded-full ${timeframe === 'year' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}
               >
@@ -223,7 +306,7 @@ export default function Dashboard() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }:{name:string, percent:number}) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }: { name: string, percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
@@ -232,7 +315,7 @@ export default function Dashboard() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value:string) => [`${value} patients`, '']} />
+                <Tooltip formatter={(value: string) => [`${value} patients`, '']} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -286,7 +369,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value:string) => [`$${value}`, 'Revenue']} />
+                <Tooltip formatter={(value: string) => [`$${value}`, 'Revenue']} />
                 <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -314,8 +397,8 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {upcomingAppointments.map((appointment) => (
-                  <AppointmentRow key={appointment.id} {...appointment} />
+                {upcomingAppointments.map((appointment:Appointment) => (
+                  <AppointmentRow key={appointment.id} appointment={appointment} />
                 ))}
               </tbody>
             </table>
@@ -331,7 +414,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-medium text-gray-800">Notifications</h2>
             <div className="flex items-center">
               <span className="bg-blue-100 text-blue-800 text-xs rounded-full px-2 py-1 mr-2">{notificationCount}</span>
-              <button 
+              <button
                 onClick={() => setNotificationCount(0)}
                 className="text-sm text-blue-600 hover:text-blue-800"
               >
@@ -341,11 +424,11 @@ export default function Dashboard() {
           </div>
           <div className="space-y-1">
             {notifications.map((notification) => (
-              <NotificationItem 
-                key={notification.id} 
-                message={notification.message} 
-                time={notification.time} 
-                type={notification.type} 
+              <NotificationItem
+                key={notification.id}
+                message={notification.message}
+                time={notification.time}
+                type={notification.type}
               />
             ))}
           </div>

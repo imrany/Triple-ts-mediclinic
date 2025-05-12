@@ -425,11 +425,12 @@ import {
     LogIn
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { doctors } from "@/data";
 import Footer from "@/components/Footer";
-import { Doctor } from "@/types"
+import { Staff } from "@/types"
+import { useAppContext } from "@/context";
 
 export default function LandingPage() {
+    const {doctors}=useAppContext()
     return (
         <div className="font-sans bg-white min-h-screen">
             {/* Header with top navigation */}
@@ -708,13 +709,13 @@ export default function LandingPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {doctors && doctors.map((doctor: Doctor) => (
+                        {doctors && doctors.slice(0, 5).map((doctor: Staff) => (
                             <div key={doctor.id} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow border border-gray-200">
-                                <img src={doctor.image} alt={doctor.name} className="w-full h-64 object-cover" />
+                                <img src={doctor.photo} alt={doctor.firstName} className="w-full h-64 object-cover" />
                                 <div className="p-4">
-                                    <h3 className="text-xl font-semibold text-pink-800">{doctor.name}</h3>
-                                    <p className="text-pink-600 font-medium">{doctor.specialization}</p>
-                                    <p className="text-gray-600 mt-2">{doctor.bio}</p>
+                                    <h3 className="text-xl font-semibold text-pink-800">{`${doctor.firstName} ${doctor.lastName}`}</h3>
+                                    <p className="text-pink-600 font-medium">{doctor.specialty}</p>
+                                    <p className="text-gray-600 mt-2">{doctor.biography}</p>
                                     <Link to={`/doctors/${doctor.id}`} className="flex items-center mt-4 text-pink-800 hover:text-pink-600">
                                         <span className="font-medium">View Profile</span>
                                         <ArrowRight className="ml-2 h-4 w-4" />

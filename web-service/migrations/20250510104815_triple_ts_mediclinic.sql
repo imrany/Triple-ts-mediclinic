@@ -42,15 +42,21 @@ CREATE INDEX idx_patients_email ON patients(email);
 -- Create appointments table
 CREATE TABLE appointments (
     id TEXT PRIMARY KEY,
-    patient_id TEXT NOT NULL REFERENCES patients(id),
+    patient_national_id INT NOT NULL,
+    patient_name TEXT NOT NULL,
+    patient_address TEXT NOT NULL,
+    patient_phone_number TEXT NOT NULL,
+    patient_email TEXT,
+    appointment_date DATE NOT NULL,
+    appointment_time TEXT NOT NULL,
+    department TEXT NOT NULL,
     staff_id TEXT NOT NULL REFERENCES staff(id),
-    appointment_date TIMESTAMP NOT NULL,
-    reason TEXT,
+    notes TEXT,
     status TEXT DEFAULT 'scheduled',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX idx_appointments_patient_id ON appointments(patient_id);
+CREATE INDEX idx_appointments_patient_id ON appointments(patient_national_id);
 CREATE INDEX idx_appointments_staff_id ON appointments(staff_id);
 CREATE INDEX idx_appointments_appointment_date ON appointments(appointment_date);
 

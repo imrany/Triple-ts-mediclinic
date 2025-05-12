@@ -18,12 +18,14 @@ import CalendarPage from './pages/Calendar';
 import Pharmacy from './pages/Pharmacy';
 import { AuthData, Staff } from './types';
 import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { fromSnakeCaseToCamelCase } from './lib/utils';
 
 function App() {
   const [orgName, setOrgName] = useState<string>('Triple Ts Mediclinic');
   const [staff, setStaff] = useState<Staff | null>(null);
-  // const api_url = `http://localhost:8000`; 
-  const api_url = `https://api.triple-ts-mediclinic.com`; 
+  const api_url = 'http://localhost:8000';
+  // const api_url ='https://api.triple-ts-mediclinic.com';
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
@@ -31,103 +33,176 @@ function App() {
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
   const [isNewTestModalOpen, setIsNewTestModalOpen] = useState(false);
-  const authData: AuthData = JSON.parse(localStorage.getItem('authData') || '{}');
+  const [doctors, setDoctors] = useState<Staff[]>([]);
+  const [departments, setDepartments] = useState<string[]>([]);
 
-  async function fetchData() {
+  // Safely parse auth data
+  const getAuthData = (): AuthData | null => {
     try {
-      const response = await fetch(`${api_url}/api/staff/${authData.user_id}`, {
+      const storedAuthData = localStorage.getItem('authData');
+      return storedAuthData ? JSON.parse(storedAuthData) : null;
+    } catch (error) {
+      console.error('Error parsing auth data:', error);
+      return null;
+    }
+  };
+
+  const authData = getAuthData();
+
+  
+
+  // Fetch user details
+  const fetchUserData = async (token: string, userId: string) => {
+    try {
+      const response = await fetch(`${api_url}/api/staff/${userId}`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${authData.token}`
+          "Authorization": `Bearer ${token}`
         }
       });
+
       const parseRes = await response.json();
+
       if (parseRes.error) {
-        console.log(parseRes.error);
-        // localStorage.removeItem('authData');
-      } else {
-        setIsAuthenticated(true);
-        const data: Staff = {
-          id: parseRes.id || '',
-          firstName: parseRes.first_name || '',
-          lastName: parseRes.last_name || '',
-          email: parseRes.email || '',
-          phoneNumber: parseRes.phone_number || '',
-          role: parseRes.role || '',
-          department: parseRes.department || '',
-          address: parseRes.address || '',
-          status: parseRes.status,
-          photo: parseRes.photo || '',
-          dateOfBirth: parseRes.date_of_birth || '',
-          nationalId: parseRes.national_id || '',
-          biography: parseRes.biography || '',
-          specialty: parseRes.specialty || '',
-          startDate: parseRes.start_date || '',
-          endDate: parseRes.end_date || '',
-          createdAt: parseRes.created_at || '',
-          updatedAt: parseRes.updated_at || '',
-        };
-        setStaff(data)
+        throw new Error(parseRes.error);
+      }
+
+      const userData= fromSnakeCaseToCamelCase(parseRes)
+      setStaff(userData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Failed to fetch user data:', error);
+      toast.error('Failed to load user data', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
+      localStorage.removeItem('authData');
+      setIsAuthenticated(false);
+    }
+  };
+
+  // Fetch staff and departments
+  const fetchStaffAndDepartments = async () => {
+    try {
+      const response = await fetch(`${api_url}/api/staff`);
+
+      const parseRes: any = await response.json();
+
+      if (parseRes.error) {
+        throw new globalThis.Error(parseRes.error);
+      }
+
+      const medicalStaff = fromSnakeCaseToCamelCase(parseRes.filter((member: Staff) =>
+        member.role?.toLowerCase().includes('doctor')
+      ));
+
+      const allDepartments = fromSnakeCaseToCamelCase(parseRes
+        .map((member: Staff) => member.department)
+        .filter((department: string | undefined, index: number, self: (string | undefined)[]) =>
+          department && self.indexOf(department) === index
+        ));
+
+      setDepartments(allDepartments as string[]);
+      setDoctors(medicalStaff);
+    } catch (error) {
+      console.error('Failed to fetch staff:', error instanceof Error ? error.message : error);
+      toast.error('Failed to load staff data', {
+        description: error instanceof Error ? error.message : 'Unknown error occurred'
+      });
+    }
+  };
+
+  // Initial data fetch
+  useEffect(() => {
+    const initializeApp = async () => {
+      try {
+        // Check for valid authentication data
+        if (!authData?.token || !authData?.user_id || !authData?.email) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Fetch user data and staff information
+        await Promise.all([
+          fetchUserData(authData.token, authData.user_id),
+          fetchStaffAndDepartments()
+        ]);
+      } catch (error) {
+        console.error('Initialization failed:', error);
+      } finally {
         setIsLoading(false);
       }
-    } catch (error: any) {
-      setIsLoading(false);
-      let errorMessage= error.message==="Failed to fetch"?"No internet":error.message;
-      console.log(errorMessage);
-      console.log(error);
-    }
+    };
+
+    initializeApp();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white">
+        <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
+        <p className="mt-4 text-lg font-medium">Getting ready!</p>
+      </div>
+    );
   }
 
-  useEffect(()=>{
-    if (!authData?.token || !authData?.user_id || !authData?.email) {
-      console.error("No authentication data found.");
-      setIsLoading(false);
-    }else{
-      fetchData()
-    }
-  },[])
   return (
-    <>
-      {isLoading?(
-        <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white ">
-          <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
-          <p className="mt-4 text-lg font-medium">Get ready!</p>
-        </div>
-      ):(
-        <AppContext.Provider value={{ 
-          orgName, setOrgName, api_url, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen, 
-          isNewDoctorModalOpen, setIsNewDoctorModalOpen, isNewPatientModalOpen, setIsNewPatientModalOpen, 
-          isNewMedicationModalOpen, setIsNewMedicationModalOpen, isNewTestModalOpen, setIsNewTestModalOpen, 
-          staff, authData
-        }}>
-          <Router>
-            <Routes>
-              {/* Unprotected Routes */}
-              <Route path="/" element={!isAuthenticated?<LandingPage />:<Navigate to="/dashboard" />} />
-              <Route path="/signin" element={!isAuthenticated?<SignIn />: <Navigate to="/dashboard" />} />
-              <Route path="/forgot-password" element={!isAuthenticated?<ForgotPassword />: <Navigate to="/dashboard" />} />
-              
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={isAuthenticated?<Layout />:<Navigate to="/signin" />}>
-                <Route index element={<Dashboard />} />
-                <Route path="account" element={<Account />} />
-                <Route path="patients" element={<Patients />} />
-                <Route path="appointments" element={<Appointments />} />
-                <Route path="doctors" element={<Doctors />} />
-                <Route path="pharmacy" element={<Pharmacy />} />
-                <Route path="laboratory" element={<Laboratory />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="calendar" element={<CalendarPage />} />
-              </Route>
+    <AppContext.Provider value={{
+      orgName,
+      setOrgName,
+      api_url,
+      isNewAppointmentModalOpen,
+      setIsNewAppointmentModalOpen,
+      isNewDoctorModalOpen,
+      setIsNewDoctorModalOpen,
+      isNewPatientModalOpen,
+      setIsNewPatientModalOpen,
+      isNewMedicationModalOpen,
+      setIsNewMedicationModalOpen,
+      isNewTestModalOpen,
+      setIsNewTestModalOpen,
+      staff,
+      authData,
+      doctors,
+      departments
+    }}>
+      <Router>
+        <Routes>
+          {/* Unprotected Routes */}
+          <Route
+            path="/"
+            element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" />}
+          />
+          <Route
+            path="/signin"
+            element={!isAuthenticated ? <SignIn /> : <Navigate to="/dashboard" />}
+          />
+          <Route
+            path="/forgot-password"
+            element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/dashboard" />}
+          />
 
-              {/* Catch-All Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Router>
-          <Toaster />
-        </AppContext.Provider>
-      )}
-    </>
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={isAuthenticated ? <Layout /> : <Navigate to="/signin" />}
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="account" element={<Account />} />
+            <Route path="patients" element={<Patients />} />
+            <Route path="appointments" element={<Appointments />} />
+            <Route path="doctors" element={<Doctors />} />
+            <Route path="pharmacy" element={<Pharmacy />} />
+            <Route path="laboratory" element={<Laboratory />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="calendar" element={<CalendarPage />} />
+          </Route>
+
+          {/* Catch-All Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+      <Toaster />
+    </AppContext.Provider>
   );
 }
 

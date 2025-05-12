@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useAppContext } from '@/context';
-import { Calendar, Clock, User, Filter, Plus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, User, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Appointment } from '@/types';
-import { doctors, patients } from '@/data';
 import useIsMobile from '@/hooks/useIsMobile';
-
 
 export default function CalendarPage() {
   const { staff } = useAppContext();
-  const isDoctor = staff?.specialty === 'doctor' || staff?.specialty === 'Senior Physician';
-  const isMobile = useIsMobile()
+  const isDoctor = staff?.role === 'doctor';
+  const isMobile = useIsMobile();
+  
   // Calendar state
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState('week'); // 'day', 'week', 'month'
-  const [showModal, setShowModal] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([]);
   const [filters, setFilters] = useState({
@@ -22,21 +21,6 @@ export default function CalendarPage() {
     type: 'all',   // all, checkup, followup, procedure, etc.
   });
 
-  // New appointment form state
-  const [newAppointment, setNewAppointment] = useState<Appointment>({
-    id: "",
-    patientName: "",
-    doctorName: "",
-    title: '',
-    patientId: '',
-    doctorId: '',
-    date: new Date,
-    startTime: '',
-    endTime: '',
-    type: 'checkup',
-    notes: '',
-    status: 'pending',
-  });
 
   // Time slots for the calendar
   const timeSlots = Array.from({ length: 12 }, (_, i) => i + 8); // 8 AM to 7 PM
@@ -48,15 +32,12 @@ export default function CalendarPage() {
   useEffect(() => {
     // In a real application, you would fetch these from an API
     fetchMockData();
-
-    // Set filtered appointments based on initial filters
-    filterAppointments();
   }, []);
 
   // Update filtered appointments when filters or appointments change
   useEffect(() => {
     filterAppointments();
-  }, [filters, appointments]);
+  }, [filters, appointments, staff]);
 
   // Mock data fetching
   const fetchMockData = () => {
@@ -69,65 +50,101 @@ export default function CalendarPage() {
 
     const mockAppointments = [
       {
-        id: 'a1',
+        id: '1',
+        patientNationalID: 123456789,
+        patientName: 'John Doe',
+        patientAddress: '123 Main St, Cityville',
+        patientPhoneNumber: '555-1234',
+        appointmentDate: today.toISOString().split('T')[0],
+        appointmentTime: "09:00",
+        department: 'Cardiology',
+        staffId: 'doc123',
+        status: 'confirmed',
+        createdAt: today.toISOString(),
+        updatedAt: today.toISOString(),
         title: 'Annual Checkup',
         patientId: 'p1',
-        patientName: 'John Smith',
         doctorId: 'd1',
         doctorName: 'Dr. Sarah Johnson',
-        date: today,
         startTime: '09:00',
         endTime: '09:30',
         type: 'checkup',
         notes: 'Routine annual physical examination',
-        status: 'confirmed',
+        date: today.toISOString().split('T')[0],
       },
       {
         id: 'a2',
+        patientNationalID: 456789123,
+        patientName: 'Emma Johnson',
+        patientAddress: '456 Oak Ave, Townsville',
+        patientPhoneNumber: '555-5678',
+        appointmentDate: today.toISOString().split('T')[0],
+        appointmentTime: "10:00",
+        department: 'Neurology',
+        staffId: 'd1',
+        status: 'confirmed',
+        createdAt: today.toISOString(),
+        updatedAt: today.toISOString(),
         title: 'Follow-up Consultation',
         patientId: 'p2',
-        patientName: 'Emma Johnson',
         doctorId: 'd1',
         doctorName: 'Dr. Sarah Johnson',
-        date: today,
         startTime: '10:00',
         endTime: '10:30',
         type: 'followup',
         notes: 'Follow-up after medication change',
-        status: 'confirmed',
+        date: today.toISOString().split('T')[0],
       },
       {
         id: 'a3',
+        patientNationalID: 789123456,
+        patientName: 'Michael Brown',
+        patientAddress: '789 Pine St, Villageton',
+        patientPhoneNumber: '555-9012',
+        appointmentDate: tomorrow.toISOString().split('T')[0],
+        appointmentTime: "14:00",
+        department: 'Radiology',
+        staffId: 'd2',
+        status: 'pending',
+        createdAt: today.toISOString(),
+        updatedAt: today.toISOString(),
         title: 'MRI Scan',
         patientId: 'p3',
-        patientName: 'Michael Brown',
         doctorId: 'd2',
         doctorName: 'Dr. Robert Chen',
-        date: tomorrow,
         startTime: '14:00',
         endTime: '15:00',
         type: 'procedure',
         notes: 'Brain MRI scan',
-        status: 'pending',
+        date: tomorrow.toISOString().split('T')[0],
       },
       {
         id: 'a4',
+        patientNationalID: 321654987,
+        patientName: 'Sophia Davis',
+        patientAddress: '321 Maple Dr, Hamletburg',
+        patientPhoneNumber: '555-3456',
+        appointmentDate: dayAfter.toISOString().split('T')[0],
+        appointmentTime: "11:00",
+        department: 'Pediatrics',
+        staffId: 'd3',
+        status: 'confirmed',
+        createdAt: today.toISOString(),
+        updatedAt: today.toISOString(),
         title: 'Pediatric Checkup',
         patientId: 'p4',
-        patientName: 'Sophia Davis',
         doctorId: 'd3',
         doctorName: 'Dr. Maria Garcia',
-        date: dayAfter,
         startTime: '11:00',
         endTime: '11:30',
         type: 'checkup',
         notes: 'Regular pediatric checkup',
-        status: 'confirmed',
+        date: dayAfter.toISOString().split('T')[0],
       },
     ];
 
-    setAppointments(mockAppointments);
-    setFilteredAppointments(mockAppointments);
+    setAppointments(mockAppointments as Appointment[]);
+    setFilteredAppointments(mockAppointments as Appointment[]);
   };
 
   // Filter appointments based on selected filters
@@ -136,29 +153,29 @@ export default function CalendarPage() {
 
     // Filter by status
     if (filters.status !== 'all') {
-      filtered = filtered.filter(appointment => appointment.status === filters.status);
+      filtered = filtered.filter(appointment => appointment.status.toLowerCase() === filters.status);
     }
 
     // Filter by type
     if (filters.type !== 'all') {
-      filtered = filtered.filter(appointment => appointment.type === filters.type);
+      filtered = filtered.filter(appointment => (appointment as any).type === filters.type);
     }
 
     // If user is a doctor, only show their appointments
-    if (isDoctor) {
-      filtered = filtered.filter(appointment => appointment.doctorId === staff?.id);
+    if (isDoctor && staff?.id) {
+      filtered = filtered.filter(appointment => (appointment as any).doctorId === staff.id);
     }
 
     // If user is a patient, only show their appointments
-    if (!isDoctor) {
-      filtered = filtered.filter(appointment => appointment.patientId === staff?.id);
+    if (!isDoctor && staff?.id) {
+      filtered = filtered.filter(appointment => (appointment as any).patientId === staff.id);
     }
 
     setFilteredAppointments(filtered);
   };
 
   // Handle filter changes
-  const handleFilterChange = (e: any) => {
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFilters(prev => ({
       ...prev,
@@ -166,57 +183,7 @@ export default function CalendarPage() {
     }));
   };
 
-  // Handle new appointment form changes
-  const handleAppointmentChange = (e: any) => {
-    const { name, value } = e.target;
-    setNewAppointment(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Create new appointment
-  const handleCreateAppointment = (e: any) => {
-    e.preventDefault();
-
-    // Find patient and doctor info
-    const patient = patients.find(p => p.id === newAppointment.patientId);
-    const doctor = doctors.find(d => d.id === newAppointment.doctorId);
-
-    const newAppointmentData = {
-      id: `a${appointments.length + 1}`,
-      title: newAppointment.title,
-      patientId: newAppointment.patientId,
-      doctorId: newAppointment.doctorId,
-      date: newAppointment.date,
-      startTime: newAppointment.startTime,
-      endTime: newAppointment.endTime,
-      type: newAppointment.type,
-      notes: newAppointment.notes,
-      status: newAppointment.status,
-      patientName: patient?.name || 'Unknown Patient',
-      doctorName: doctor?.name || 'Unknown Doctor',
-    };
-
-    setAppointments(prev => [...prev, newAppointmentData]);
-    setShowModal(false);
-
-    // Reset form
-    setNewAppointment({
-      id: "",
-      patientName: "",
-      doctorName: "",
-      title: '',
-      patientId: '',
-      doctorId: '',
-      date: new Date,
-      startTime: '',
-      endTime: '',
-      type: 'checkup',
-      notes: '',
-      status: 'pending',
-    });
-  };
+  
 
   // Navigation functions
   const goToToday = () => {
@@ -280,20 +247,23 @@ export default function CalendarPage() {
   };
 
   // Get appointments for a specific date and time
-  const getAppointmentsForDateTime = (date: any, time: any) => {
+  const getAppointmentsForDateTime = (date: Date, time: number) => {
     const dateStr = date.toISOString().split('T')[0];
     const timeStr = `${time.toString().padStart(2, '0')}:00`;
 
-    return filteredAppointments.filter(appointment => {
+    return filteredAppointments.filter((appointment: Appointment) => {
+      const apptDate = appointment.appointmentDate || (appointment as any).date;
+      const apptTime = appointment.appointmentTime || (appointment as any).startTime;
+      
       return (
-        appointment.date === dateStr &&
-        appointment.startTime.startsWith(timeStr.substring(0, 2))
+        apptDate === dateStr &&
+        apptTime && apptTime.startsWith(timeStr.substring(0, 2))
       );
     });
   };
 
   // Format date for display
-  const formatDate = (date: any) => {
+  const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'short',
       month: 'short',
@@ -303,8 +273,8 @@ export default function CalendarPage() {
   };
 
   // Get status color
-  const getStatusColor = (status: any) => {
-    switch (status) {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
       case 'confirmed':
         return 'bg-green-100 text-green-800';
       case 'pending':
@@ -317,22 +287,21 @@ export default function CalendarPage() {
   };
 
   // Render appointment card
-  const renderAppointmentCard = (appointment: any) => {
+  const renderAppointmentCard = (appointment: Appointment) => {
     return (
       <div
         key={appointment.id}
-        className={`p-2 mb-1 rounded-md border-l-4 border-pink-500 shadow-sm ${appointment.status === 'cancelled' ? 'opacity-50' : ''
-          }`}
+        className={`p-2 mb-1 rounded-md border-l-4 border-pink-500 shadow-sm ${appointment.status.toLowerCase() === 'cancelled' ? 'opacity-50' : ''}`}
       >
         <div className="flex justify-between items-start">
-          <div className="font-medium text-sm">{appointment.title}</div>
+          <div className="font-medium text-sm">{(appointment as any).title || `Appointment: ${appointment.patientName}`}</div>
           <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(appointment.status)}`}>
             {appointment.status}
           </span>
         </div>
         <div className="flex items-center text-xs text-gray-500 mt-1">
           <Clock className="w-3 h-3 mr-1" />
-          {appointment.startTime} - {appointment.endTime}
+          {appointment.appointmentTime || (appointment as any).startTime}
         </div>
         <div className="flex items-center text-xs text-gray-500">
           {isDoctor ? (
@@ -343,11 +312,11 @@ export default function CalendarPage() {
           ) : (
             <>
               <User className="w-3 h-3 mr-1" />
-              {appointment.doctorName}
+              {(appointment as any).doctorName || appointment.staffId}
             </>
           )}
         </div>
-        <div className="text-xs mt-1 truncate">{appointment.notes}</div>
+        <div className="text-xs mt-1 truncate">{appointment.department}</div>
       </div>
     );
   };
@@ -367,11 +336,13 @@ export default function CalendarPage() {
           {dates.map((date, index) => (
             <div
               key={index}
-              className={`py-2 text-sm font-medium ${date.toDateString() === new Date().toDateString() ? 'bg-pink-50' : ''
-                }`}
+              className={`py-2 text-sm font-medium ${date.toDateString() === new Date().toDateString() ? 'bg-pink-50' : ''}`}
             >
               <div>{daysOfWeek[date.getDay()].substring(0, 3)}</div>
-              <div className={`text-lg ${date.toDateString() === selectedDate.toDateString() ? 'bg-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto' : ''}`}>
+              <div 
+                className={`text-lg ${date.toDateString() === selectedDate.toDateString() ? 'bg-pink-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto' : ''}`}
+                onClick={() => setSelectedDate(date)}
+              >
                 {date.getDate()}
               </div>
             </div>
@@ -423,8 +394,7 @@ export default function CalendarPage() {
                   return (
                     <div
                       key={index}
-                      className={`p-1 border-r min-h-16 ${date.toDateString() === new Date().toDateString() ? 'bg-pink-50' : ''
-                        }`}
+                      className={`p-1 border-r min-h-16 ${date.toDateString() === new Date().toDateString() ? 'bg-pink-50' : ''}`}
                     >
                       {appointments.map(appointment => renderAppointmentCard(appointment))}
                     </div>
@@ -441,195 +411,34 @@ export default function CalendarPage() {
     }
   };
 
-  // New Appointment Modal
-  const RenderNewAppointmentModal = () => {
-    return (
-      <div className={`fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50 ${showModal ? '' : 'hidden'}`}>
-        <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Schedule New Appointment</h2>
-            <button
-              onClick={() => setShowModal(false)}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+  // Helper function to safely format dates
+  const formatAppointmentDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString();
+    } catch (error) {
+      return "Invalid date";
+    }
+  };
 
-          <form onSubmit={handleCreateAppointment}>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={newAppointment.title}
-                  onChange={handleAppointmentChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Date
-                  </label>
-                  <input
-                    type="date"
-                    name="date"
-                    value={newAppointment.date.toISOString().split('T')[0]}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Appointment Type
-                  </label>
-                  <select
-                    name="type"
-                    value={newAppointment.type}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  >
-                    <option value="checkup">Check-up</option>
-                    <option value="followup">Follow-up</option>
-                    <option value="procedure">Procedure</option>
-                    <option value="consultation">Consultation</option>
-                    <option value="emergency">Emergency</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Time
-                  </label>
-                  <input
-                    type="time"
-                    name="startTime"
-                    value={newAppointment.startTime}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Time
-                  </label>
-                  <input
-                    type="time"
-                    name="endTime"
-                    value={newAppointment.endTime}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              {isDoctor && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Patient
-                  </label>
-                  <select
-                    name="patientId"
-                    value={newAppointment.patientId}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  >
-                    <option value="">Select a patient</option>
-                    {patients.map(patient => (
-                      <option key={patient.id} value={patient.id}>
-                        {patient.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {!isDoctor && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Doctor
-                  </label>
-                  <select
-                    name="doctorId"
-                    value={newAppointment.doctorId}
-                    onChange={handleAppointmentChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    required
-                  >
-                    <option value="">Select a doctor</option>
-                    {doctors.map(doctor => (
-                      <option key={doctor.id} value={doctor.id}>
-                        {doctor.name} - {doctor.specialization}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes
-                </label>
-                <textarea
-                  name="notes"
-                  value={newAppointment.notes}
-                  onChange={handleAppointmentChange}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                ></textarea>
-              </div>
-
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="mr-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-pink-600 text-white rounded-md text-sm hover:bg-pink-700"
-                >
-                  Schedule Appointment
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
+  // Helper function to safely compare dates
+  const isDateAfterToday = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return date >= today;
+    } catch (error) {
+      return false;
+    }
   };
 
   return (
     <div className={`container mx-auto ${isMobile ? "py-6" : "pb-6"} max-w-6xl`}>
-      <RenderNewAppointmentModal/>
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Calendar</h1>
           <p className="text-sm text-gray-500">Manage your medical calendar</p>
         </div>
-
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-4 py-2 bg-pink-600 text-white rounded-md text-sm hover:bg-pink-700 flex items-center"
-        >
-          <Plus className="w-4 h-4 mr-1" /> 
-          {!isMobile&&(<p>New Appointment</p>)}
-        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-md overflow-hidden mb-6">
@@ -686,10 +495,13 @@ export default function CalendarPage() {
             </div>
 
             <div className="relative">
-              <button className="px-3 py-1 text-sm border rounded-md flex items-center">
+              <button 
+                className="px-3 py-1 text-sm border rounded-md flex items-center"
+                onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              >
                 <Filter className="w-4 h-4 mr-1" /> Filter
               </button>
-              <div className="absolute right-0 mt-1 w-48 bg-white border rounded-md shadow-lg p-2 z-10 hidden">
+              <div className={`absolute right-0 mt-1 w-48 bg-white border rounded-md shadow-lg p-2 z-10 ${showFilterDropdown ? "" : "hidden"}`}>
                 <div className="mb-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Status
@@ -741,8 +553,15 @@ export default function CalendarPage() {
         <h2 className="text-lg font-medium mb-4">Upcoming Appointments</h2>
         <div className="space-y-2">
           {filteredAppointments
-            .filter(appointment => new Date(appointment.date.toISOString().split('T')[0]) >= new Date())
-            .sort((a, b) => Number(new Date(a.date)) - Number(new Date(b.date)))
+            .filter(appointment => {
+              const dateToCheck = appointment.appointmentDate || (appointment as any).date;
+              return isDateAfterToday(dateToCheck);
+            })
+            .sort((a, b) => {
+              const dateA = new Date(a.appointmentDate || (a as any).date);
+              const dateB = new Date(b.appointmentDate || (b as any).date);
+              return dateA.getTime() - dateB.getTime();
+            })
             .slice(0, 5)
             .map(appointment => (
               <div key={appointment.id} className="flex items-center p-3 border rounded-md">
@@ -751,16 +570,16 @@ export default function CalendarPage() {
                 </div>
                 <div className="flex-grow">
                   <div className="flex justify-between">
-                    <h3 className="font-medium">{appointment.title}</h3>
+                    <h3 className="font-medium">{(appointment as any).title || `Appointment: ${appointment.patientName}`}</h3>
                     <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(appointment.status)}`}>
                       {appointment.status}
                     </span>
                   </div>
                   <div className="text-sm text-gray-500">
-                    {new Date(appointment.date.toISOString().split('T')[0]).toLocaleDateString()} at {appointment.startTime}
+                    {formatAppointmentDate(appointment.appointmentDate || (appointment as any).date)} at {appointment.appointmentTime || (appointment as any).startTime}
                   </div>
                   <div className="text-sm">
-                    {isDoctor ? `Patient: ${appointment.patientName}` : `Doctor: ${appointment.doctorName}`}
+                    {isDoctor ? `Patient: ${appointment.patientName}` : `Doctor: ${(appointment as any).doctorName || appointment.staffId}`}
                   </div>
                 </div>
               </div>
@@ -768,5 +587,5 @@ export default function CalendarPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
