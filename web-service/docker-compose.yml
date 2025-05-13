@@ -17,5 +17,12 @@ services:
       - ./.env
     ports:
       - '5050:80'
+  web-service:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+
 volumes:
   progresDB:
