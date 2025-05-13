@@ -1,0 +1,41 @@
+# .github/workflows/deploy.yml
+name: Deploy Web-Service & React App
+
+on:
+  push:
+    branches:
+      - main  # Change to the branch that triggers deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: SSH into VPS & Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.VPS_SSH_KEY }}
+        script: |
+          # Navigate to web-service repo & deploy
+          cd ~/Triple-ts-mediclinic
+          git pull origin main
+
+          cd ~/Triple-ts-mediclinic/web-service
+          docker-compose down
+          docker-compose build --no-cache
+          docker-compose up -d
+
+          # Navigate to React app repo, build, and deploy
+          cd ~/Triple-ts-mediclinic/client
+          npm install
+          npm run build
+          sudo rm -rf /var/www/triple-ts-mediclinic
+          sudo mv dist /var/www/triple-ts-mediclinic
+
+          # Restart Nginx to apply changes
+          sudo systemctl restart nginx

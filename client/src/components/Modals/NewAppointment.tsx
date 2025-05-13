@@ -1,58 +1,126 @@
 import { X } from 'lucide-react';
 import { useAppContext } from '@/context';
 import { Staff } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 interface NewAppointmentModalProps {
   departments: string[];
   doctors: Staff[];
+  actions: {
+    fetchAppointments: () => Promise<void>;
+  }
 }
 
-const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, doctors }) => {
-  const { api_url, authData } = useAppContext();
+const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, doctors, actions }) => {
+  const { api_url, authData, isNewAppointmentModalOpen, setIsNewAppointmentModalOpen } = useAppContext();
   const [activeTab, setActiveTab] = useState<'patient' | 'appointment'>('patient');
   const [patientName, setPatientName] = useState<string>("");
-  const [patientNationalID, setPatientNationalID] = useState(0);
-  const [patientPhoneNumber, setPatientPhoneNumber] = useState<string>("");
+  const [patientNationalID, setPatientNationalID] = useState<number | null>(null);
+  const [patientPhoneNumber, setPatientPhone] = useState<string>("");
   const [patientAddress, setPatientAddress] = useState<string>("");
   const [patientEmail, setPatientEmail] = useState<string>("");
-  const [appointmentDate, setAppointmentDate] = useState<string | null>(null);
-  const [appointmentTime, setAppointmentTime] = useState<string | null>(null);
+  const [appointmentDate, setAppointmentDate] = useState<string>("");
+  const [appointmentTime, setAppointmentTime] = useState<string>("");
   const [department, setDepartment] = useState<string>("");
   const [staffID, setStaffID] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [emailError, setEmailError] = useState<string>("");
+  const [phoneError, setPhoneError] = useState<string>("");
 
-  const { isNewAppointmentModalOpen, setIsNewAppointmentModalOpen } = useAppContext();
+  // Reset form when modal is closed
+  useEffect(() => {
+    if (!isNewAppointmentModalOpen) {
+      resetForm();
+    }
+  }, [isNewAppointmentModalOpen]);
+
+  // Reset department selection when department changes
+  useEffect(() => {
+    setStaffID("");
+  }, [department]);
+
+  const resetForm = () => {
+    setActiveTab('patient');
+    setPatientName("");
+    setPatientNationalID(null);
+    setPatientPhone("");
+    setPatientAddress("");
+    setPatientEmail("");
+    setAppointmentDate("");
+    setAppointmentTime("");
+    setDepartment("");
+    setStaffID("");
+    setNotes("");
+    setEmailError("");
+    setPhoneError("");
+  };
 
   if (!isNewAppointmentModalOpen) return null;
 
-  const validateForm = () => {
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    setEmailError(isValid ? "" : "Please enter a valid email address");
+    return isValid;
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^\+?[0-9]{10,14}$/;
+    const isValid = phoneRegex.test(phone);
+    setPhoneError(isValid ? "" : "Please enter a valid phone number (10-14 digits)");
+    return isValid;
+  };
+
+  const validatePatientForm = (): boolean => {
+    const isEmailValid = validateEmail(patientEmail);
+    const isPhoneValid = validatePhone(patientPhoneNumber);
+
     return !!(
-      patientName &&
+      patientName.trim() &&
       patientNationalID &&
-      patientPhoneNumber &&
-      patientAddress &&
-      patientEmail
+      patientNationalID >= 10000000 &&
+      patientNationalID <= 99999999 &&
+      patientAddress.trim() &&
+      isEmailValid &&
+      isPhoneValid
     );
   };
 
-  const validateAppointmentDetails = () => {
+  const validateAppointmentDetails = (): boolean => {
     return !!(
       appointmentDate &&
       appointmentTime &&
       department &&
       staffID &&
-      notes
+      notes.trim()
     );
+  };
+
+  const handleCloseModal = () => {
+    setIsNewAppointmentModalOpen(false);
+  };
+
+  const handleModalBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      handleCloseModal();
+    }
   };
 
   async function handleSubmitAppointment(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!validateForm() || !validateAppointmentDetails()) {
-      toast.error("Please fill in all required fields");
+    if (!validatePatientForm() || !validateAppointmentDetails()) {
+      toast.error("Please fill in all required fields correctly");
+      return;
+    }
+
+    // Check if appointment date is valid (not in the past)
+    const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+    const now = new Date();
+    if (appointmentDateTime < now) {
+      toast.error("Appointment time cannot be in the past");
       return;
     }
 
@@ -67,15 +135,15 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
         },
         body: JSON.stringify({
           patient_national_id: patientNationalID,
-          patient_name: patientName,
-          patient_address: patientAddress,
+          patient_name: patientName.trim(),
+          patient_address: patientAddress.trim(),
           patient_phone_number: patientPhoneNumber,
-          patient_email: patientEmail,
-          appointment_date: new Date(`${appointmentDate}T${appointmentTime}`).toISOString(),
+          patient_email: patientEmail.trim(),
+          appointment_date: appointmentDateTime.toISOString(),
           appointment_time: appointmentTime,
           department: department,
           staff_id: staffID,
-          notes: notes,
+          notes: notes.trim(),
           status: "Pending",
           createdAt: currentDate.toISOString(),
           updatedAt: currentDate.toISOString(),
@@ -93,7 +161,9 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
         });
       } else {
         toast.success(parseRes.message);
-        setIsNewAppointmentModalOpen(false);
+        resetForm();
+        handleCloseModal();
+        actions.fetchAppointments();
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -109,15 +179,24 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
     }
   }
 
+  const filteredDoctors = doctors.filter((doctor: Staff) => {
+    return doctor.status === "active" && 
+           (!department || doctor.department === department);
+  });
+
   return (
-    <div className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={handleModalBackdropClick}
+    >
+      <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold">Schedule New Appointment</h3>
           <button
-            onClick={() => setIsNewAppointmentModalOpen(false)}
+            onClick={handleCloseModal}
             className="text-gray-500 hover:text-gray-700"
             type="button"
+            aria-label="Close modal"
           >
             <X size={18} />
           </button>
@@ -135,8 +214,8 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
             <button
               type='button'
               className={`flex-1 py-2 text-center font-medium hover:border-gray-300 text-gray-700 border-b-2 ${activeTab === "appointment" ? "border-blue-500" : "border-transparent"}`}
-              onClick={() => setActiveTab('appointment')}
-              disabled={!validateForm()}
+              onClick={() => validatePatientForm() && setActiveTab('appointment')}
+              disabled={!validatePatientForm()}
             >
               Appointment Details
             </button>
@@ -145,7 +224,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
           {activeTab === 'patient' && (
             <div className="space-y-4">
               <div>
-                <label htmlFor="patient-name" className="block text-sm font-medium text-gray-700 mb-1">Patient</label>
+                <label htmlFor="patient-name" className="block text-sm font-medium text-gray-700 mb-1">Patient Name *</label>
                 <input
                   id="patient-name"
                   type="text"
@@ -158,7 +237,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
               </div>
 
               <div>
-                <label htmlFor="national-id" className="block text-sm font-medium text-gray-700 mb-1">National ID</label>
+                <label htmlFor="national-id" className="block text-sm font-medium text-gray-700 mb-1">National ID *</label>
                 <input
                   id="national-id"
                   type="number"
@@ -167,27 +246,31 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                   required
                   min={10000000}
                   max={99999999}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPatientNationalID(Number(e.target.value))}
+                  value={patientNationalID || ''}
+                  onChange={(e) => setPatientNationalID(e.target.value ? Number(e.target.value) : null)}
                 />
               </div>
 
               <div>
-                <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                <label htmlFor="phone-number" className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
                 <input
                   id="phone-number"
                   type="tel"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className={`w-full border ${phoneError ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2`}
                   placeholder="Enter patient phone number"
                   value={patientPhoneNumber}
                   required
-                  minLength={10}
-                  maxLength={14}
-                  onChange={(e) => setPatientPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    setPatientPhone(e.target.value);
+                    if (phoneError) validatePhone(e.target.value);
+                  }}
+                  onBlur={(e) => validatePhone(e.target.value)}
                 />
+                {phoneError && <p className="text-red-500 text-xs mt-1">{phoneError}</p>}
               </div>
 
               <div>
-                <label htmlFor="patient-address" className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                <label htmlFor="patient-address" className="block text-sm font-medium text-gray-700 mb-1">Address *</label>
                 <input
                   id="patient-address"
                   type="text"
@@ -200,31 +283,36 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
               </div>
 
               <div>
-                <label htmlFor="patient-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label htmlFor="patient-email" className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                 <input
                   id="patient-email"
                   type="email"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                  className={`w-full border ${emailError ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2`}
                   placeholder="Enter patient email address"
                   value={patientEmail}
                   required
-                  onChange={(e) => setPatientEmail(e.target.value)}
+                  onChange={(e) => {
+                    setPatientEmail(e.target.value);
+                    if (emailError) validateEmail(e.target.value);
+                  }}
+                  onBlur={(e) => validateEmail(e.target.value)}
                 />
+                {emailError && <p className="text-red-500 text-xs mt-1">{emailError}</p>}
               </div>
 
               <div className="pt-4 flex justify-end space-x-2">
                 <button
                   type="button"
-                  onClick={() => setIsNewAppointmentModalOpen(false)}
+                  onClick={handleCloseModal}
                   className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  disabled={!validateForm()}
-                  onClick={() => setActiveTab('appointment')}
-                  className={`px-4 py-2 ${!validateForm() ? "cursor-not-allowed bg-gray-600 hover:bg-gray-600" : "bg-blue-500 cursor-pointer hover:bg-blue-600"} text-white rounded-lg`}
+                  disabled={!validatePatientForm()}
+                  onClick={() => validatePatientForm() && setActiveTab('appointment')}
+                  className={`px-4 py-2 ${!validatePatientForm() ? "cursor-not-allowed bg-gray-600 hover:bg-gray-600" : "bg-blue-500 cursor-pointer hover:bg-blue-600"} text-white rounded-lg`}
                 >
                   Next
                 </button>
@@ -236,24 +324,24 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="appointment-date" className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                  <label htmlFor="appointment-date" className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
                   <input
                     id="appointment-date"
                     type="date"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    value={appointmentDate || ''}
+                    value={appointmentDate}
                     min={new Date().toISOString().split('T')[0]}
                     required
                     onChange={(e) => setAppointmentDate(e.target.value)}
                   />
                 </div>
                 <div>
-                  <label htmlFor="appointment-time" className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+                  <label htmlFor="appointment-time" className="block text-sm font-medium text-gray-700 mb-1">Time *</label>
                   <input
                     id="appointment-time"
                     type="time"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
-                    value={appointmentTime || ''}
+                    value={appointmentTime}
                     required
                     onChange={(e) => setAppointmentTime(e.target.value)}
                   />
@@ -261,7 +349,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
               </div>
 
               <div>
-                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">Department *</label>
                 <select
                   id="department"
                   value={department}
@@ -276,26 +364,28 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                 </select>
               </div>
 
-              {department && department.length !== 0 && (<div>
-                <label htmlFor="doctor" className="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
+              <div>
+                <label htmlFor="doctor" className="block text-sm font-medium text-gray-700 mb-1">Doctor *</label>
                 <select
                   id="doctor"
                   value={staffID}
                   onChange={(e) => setStaffID(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   required
+                  disabled={!department}
                 >
                   <option value="">Select Doctor</option>
-                  {doctors
-                    .filter((doctor: Staff) => doctor.status === "active")
-                    .map((doctor: Staff) => (
-                      <option key={doctor.id} value={doctor.id}>{`${doctor.firstName} ${doctor.lastName}`}</option>
-                    ))}
+                  {filteredDoctors.map((doctor: Staff) => (
+                    <option key={doctor.id} value={doctor.id}>{`${doctor.firstName} ${doctor.lastName}`}</option>
+                  ))}
                 </select>
-              </div>)}
+                {department && filteredDoctors.length === 0 && (
+                  <p className="text-amber-500 text-xs mt-1">No active doctors available in this department</p>
+                )}
+              </div>
 
               <div>
-                <label htmlFor="appointment-notes" className="block text-sm font-medium text-gray-700 mb-1">Appointment Notes</label>
+                <label htmlFor="appointment-notes" className="block text-sm font-medium text-gray-700 mb-1">Appointment Notes *</label>
                 <textarea
                   id="appointment-notes"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24"
@@ -315,7 +405,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                 </button>
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || !validateAppointmentDetails()}
                   className={`px-4 py-2 ${isLoading ? "bg-blue-400" : "bg-blue-500"} text-white rounded-lg hover:bg-blue-600 ${!validateAppointmentDetails() ? "cursor-not-allowed opacity-50" : ""}`}
                 >
                   {isLoading ? "Scheduling..." : "Schedule Appointment"}

@@ -508,7 +508,7 @@ export default function AppointmentsPage() {
       </div>
 
       {/* New Appointment Modal */}
-      <NewAppointmentModal departments={departments} doctors={doctors} />
+      <NewAppointmentModal departments={departments} doctors={doctors} actions={{fetchAppointments}} />
     </div>
   );
 }

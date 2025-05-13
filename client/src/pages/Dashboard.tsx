@@ -6,6 +6,20 @@ import React, { useEffect, useState } from 'react';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { toast } from 'sonner';
 
+// Define the Staff type that was missing
+type Staff = {
+  department: string;
+  email: string;
+  experience: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+  photo: string;
+  role: string;
+  specialty: string;
+  status: string;
+};
+
 const patientStats = [
   { name: 'New', value: 45 },
   { name: 'Returning', value: 85 },
@@ -31,32 +45,19 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
-  const { setIsNewAppointmentModalOpen, doctors, departments } = useAppContext()
+  const { setIsNewAppointmentModalOpen, doctors, departments } = useAppContext();
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [appointmentData, setAppointData] = useState<AppointmentData[]>([
     { day: new Date().toLocaleDateString('en-US', { weekday: 'short' }), count: 0 },
-  ])
+  ]);
   const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([
     { name: "", patients: 0 }
-  ])
+  ]);
 
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([{
-    id: '1',
-    patientNationalID: 123456789,
-    patientName: 'John Doe',
-    patientAddress: '123 Main St, Cityville',
-    patientPhoneNumber: '555-1234',
-    appointmentDate: new Date().toISOString(),
-    appointmentTime: "",
-    department: 'Cardiology',
-    staffId: 'doc123',
-    status: 'Confirmed',
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }]);
-  const { api_url, authData } = useAppContext()
+  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const { api_url, authData } = useAppContext();
 
   async function fetchAppointments() {
     try {
@@ -65,21 +66,21 @@ export default function Dashboard() {
         headers: {
           "Authorization": `Bearer ${authData?.token || ''}`
         }
-      })
-      const parseRes = await response.json()
+      });
+      const parseRes = await response.json();
       if (parseRes.error) {
         toast(`Something went wrong!`, {
           description: `${parseRes.error}`,
           action: {
-            label: "Undo",
+            label: "Retry",
             onClick: () => fetchAppointments()
           },
         });
       } else {
-        const data=fromSnakeCaseToCamelCase(parseRes)
-        console.log(data)
+        const data = fromSnakeCaseToCamelCase(parseRes);
+        console.log(data);
         setAppointments(data);
-        const groupedAppointments = data.reduce((acc: Record<string, number>, appointment: Appointment) => {
+        const groupedAppointments = data.reduce((acc: Record<string, number>, { appointment, _staff }:{ appointment: Appointment, staff:Staff }) => {
           const day = new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
             weekday: 'short',
           });
@@ -93,31 +94,22 @@ export default function Dashboard() {
           count: count as number,
         })));
 
-        const upcomingAppointments:Appointment[] =data
-          .filter((appointment: Appointment) => (appointment.status === "scheduled" || appointment.status === "Pending"))
-          .sort((a: Appointment, b: Appointment) => new window.Date(a.appointmentDate).getTime() - new window.Date(b.appointmentDate).getTime())
-          .map((appointment: Appointment) => ({
-            id: appointment.id,
-            patientName: appointment.patientName,
-            AppointmentTime: appointment.appointmentTime,
-            patientNationalID: appointment.patientNationalID,
-            patientAddress: appointment.patientAddress,
-            patientPhoneNumber: appointment.patientPhoneNumber,
-            patientEmail: appointment.patientEmail,
-            AppointmentDate: appointment.appointmentDate,
-            department: appointment.department,
-            staffId: appointment.staffId,
-            status: appointment.status === "scheduled" ? "Pending" : appointment.status,
-            createdAt: appointment.createdAt,
-            updatedAt: appointment.updatedAt,
-            notes: appointment.notes,
-          }));
+        // Filter and sort upcoming appointments
+        const upcoming = data
+          .filter(({ appointment, _staff }:{ appointment: Appointment, staff:Staff }) => (
+            appointment.status === "scheduled" || appointment.status === "Pending"
+          ))
+          .sort((a: Appointment, b: Appointment) => 
+            new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime()
+          );
+        
+        setUpcomingAppointments(upcoming);
+        setNotificationCount(upcoming.length);
 
-        setUpcomingAppointments(upcomingAppointments);
-
+        // Calculate department statistics
         setDepartmentStats(
           Object.entries(
-            data.reduce((acc: Record<string, number>, appointment: Appointment) => {
+            data.reduce((acc: Record<string, number>, { appointment, _staff }:{ appointment: Appointment, staff:Staff }) => {
               const department = appointment.department;
               acc[department] = (acc[department] || 0) + 1;
               return acc;
@@ -125,25 +117,24 @@ export default function Dashboard() {
           )
             .map(([name, patients]) => ({ name, patients: patients as number }))
             .sort((a, b) => b.patients - a.patients)
-        )
-        setNotificationCount(upcomingAppointments.length);
-
+        );
       }
     } catch (error: any) {
-      console.log(error.message)
+      console.log(error.message);
       toast(`Something went wrong!`, {
         description: `${error.message}`,
         action: {
-          label: "Undo",
+          label: "Retry",
           onClick: () => fetchAppointments()
         },
-      })
+      });
     }
   }
 
   useEffect(() => {
-    fetchAppointments()
-  }, [])
+    fetchAppointments();
+  }, []);
+
   const StatCard: React.FC<{ title: string; value: string; description: string; icon: React.ReactNode; color: string }> = ({ title, value, description, icon, color }) => (
     <div className="bg-white rounded-xl shadow-md p-6 flex flex-col">
       <div className="flex justify-between items-center mb-4">
@@ -191,13 +182,13 @@ export default function Dashboard() {
     );
   };
 
-  const AppointmentRow = ({ appointment }:{ appointment:Appointment }) => (
+  const AppointmentRow: React.FC<{ appointment: Appointment, staff: Staff }> = ({ appointment, staff }) => (
     <tr className="border-b border-gray-100 last:border-0">
-      <td className="py-3 px-2">{appointment.patientName}</td>
-      <td className="py-3 px-2">{appointment.appointmentTime}</td>
-      <td className="py-3 px-2">{appointment.staffId}</td>
-      <td className="py-3 px-2">{appointment.department}</td>
-      <td className="py-3 px-2">
+      <td className="py-3 px-2 text-sm">{appointment.patientName}</td>
+      <td className="py-3 px-2 text-sm">{appointment.appointmentTime}</td>
+      <td className="py-3 px-2 text-sm">{`${staff.firstName} ${staff.lastName}`}</td>
+      <td className="py-3 px-2 text-sm">{appointment.department}</td>
+      <td className="py-3 px-2 text-sm">
         <span className={`px-2 py-1 text-xs rounded-full ${appointment.status === 'Confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
           }`}>
           {appointment.status}
@@ -306,16 +297,16 @@ export default function Dashboard() {
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }: { name: string, percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {patientStats.map((_, index) => (
+                  {patientStats.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: string) => [`${value} patients`, '']} />
+                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -343,7 +334,7 @@ export default function Dashboard() {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Bar dataKey="patients" fill="#8884d8">
-                  {departmentStats.map((_, index) => (
+                  {departmentStats.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>
@@ -369,7 +360,7 @@ export default function Dashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value: string) => [`$${value}`, 'Revenue']} />
+                <Tooltip />
                 <Line type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} />
               </LineChart>
             </ResponsiveContainer>
@@ -397,8 +388,8 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {upcomingAppointments.map((appointment:Appointment) => (
-                  <AppointmentRow key={appointment.id} appointment={appointment} />
+                {appointments.map((appointment) => (
+                  <AppointmentRow key={appointment.appointment.id} appointment={appointment.appointment} staff={appointment.staff} />
                 ))}
               </tbody>
             </table>
@@ -468,7 +459,7 @@ export default function Dashboard() {
           </button>
         </div>
       </div>
-      <NewAppointmentModal departments={departments} doctors={doctors} />
+      <NewAppointmentModal departments={departments} doctors={doctors} actions={{fetchAppointments}} />
     </div>
   );
 }
