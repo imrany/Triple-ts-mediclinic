@@ -19,10 +19,11 @@ services:
       - '5050:80'
   web-service:
     build: .
-    ports:
-      - "8000:8000"
+    container_name: web-service
     env_file:
       - ./.env
+    ports:
+      - "8000:8000"
 
 volumes:
   progresDB:
