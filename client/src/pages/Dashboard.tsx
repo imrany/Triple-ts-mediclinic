@@ -3,6 +3,7 @@ import { useAppContext } from '@/context';
 import { fromSnakeCaseToCamelCase } from '@/lib/utils';
 import { Appointment, AppointmentData, DepartmentStats } from '@/types';
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import { toast } from 'sonner';
 
@@ -18,6 +19,12 @@ type Staff = {
   role: string;
   specialty: string;
   status: string;
+};
+
+// Define a proper type for the appointment data structure as received from API
+type AppointmentWithStaff = {
+  appointment: Appointment;
+  staff: Staff;
 };
 
 const patientStats = [
@@ -48,16 +55,12 @@ export default function Dashboard() {
   const { setIsNewAppointmentModalOpen, doctors, departments } = useAppContext();
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const [appointmentData, setAppointData] = useState<AppointmentData[]>([
-    { day: new Date().toLocaleDateString('en-US', { weekday: 'short' }), count: 0 },
-  ]);
-  const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([
-    { name: "", patients: 0 }
-  ]);
-
-  const [upcomingAppointments, setUpcomingAppointments] = useState<Appointment[]>([]);
+  const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
+  const [appointmentData, setAppointData] = useState<AppointmentData[]>([]);
+  const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([]);
   const { api_url, authData } = useAppContext();
+  const navigate=useNavigate()
+  const [count, setCount]=useState(6)
 
   async function fetchAppointments() {
     try {
@@ -77,11 +80,13 @@ export default function Dashboard() {
           },
         });
       } else {
-        const data = fromSnakeCaseToCamelCase(parseRes);
+        const data = fromSnakeCaseToCamelCase(parseRes) as AppointmentWithStaff[];
         console.log(data);
         setAppointments(data);
-        const groupedAppointments = data.reduce((acc: Record<string, number>, { appointment, _staff }:{ appointment: Appointment, staff:Staff }) => {
-          const day = new Date(appointment.appointmentDate).toLocaleDateString('en-US', {
+        
+        // Process appointment data for chart
+        const groupedAppointments = data.reduce((acc: Record<string, number>, item: AppointmentWithStaff) => {
+          const day = new Date(item.appointment.appointmentDate).toLocaleDateString('en-US', {
             weekday: 'short',
           });
 
@@ -94,30 +99,20 @@ export default function Dashboard() {
           count: count as number,
         })));
 
-        // Filter and sort upcoming appointments
-        const upcoming = data
-          .filter(({ appointment, _staff }:{ appointment: Appointment, staff:Staff }) => (
-            appointment.status === "scheduled" || appointment.status === "Pending"
-          ))
-          .sort((a: Appointment, b: Appointment) => 
-            new Date(a.appointmentDate).getTime() - new Date(b.appointmentDate).getTime()
-          );
-        
-        setUpcomingAppointments(upcoming);
-        setNotificationCount(upcoming.length);
+        setNotificationCount(data.length);
 
         // Calculate department statistics
-        setDepartmentStats(
-          Object.entries(
-            data.reduce((acc: Record<string, number>, { appointment, _staff }:{ appointment: Appointment, staff:Staff }) => {
-              const department = appointment.department;
-              acc[department] = (acc[department] || 0) + 1;
-              return acc;
-            }, {})
-          )
-            .map(([name, patients]) => ({ name, patients: patients as number }))
-            .sort((a, b) => b.patients - a.patients)
-        );
+        const deptStats = Object.entries(
+          data.reduce((acc: Record<string, number>, item: AppointmentWithStaff) => {
+            const department = item.appointment.department;
+            acc[department] = (acc[department] || 0) + 1;
+            return acc;
+          }, {})
+        )
+          .map(([name, patients]) => ({ name, patients: patients as number }))
+          .sort((a, b) => b.patients - a.patients);
+        
+        setDepartmentStats(deptStats);
       }
     } catch (error: any) {
       console.log(error.message);
@@ -182,7 +177,7 @@ export default function Dashboard() {
     );
   };
 
-  const AppointmentRow: React.FC<{ appointment: Appointment, staff: Staff }> = ({ appointment, staff }) => (
+  const AppointmentRow: React.FC<{ appointment: Appointment; staff: Staff }> = ({ appointment, staff }) => (
     <tr className="border-b border-gray-100 last:border-0">
       <td className="py-3 px-2 text-sm">{appointment.patientName}</td>
       <td className="py-3 px-2 text-sm">{appointment.appointmentTime}</td>
@@ -302,7 +297,7 @@ export default function Dashboard() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {patientStats.map((entry, index) => (
+                  {patientStats.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -334,7 +329,7 @@ export default function Dashboard() {
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
                 <Bar dataKey="patients" fill="#8884d8">
-                  {departmentStats.map((entry, index) => (
+                  {departmentStats.map((_entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Bar>
@@ -374,7 +369,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-medium text-gray-800">Today's Appointments</h2>
-            <button className="text-sm text-blue-600 hover:text-blue-800">View All</button>
+            <button onClick={()=>navigate("/dashboard/appointments")} className="text-sm text-blue-600 hover:text-blue-800">View All</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full table-auto">
@@ -388,14 +383,18 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {appointments.map((appointment) => (
-                  <AppointmentRow key={appointment.appointment.id} appointment={appointment.appointment} staff={appointment.staff} />
+                {appointments.slice(0,count).map((item) => (
+                  <AppointmentRow 
+                    key={item.appointment.id} 
+                    appointment={item.appointment} 
+                    staff={item.staff} 
+                  />
                 ))}
               </tbody>
             </table>
           </div>
           <div className="flex justify-center mt-4">
-            <button className="text-sm text-blue-600 hover:text-blue-800">Load More</button>
+            <button onClick={() => setCount(count + 3)} className="text-sm text-blue-600 hover:text-blue-800">Load More</button>
           </div>
         </div>
 
