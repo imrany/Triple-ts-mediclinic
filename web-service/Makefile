@@ -1,6 +1,9 @@
 all: build run
 dev: build ensure-compile-daemon watch
 
+delete: 
+	rm ./web-service
+
 build:
 	go build -o web-service main.go
 

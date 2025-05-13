@@ -1,5 +1,5 @@
 # Step 1: Build Stage
-FROM golang:1.20-alpine AS builder
+FROM golang:1.20.10-alpine AS builder
 
 WORKDIR /app
 
@@ -13,7 +13,8 @@ RUN go mod download
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o web-service .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o web-service .
+
 
 # Step 2: Run Stage (Uses Small Final Image)
 FROM alpine:latest
