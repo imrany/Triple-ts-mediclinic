@@ -1,13 +1,14 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Calendar, Clock, Filter, Plus, Search, ChevronLeft, ChevronRight, MoreHorizontal, X } from 'lucide-react';
 import { useAppContext } from '@/context';
 import NewAppointmentModal from '@/components/Modals/NewAppointment';
+import { Appointment } from '@/types';
 import { toast } from 'sonner';
 import { fromSnakeCaseToCamelCase } from '@/lib/utils';
 
-// Define the Staff type
+// Define the Staff type that was missing
 type Staff = {
-  id: string;
+  id: string; // Changed from 'any' to 'string' for type safety
   department: string;
   email: string;
   experience: string;
@@ -20,62 +21,19 @@ type Staff = {
   status: string;
 };
 
-// Define the Appointment type
-type Appointment = {
-  id: string;
-  patientName: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  staffId: string;
-  department: string;
-  status: string;
-  notes?: string;
-};
-
 // Define a proper type for the appointment data structure as received from API
 type AppointmentWithStaff = {
   appointment: Appointment;
   staff: Staff;
 };
 
-// Status badge component extracted for reuse
-const StatusBadge = ({ status }: { status: string }) => {
-  let bgColor;
-  let textColor;
-
-  switch (status.toLowerCase()) {
-    case 'confirmed':
-      bgColor = 'bg-green-100';
-      textColor = 'text-green-800';
-      break;
-    case 'pending':
-    case 'scheduled':
-      bgColor = 'bg-yellow-100';
-      textColor = 'text-yellow-800';
-      break;
-    case 'cancelled':
-      bgColor = 'bg-red-100';
-      textColor = 'text-red-800';
-      break;
-    default:
-      bgColor = 'bg-gray-100';
-      textColor = 'text-gray-800';
-  }
-
-  return (
-    <span className={`px-3 py-1 text-xs rounded-full ${bgColor} ${textColor}`}>
-      {status}
-    </span>
-  );
-};
-
 export default function AppointmentsPage() {
   const { departments, doctors, api_url, authData } = useAppContext() as {
-    departments:string[]
-    doctors:any
     api_url:string
     authData:any
-  };
+    doctors:any
+    departments:string[]
+  }
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState('day'); // day, week, month
   const [appointments, setAppointments] = useState<AppointmentWithStaff[] | null>(null);
@@ -88,6 +46,7 @@ export default function AppointmentsPage() {
   });
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const { setIsNewAppointmentModalOpen } = useAppContext();
+  const [filteredAppointments, setFilteredAppointments] = useState<AppointmentWithStaff[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Format date for display
@@ -137,25 +96,15 @@ export default function AppointmentsPage() {
       .substring(0, 2);
   };
 
-  // Fetch appointments from the API
-  const fetchAppointments = async () => {
+  async function fetchAppointments() {
     setIsLoading(true);
     try {
-      if (!api_url || !authData?.token) {
-        throw new Error("API URL or authentication token is missing");
-      }
-      
       const response = await fetch(`${api_url}/api/appointments`, {
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${authData.token}`
+          "Authorization": `Bearer ${authData?.token || ''}`
         }
       });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch appointments");
-      }
       
       const parseRes = await response.json();
       if (parseRes.error) {
@@ -170,9 +119,10 @@ export default function AppointmentsPage() {
       } else {
         const data = fromSnakeCaseToCamelCase(parseRes);
         setAppointments(data);
+        setFilteredAppointments(data)
       }
     } catch (error: any) {
-      console.error("Error fetching appointments:", error.message);
+      console.log(error.message);
       toast(`Something went wrong!`, {
         description: `${error.message}`,
         action: {
@@ -181,53 +131,79 @@ export default function AppointmentsPage() {
         },
       });
       setAppointments([]);
+      setFilteredAppointments([])
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Fetch appointments on component mount
-  useEffect(() => {
-    fetchAppointments();
-  }, [api_url, authData]); // Added dependencies
+  }
 
   // Filter appointments whenever dependencies change
-  const filteredAppointments = useMemo(() => {
-    if (!appointments) return [];
+  useEffect(()=>{
+    fetchAppointments();
+  },[])
+
+  useEffect(() => {
+    if (!appointments) return;
     
-    return appointments.filter((appointmentData: AppointmentWithStaff) => {
+    const filtered = appointments.filter((appointmentData: AppointmentWithStaff) => {
       // Match search term
       const matchesSearch = searchTerm === '' || (
-        (appointmentData.appointment.patientName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (appointmentData.staff && 
-         `${appointmentData.staff.firstName || ''} ${appointmentData.staff.lastName || ''}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (appointmentData.appointment.notes?.toLowerCase().includes(searchTerm.toLowerCase()))
+        (appointmentData.appointment.patientName && appointmentData.appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (appointmentData.staff && appointmentData.staff.firstName && 
+         `${appointmentData.staff.firstName} ${appointmentData.staff.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (appointmentData.appointment.notes && appointmentData.appointment.notes.toLowerCase().includes(searchTerm.toLowerCase()))
       );
 
-      // Match filters - case insensitive comparisons
-      const matchesStatus = filters.status === 'all' || 
-        appointmentData.appointment.status.toLowerCase() === filters.status.toLowerCase();
-      
-      const matchesDepartment = filters.department === 'all' || 
-        appointmentData.appointment.department === filters.department;
-      
-      const matchesDoctor = filters.doctor === 'all' || 
-        appointmentData.appointment.staffId === filters.doctor;
+      // Match filters
+      const matchesStatus = filters.status === 'all' || appointmentData.appointment.status === filters.status;
+      const matchesDepartment = filters.department === 'all' || appointmentData.appointment.department === filters.department;
+      const matchesDoctor = filters.doctor === 'all' || appointmentData.appointment.staffId === filters.doctor;
 
       // For day view, only show appointments for the selected date
-      let matchesDate = true;
-      if (appointmentData.appointment.appointmentDate) {
-        const appointmentDate = new Date(appointmentData.appointment.appointmentDate);
-        matchesDate = view === 'day'
-          ? appointmentDate.toDateString() === currentDate.toDateString()
-          : true; // For week and month view, we'll handle display separately
-      }
+      const appointmentDate = new Date(appointmentData.appointment.appointmentDate);
+      const matchesDate = view === 'day'
+        ? appointmentDate.toDateString() === currentDate.toDateString()
+        : true; // For week and month view, we'll handle display separately
 
       return matchesSearch && matchesStatus && matchesDepartment && matchesDoctor && matchesDate;
     });
-  }, [appointments, searchTerm, filters, view, currentDate]);
 
-  // Appointment Details component
+    setFilteredAppointments(filtered);
+  }, [searchTerm, filters, view, currentDate]);
+
+  const StatusBadge = ({ status }: { status: string }) => {
+    let bgColor;
+    let textColor;
+
+    switch (status) {
+      case 'Confirmed':
+        bgColor = 'bg-green-100';
+        textColor = 'text-green-800';
+        break;
+      case 'Pending':
+        bgColor = 'bg-yellow-100';
+        textColor = 'text-yellow-800';
+        break;
+      case 'scheduled':
+        bgColor = 'bg-yellow-100';
+        textColor = 'text-yellow-800';
+        break;
+      case 'Cancelled':
+        bgColor = 'bg-red-100';
+        textColor = 'text-red-800';
+        break;
+      default:
+        bgColor = 'bg-gray-100';
+        textColor = 'text-gray-800';
+    }
+
+    return (
+      <span className={`px-3 py-1 text-xs rounded-full ${bgColor} ${textColor}`}>
+        {status}
+      </span>
+    );
+  };
+
   const AppointmentDetails = ({ appointment }: { appointment: AppointmentWithStaff }) => {
     if (!appointment) return null;
 
@@ -238,16 +214,15 @@ export default function AppointmentsPage() {
     
     const doctorName = doctor ? 
       `${doctor.firstName} ${doctor.lastName}` : 
-      (appointment.staff ? `${appointment.staff.firstName || ''} ${appointment.staff.lastName || ''}`.trim() : 'Unknown Doctor');
+      (appointment.staff ? `${appointment.staff.firstName} ${appointment.staff.lastName}` : 'Unknown Doctor');
 
     return (
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <div className="flex justify-between items-start mb-6">
-          <h3 className="text-xl font-bold">{appointment.appointment.patientName || 'Unknown Patient'}</h3>
+          <h3 className="text-xl font-bold">{appointment.appointment.patientName}</h3>
           <button
             onClick={() => setSelectedAppointment(null)}
             className="text-gray-500 hover:text-gray-700"
-            aria-label="Close details"
           >
             <X size={18} />
           </button>
@@ -256,28 +231,23 @@ export default function AppointmentsPage() {
         <div className="space-y-4">
           <div className="flex items-center">
             <Clock size={18} className="text-gray-500 mr-2" />
-            <p>
-              {appointment.appointment.appointmentDate 
-                ? new Date(appointment.appointment.appointmentDate).toLocaleDateString() 
-                : 'Unknown date'} 
-              at {appointment.appointment.appointmentTime || 'Unknown time'}
-            </p>
+            <p>{new Date(appointment.appointment.appointmentDate).toLocaleDateString()} at {appointment.appointment.appointmentTime}</p>
           </div>
 
           <div className="flex items-center">
             <div className="w-8 h-8 rounded-full bg-pink-500 text-white flex items-center justify-center mr-2">
-              {doctor ? getInitials(`${doctor.firstName || ''} ${doctor.lastName || ''}`) :
-                (appointment.staff ? getInitials(`${appointment.staff.firstName || ''} ${appointment.staff.lastName || ''}`) : 'UN')}
+              {doctor ? getInitials(`${doctor.firstName} ${doctor.lastName}`) :
+                (appointment.staff ? getInitials(`${appointment.staff.firstName} ${appointment.staff.lastName}`) : 'UN')}
             </div>
             <div>
               <p className="font-medium">{doctorName}</p>
-              <p className="text-sm text-gray-500">{appointment.appointment.department || 'Unknown department'}</p>
+              <p className="text-sm text-gray-500">{appointment.appointment.department}</p>
             </div>
           </div>
 
           <div>
             <p className="font-medium mb-1">Status</p>
-            <StatusBadge status={appointment.appointment.status || 'Unknown'} />
+            <StatusBadge status={appointment.appointment.status} />
           </div>
 
           <div>
@@ -289,7 +259,7 @@ export default function AppointmentsPage() {
             <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
               Reschedule
             </button>
-            {appointment.appointment.status.toLowerCase() !== 'cancelled' && (
+            {appointment.appointment.status !== 'Cancelled' && (
               <button className="px-4 py-2 bg-white border border-red-300 rounded-lg text-red-700 hover:bg-red-50">
                 Cancel
               </button>
@@ -303,7 +273,6 @@ export default function AppointmentsPage() {
     );
   };
 
-  // Filter Panel component
   const FilterPanel = () => (
     <div className="bg-white rounded-xl shadow-md p-6 mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -311,7 +280,6 @@ export default function AppointmentsPage() {
         <button
           onClick={() => setIsFilterPanelOpen(false)}
           className="text-gray-500 hover:text-gray-700"
-          aria-label="Close filters"
         >
           <X size={18} />
         </button>
@@ -319,25 +287,22 @@ export default function AppointmentsPage() {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="status-filter">Status</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select
-            id="status-filter"
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
             value={filters.status}
             onChange={(e) => setFilters({ ...filters, status: e.target.value })}
           >
             <option value="all">Select Status</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="pending">Pending</option>
-            <option value="scheduled">Scheduled</option>
-            <option value="cancelled">Cancelled</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Pending">Pending</option>
+            <option value="Cancelled">Cancelled</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="department-filter">Department</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Department</label>
           <select
-            id="department-filter"
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
             value={filters.department}
             onChange={(e) => setFilters({ ...filters, department: e.target.value })}
@@ -350,18 +315,15 @@ export default function AppointmentsPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="doctor-filter">Doctor</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Doctor</label>
           <select
-            id="doctor-filter"
             className="w-full border border-gray-300 rounded-lg px-3 py-2"
             value={filters.doctor}
             onChange={(e) => setFilters({ ...filters, doctor: e.target.value })}
           >
             <option value="all">Select Doctor</option>
             {Array.isArray(doctors) && doctors.map((doctor: Staff) => (
-              <option key={doctor.id} value={doctor.id}>
-                {`${doctor.firstName || ''} ${doctor.lastName || ''}`.trim() || doctor.id}
-              </option>
+              <option key={doctor.id} value={doctor.id}>{`${doctor.firstName} ${doctor.lastName}`}</option>
             ))}
           </select>
         </div>
@@ -384,7 +346,6 @@ export default function AppointmentsPage() {
     </div>
   );
 
-  // Appointments List component
   const AppointmentsList = () => {
     if (isLoading) {
       return (
@@ -431,8 +392,8 @@ export default function AppointmentsPage() {
                 null;
               
               const doctorName = doctor ? 
-                `${doctor.firstName || ''} ${doctor.lastName || ''}`.trim() : 
-                (appointmentData.staff ? `${appointmentData.staff.firstName || ''} ${appointmentData.staff.lastName || ''}`.trim() : 'Unknown Doctor');
+                `${doctor.firstName} ${doctor.lastName}` : 
+                (appointmentData.staff ? `${appointmentData.staff.firstName} ${appointmentData.staff.lastName}` : 'Unknown Doctor');
 
               return (
                 <div
@@ -443,18 +404,18 @@ export default function AppointmentsPage() {
                   <div className="flex justify-between items-center">
                     <div className="flex items-center">
                       <div className="w-10 h-10 rounded-full bg-pink-100 text-pink-800 flex items-center justify-center font-medium mr-3">
-                        {getInitials(appointmentData.appointment.patientName || 'UN')}
+                        {getInitials(appointmentData.appointment.patientName)}
                       </div>
                       <div>
-                        <p className="font-medium">{appointmentData.appointment.patientName || 'Unknown Patient'}</p>
+                        <p className="font-medium">{appointmentData.appointment.patientName}</p>
                         <p className="text-sm text-gray-500">
-                          {appointmentData.appointment.appointmentTime || 'No time'} • {doctorName}
+                          {appointmentData.appointment.appointmentTime} • {doctorName}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <StatusBadge status={appointmentData.appointment.status || 'Unknown'} />
-                      <button className="text-gray-400 hover:text-gray-600" aria-label="More options">
+                      <StatusBadge status={appointmentData.appointment.status} />
+                      <button className="text-gray-400 hover:text-gray-600">
                         <MoreHorizontal size={18} />
                       </button>
                     </div>
@@ -517,14 +478,12 @@ export default function AppointmentsPage() {
               className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              aria-label="Search appointments"
             />
             <Search size={18} className="absolute left-3 top-2.5 text-gray-400" />
           </div>
           <button
             onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
             className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-            aria-label="Toggle filters"
           >
             <Filter size={18} />
           </button>
@@ -543,7 +502,6 @@ export default function AppointmentsPage() {
         <button
           onClick={navigatePrevious}
           className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          aria-label="Previous day"
         >
           <ChevronLeft size={18} />
         </button>
@@ -554,7 +512,6 @@ export default function AppointmentsPage() {
         <button
           onClick={navigateNext}
           className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-          aria-label="Next day"
         >
           <ChevronRight size={18} />
         </button>
