@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Copy go modules files first (better caching)
 COPY go.mod go.sum ./
+COPY .env /app/.env
 
 # Download dependencies and update go.mod
 RUN go mod download && go mod tidy
