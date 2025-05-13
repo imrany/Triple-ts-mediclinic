@@ -18,7 +18,8 @@ CREATE TABLE staff (
     password TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    email TEXT UNIQUE NOT NULL
+    email TEXT UNIQUE NOT NULL,
+    experience TEXT DEFAULT '0-5 years'
 );
 CREATE INDEX idx_staff_email ON staff(email);
 CREATE INDEX idx_staff_phone_number ON staff(phone_number);

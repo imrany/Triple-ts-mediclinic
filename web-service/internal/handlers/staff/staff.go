@@ -32,6 +32,7 @@ type Staff struct {
 	Email       string  `json:"email"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
+	Experience string `json:"experience"`
 }
 
 func GetStaffByID(c *fiber.Ctx) error {
@@ -43,7 +44,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 	}
 
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, email, created_at, updated_at FROM staff WHERE id = $1", id)
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, email, created_at, updated_at, experience FROM staff WHERE id = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -55,7 +56,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 	var staff *Staff
 	if rows.Next() {
 		var s Staff
-		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Email, &s.CreatedAt, &s.UpdatedAt); err != nil {
+		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Email, &s.CreatedAt, &s.UpdatedAt, &s.Experience); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})
@@ -75,7 +76,7 @@ func GetStaffByID(c *fiber.Ctx) error {
 
 func GetAllStaff(c *fiber.Ctx) error {
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, phone_number, specialty, role, created_at, email, status, start_date, photo FROM staff")
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, department, phone_number, specialty, role, created_at, email, status, start_date, photo, experience FROM staff")
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -86,7 +87,7 @@ func GetAllStaff(c *fiber.Ctx) error {
 	var staff []Staff
 	for rows.Next() {
 		var s Staff
-		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.PhoneNumber, &s.Specialty, &s.Role, &s.CreatedAt, &s.Email, &s.Status, &s.StartDate, &s.Photo ); err != nil {
+		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.Department, &s.PhoneNumber, &s.Specialty, &s.Role, &s.CreatedAt, &s.Email, &s.Status, &s.StartDate, &s.Photo, &s.Experience ); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})
@@ -121,7 +122,7 @@ func AddStaff(c *fiber.Ctx) error {
 	s.ID = uuid.New().String()[:8]
 
 	// Insert staff into the database
-	_, err = db.Exec(context.Background(), "INSERT INTO staff (id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)", s.ID, s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email)
+	_, err = db.Exec(context.Background(), "INSERT INTO staff (id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, email, experience) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)", s.ID, s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Password, s.Email, s.Experience)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to add Staff",
@@ -153,7 +154,7 @@ func UpdateStaff(c *fiber.Ctx) error {
 	}
 
 	// Update staff in the database
-	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14, email = $15 WHERE id = $16 OR national_id = $16", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Email, id)
+	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14, email = $15, experience=$17 WHERE id = $16 OR national_id = $16", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, s.Email, id, s.Experience)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -176,7 +177,7 @@ func DeleteStaff(c *fiber.Ctx) error {
 	}
 
 	// Delete staff from the database
-	_, err := db.Exec(context.Background(), "DELETE FROM staff WHERE id = $1 OR national_id = $1", id)
+	_, err := db.Exec(context.Background(), "DELETE FROM staff WHERE id = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err,
@@ -197,7 +198,7 @@ func GetStaffByEmail(c *fiber.Ctx) error {
 	}
 
 	db := database.GetDB()
-	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role FROM staff WHERE email = $1", id)
+	rows, err := db.Query(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, experience FROM staff WHERE email = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -209,7 +210,7 @@ func GetStaffByEmail(c *fiber.Ctx) error {
 	var staff *Staff
 	if rows.Next() {
 		var s Staff
-		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role); err != nil {
+		if err := rows.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Experience); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})
@@ -267,7 +268,7 @@ func UpdateStaffByEmail(c *fiber.Ctx) error {
 	}
 
 	// Update staff in the database
-	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14 WHERE email = $15", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, email)
+	_, err := db.Exec(context.Background(), "UPDATE staff SET first_name = $1, last_name = $2, phone_number = $3, date_of_birth = $4, national_id = $5, address = $6, biography = $7, photo = $8, department = $9, specialty = $10, start_date = $11, end_date = $12, status = $13, role = $14, experience = $16 WHERE email = $15", s.FirstName, s.LastName, s.PhoneNumber, s.DateOfBirth, s.NationalID, s.Address, s.Biography, s.Photo, s.Department, s.Specialty, s.StartDate, s.EndDate, s.Status, s.Role, email, s.Experience)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": err.Error(),
@@ -315,8 +316,8 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	// Check if staff exists in the database
-	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password FROM staff WHERE email = $1", email)
-	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Password); err != nil {
+	row := db.QueryRow(context.Background(), "SELECT id, first_name, last_name, phone_number, date_of_birth, national_id, address, biography, photo, department, specialty, start_date, end_date, status, role, password, experience FROM staff WHERE email = $1", email)
+	if err := row.Scan(&s.ID, &s.FirstName, &s.LastName, &s.PhoneNumber, &s.DateOfBirth, &s.NationalID, &s.Address, &s.Biography, &s.Photo, &s.Department, &s.Specialty, &s.StartDate, &s.EndDate, &s.Status, &s.Role, &s.Password, &s.Experience); err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "This account doesn't exist",
 			"details": err.Error(),

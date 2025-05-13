@@ -26,13 +26,42 @@ type Appointment struct {
 	UpdatedAt          time.Time `json:"updated_at"`
 }
 
+type Staff struct {
+	ID          string  `json:"id"`
+	FirstName   string  `json:"first_name"`
+	LastName    string  `json:"last_name"`
+	PhoneNumber string  `json:"phone_number"`
+	DateOfBirth time.Time  `json:"date_of_birth"`
+	NationalID  int     `json:"national_id"`
+	Address     string  `json:"address"`
+	Biography   *string `json:"biography,omitempty"`
+	Photo       *string `json:"photo,omitempty"`
+	Department  string  `json:"department"`
+	Specialty   string  `json:"specialty"`
+	StartDate   time.Time  `json:"start_date"`
+	EndDate     *time.Time `json:"end_date,omitempty"`
+	Status      string  `json:"status"`
+	Role        string  `json:"role"`
+	Password    string `json:"password"`
+	Email       string  `json:"email"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Experience string `json:"experience"`
+}
+
+// SELECT orders.*, products.* 
+//              FROM orders 
+//              INNER JOIN products 
+//              ON orders.product_reference = products.product_reference
 func GetAppointments(c *fiber.Ctx) error {
 	db := database.GetDB()
 	rows, err := db.Query(context.Background(), `
-		SELECT id, patient_national_id, patient_name, patient_address, patient_phone_number, 
-			   patient_email, appointment_date, appointment_time, department, staff_id, 
-			   notes, status, created_at, updated_at 
-		FROM appointments
+		SELECT appointments.id, appointments.patient_national_id, appointments.patient_name, appointments.patient_address, appointments.patient_phone_number, 
+			   appointments.patient_email, appointments.appointment_date, appointments.appointment_time, appointments.department, appointments.staff_id, 
+			   appointments.notes, appointments.status, appointments.created_at, appointments.updated_at,
+			   staff.first_name, staff.last_name, staff.phone_number, staff.photo, staff.department, staff.specialty, 
+			   staff.role, staff.email, staff.status, staff.experience
+		FROM appointments INNER JOIN staff ON appointments.staff_id = staff.id
 	`)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -41,18 +70,40 @@ func GetAppointments(c *fiber.Ctx) error {
 	}
 	defer rows.Close()
 
-	var appointment []Appointment
+	var appointments []map[string]interface{}
 	for rows.Next() {
 		var a Appointment
-		if err := rows.Scan(&a.ID, &a.PatientNationalID, &a.PatientName, &a.PatientAddress, &a.PatientPhoneNumber, &a.PatientEmail, &a.AppointmentDate, &a.AppointmentTime, &a.Department, &a.StaffID, &a.Notes, &a.Status, &a.CreatedAt, &a.UpdatedAt); err != nil {
+		var s Staff
+		if err := rows.Scan(
+			&a.ID, &a.PatientNationalID, &a.PatientName, &a.PatientAddress, &a.PatientPhoneNumber, 
+			&a.PatientEmail, &a.AppointmentDate, &a.AppointmentTime, &a.Department, &a.StaffID, 
+			&a.Notes, &a.Status, &a.CreatedAt, &a.UpdatedAt,
+			&s.FirstName, &s.LastName, &s.PhoneNumber, &s.Photo, &s.Department, &s.Specialty,
+			&s.Role, &s.Email, &s.Status, &s.Experience); err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
 			})
 		}
-		appointment = append(appointment, a)
+
+		appointment := map[string]interface{}{
+			"appointment": a,
+			"staff": map[string]interface{}{
+				"first_name": s.FirstName,
+				"last_name":  s.LastName,
+				"phone_number": s.PhoneNumber,
+				"photo":      s.Photo,
+				"department": s.Department,
+				"specialty":  s.Specialty,
+				"role":       s.Role,
+				"email":      s.Email,
+				"status":     s.Status,
+				"experience": s.Experience,
+			},
+		}
+		appointments = append(appointments, appointment)
 	}
 
-	return c.JSON(appointment)
+	return c.JSON(appointments)
 }
 
 func AddAppointment(c *fiber.Ctx) error {
@@ -115,11 +166,20 @@ func GetAppointmentByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
 	var a Appointment
+	var s Staff
 	err := db.QueryRow(context.Background(), `
-		SELECT id, patient_national_id, patient_name, patient_address, patient_phone_number, 
-			   patient_email, appointment_date, appointment_time, department, staff_id, 
-			   notes, status, created_at, updated_at 
-		FROM appointments WHERE id = $1`, id).Scan(&a.ID, &a.PatientNationalID, &a.PatientName, &a.PatientAddress, &a.PatientPhoneNumber, &a.PatientEmail, &a.AppointmentDate, &a.AppointmentTime, &a.Department, &a.StaffID, &a.Notes, &a.Status, &a.CreatedAt, &a.UpdatedAt)
+		SELECT appointments.id, appointments.patient_national_id, appointments.patient_name, appointments.patient_address, appointments.patient_phone_number, 
+			appointments.patient_email, appointments.appointment_date, appointments.appointment_time, appointments.department, appointments.staff_id, 
+			appointments.notes, appointments.status, appointments.created_at, appointments.updated_at,
+			staff.first_name, staff.last_name, staff.phone_number, staff.photo, staff.department, staff.specialty, 
+			staff.role, staff.email, staff.status, staff.experience
+		FROM appointments INNER JOIN staff ON appointments.staff_id = staff.id WHERE appointments.id = $1`, id).Scan(
+		&a.ID, &a.PatientNationalID, &a.PatientName, &a.PatientAddress, &a.PatientPhoneNumber, &a.PatientEmail, 
+		&a.AppointmentDate, &a.AppointmentTime, &a.Department, &a.StaffID, &a.Notes, &a.Status, &a.CreatedAt, 
+		&a.UpdatedAt,
+		&s.FirstName, &s.LastName, &s.PhoneNumber, &s.Photo, &s.Department, &s.Specialty, 
+		&s.Role, &s.Email, &s.Status, &s.Experience,
+	)
 	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": "Appointment not found",
@@ -127,5 +187,34 @@ func GetAppointmentByID(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(a)
+	appointment := map[string]interface{}{
+		"id":                  a.ID,
+		"patient_national_id": a.PatientNationalID,
+		"patient_name":        a.PatientName,
+		"patient_address":     a.PatientAddress,
+		"patient_phone_number": a.PatientPhoneNumber,
+		"patient_email":       a.PatientEmail,
+		"appointment_date":    a.AppointmentDate,
+		"appointment_time":    a.AppointmentTime,
+		"department":          a.Department,
+		"staff_id":            a.StaffID,
+		"notes":               a.Notes,
+		"status":              a.Status,
+		"created_at":          a.CreatedAt,
+		"updated_at":          a.UpdatedAt,
+		"staff": map[string]interface{}{
+			"first_name":  s.FirstName,
+			"last_name":   s.LastName,
+			"phone_number": s.PhoneNumber,
+			"photo":       s.Photo,
+			"department":  s.Department,
+			"specialty":   s.Specialty,
+			"role":        s.Role,
+			"email":       s.Email,
+			"status":      s.Status,
+			"experience":  s.Experience,
+		},
+	}
+
+	return c.JSON(appointment)
 }
