@@ -1,20 +1,19 @@
 # Step 1: Build Stage
-FROM golang:1.20.10-alpine AS builder
+FROM golang:1.22.2-alpine AS builder
 
 WORKDIR /app
 
 # Copy go modules files first (better caching)
 COPY go.mod go.sum ./
 
-# Download dependencies
-RUN go mod download
+# Download dependencies and update go.mod
+RUN go mod download && go mod tidy
 
 # Copy source code
 COPY . .
 
 # Build the Go app
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o web-service .
-
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o web-service .
 
 # Step 2: Run Stage (Uses Small Final Image)
 FROM alpine:latest
