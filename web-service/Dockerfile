@@ -23,6 +23,9 @@ WORKDIR /app
 # Copy built binary from builder stage
 COPY --from=builder /app/web-service .
 
+# Copy .env file from the host to the final image
+COPY .env .
+
 # Expose the application port
 EXPOSE 8000
 
