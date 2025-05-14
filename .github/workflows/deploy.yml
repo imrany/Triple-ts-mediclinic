@@ -15,12 +15,12 @@ jobs:
       uses: actions/checkout@v3
 
     - name: SSH into VPS & Deploy
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.VPS_HOST }}
         username: ${{ secrets.VPS_USER }}
         key: ${{ secrets.VPS_SSH_KEY }}
-        passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }} # Add this line
+        passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }} 
         script: |
           # Navigate to web-service repo & deploy
           cd ~/Triple-ts-mediclinic
