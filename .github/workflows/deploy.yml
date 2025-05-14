@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18  
+
     - name: Checkout Code
       uses: actions/checkout@v3
 
@@ -25,8 +30,7 @@ jobs:
           cd ~/Triple-ts-mediclinic
           git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-mediclinic.git main
 
-          
-          # Deploy Triple-ts-mediclinic frontend
+          # Deploy frontend
           cd ~/Triple-ts-mediclinic/client
           make
 
@@ -47,4 +51,4 @@ jobs:
           sudo docker build -t web-service .
 
           #Running web-service image
-          sudo docker run --name web-service -p 8000:8000 web-service
+          sudo docker run -d --name web-service -p 8000:8000 web-service
