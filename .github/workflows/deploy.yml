@@ -25,6 +25,14 @@ jobs:
           cd ~/Triple-ts-mediclinic
           git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-mediclinic.git main
 
+          
+          # Deploy Triple-ts-mediclinic frontend
+          cd ~/Triple-ts-mediclinic/client
+          make
+
+          # Restart Nginx safely
+          sudo systemctl restart nginx || sudo nginx -t
+
           # Stop & remove existing containers
           sudo docker stop web-service || true
           sudo docker rm web-service || true
@@ -40,10 +48,3 @@ jobs:
 
           #Running web-service image
           sudo docker run --name web-service -p 8000:8000 web-service
-
-          # Deploy Triple-ts-mediclinic frontend
-          cd ~/Triple-ts-mediclinic/client
-          make
-
-          # Restart Nginx safely
-          sudo systemctl restart nginx || sudo nginx -t
