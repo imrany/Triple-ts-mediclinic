@@ -27,7 +27,7 @@ jobs:
           git pull origin main
 
           cd ~/Triple-ts-mediclinic/web-service
-          docker-compose up -d --no-deps --build web-service
+          sudo docker-compose up -d --no-deps --build web-service
 
           # Navigate to React app repo, build, and deploy
           cd ~/Triple-ts-mediclinic/client
