@@ -35,21 +35,15 @@ jobs:
           # Build new image
           cd ~/Triple-ts-mediclinic/web-service
           
-          # Rebuild images and deploy multiple containers
-          sudo docker-compose up -d --scale web-service=3 --build
+          # Rebuild image
+          sudo docker build -t web-service .
 
-          # Ensure Node.js & npm exist before frontend build
-          if ! command -v npm &> /dev/null; then
-            sudo apt update
-            sudo apt install nodejs npm -y
-          fi
+          #Running web-service image
+          sudo docker run -p 8000:8000 web-service
 
-          # Deploy React frontend
+          # Deploy Triple-ts-mediclinic frontend
           cd ~/Triple-ts-mediclinic/client
-          npm install
-          npm run build
-          sudo rm -rf /var/www/triple-ts-mediclinic
-          sudo mv dist /var/www/triple-ts-mediclinic
+          make
 
           # Restart Nginx safely
           sudo systemctl restart nginx || sudo nginx -t

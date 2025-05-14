@@ -1,7 +1,12 @@
-all: delete build move
+all: install build delete move
+
+install:
+	echo "Installing project dependencies..."
+	$(shell which npm > /dev/null 2>&1 || echo "Error: npm is not installed or not in PATH")
+	npm install
 
 delete: 
-	rm -rf /var/www/triple-ts-mediclinic
+	sudo rm -rf /var/www/triple-ts-mediclinic
 
 build:
 	echo "Building project..."
@@ -9,4 +14,4 @@ build:
 	npm run build
 
 move:
-	mv ./dist /var/www/triple-ts-mediclinic
+	sudo mv ./dist /var/www/triple-ts-mediclinic
