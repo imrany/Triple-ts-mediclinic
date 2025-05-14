@@ -8,7 +8,6 @@ import LandingPage from './pages/LandingPage';
 import ForgotPassword from './pages/ForgotPassword';
 import Layout from './layout/Layout';
 import { Toaster } from "@/components/ui/sonner";
-import Account from './pages/Account';
 import Laboratory from './pages/Laboratory';
 import Doctors from './pages/Doctors';
 import Appointments from './pages/Appointments';
@@ -187,7 +186,6 @@ function App() {
             element={isAuthenticated ? <Layout /> : <Navigate to="/signin" />}
           >
             <Route index element={<Dashboard />} />
-            <Route path="account" element={<Account />} />
             <Route path="patients" element={<Patients />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="doctors" element={<Doctors />} />

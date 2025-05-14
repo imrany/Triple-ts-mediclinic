@@ -59,23 +59,32 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
 
   if (!isNewAppointmentModalOpen) return null;
 
-  const validateEmail = (email: string): boolean => {
+  const validateEmailFormat = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const isValid = emailRegex.test(email);
+    return emailRegex.test(email);
+  };
+
+  const validatePhoneFormat = (phone: string): boolean => {
+    const phoneRegex = /^\+?[0-9]{10,14}$/;
+    return phoneRegex.test(phone);
+  };
+  
+  const validateEmail = (email: string): boolean => {
+    const isValid = validateEmailFormat(email);
     setEmailError(isValid ? "" : "Please enter a valid email address");
     return isValid;
   };
 
   const validatePhone = (phone: string): boolean => {
-    const phoneRegex = /^\+?[0-9]{10,14}$/;
-    const isValid = phoneRegex.test(phone);
+    const isValid = validatePhoneFormat(phone);
     setPhoneError(isValid ? "" : "Please enter a valid phone number (10-14 digits)");
     return isValid;
   };
 
   const validatePatientForm = (): boolean => {
-    const isEmailValid = validateEmail(patientEmail);
-    const isPhoneValid = validatePhone(patientPhoneNumber);
+    // Don't call validateEmail/validatePhone directly here, as they set state and cause re-renders
+    const isEmailValid = validateEmailFormat(patientEmail);
+    const isPhoneValid = validatePhoneFormat(patientPhoneNumber);
 
     return !!(
       patientName.trim() &&
@@ -179,14 +188,14 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
     }
   }
 
-  const filteredDoctors = doctors.filter((doctor: Staff) => {
+  const filteredDoctors = doctors && Array.isArray(doctors) ? doctors.filter((doctor: Staff) => {
     return doctor.status === "active" && 
            (!department || doctor.department === department);
-  });
+  }) : [];
 
   return (
     <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50"
       onClick={handleModalBackdropClick}
     >
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-lg" onClick={e => e.stopPropagation()}>
@@ -205,16 +214,20 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
         <form onSubmit={handleSubmitAppointment} className="space-y-4">
           <div className="flex border-b border-gray-300 mb-4">
             <button
-              type='button'
+              type="button"
               className={`flex-1 py-2 text-center font-medium hover:border-gray-300 text-gray-700 border-b-2 ${activeTab === "patient" ? "border-blue-500" : "border-transparent"}`}
               onClick={() => setActiveTab('patient')}
             >
               Patient Info
             </button>
             <button
-              type='button'
+              type="button"
               className={`flex-1 py-2 text-center font-medium hover:border-gray-300 text-gray-700 border-b-2 ${activeTab === "appointment" ? "border-blue-500" : "border-transparent"}`}
-              onClick={() => validatePatientForm() && setActiveTab('appointment')}
+              onClick={() => {
+                if (validatePatientForm()) {
+                  setActiveTab('appointment');
+                }
+              }}
               disabled={!validatePatientForm()}
             >
               Appointment Details
@@ -311,8 +324,12 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                 <button
                   type="button"
                   disabled={!validatePatientForm()}
-                  onClick={() => validatePatientForm() && setActiveTab('appointment')}
-                  className={`px-4 py-2 ${!validatePatientForm() ? "cursor-not-allowed bg-gray-600 hover:bg-gray-600" : "bg-blue-500 cursor-pointer hover:bg-blue-600"} text-white rounded-lg`}
+                  onClick={() => {
+                    if (validatePatientForm()) {
+                      setActiveTab('appointment');
+                    }
+                  }}
+                  className={`px-4 py-2 ${!validatePatientForm() ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600 cursor-pointer"} text-white rounded-lg`}
                 >
                   Next
                 </button>
@@ -358,9 +375,9 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                   required
                 >
                   <option value="">Select Department</option>
-                  {departments.map((dept: string, index: number) => (
+                  {departments && Array.isArray(departments) ? departments.map((dept: string, index: number) => (
                     <option key={index} value={dept}>{dept}</option>
-                  ))}
+                  )) : null}
                 </select>
               </div>
 
@@ -406,7 +423,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
                 <button
                   type="submit"
                   disabled={isLoading || !validateAppointmentDetails()}
-                  className={`px-4 py-2 ${isLoading ? "bg-blue-400" : "bg-blue-500"} text-white rounded-lg hover:bg-blue-600 ${!validateAppointmentDetails() ? "cursor-not-allowed opacity-50" : ""}`}
+                  className={`px-4 py-2 ${isLoading ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"} text-white rounded-lg ${!validateAppointmentDetails() ? "opacity-50 cursor-not-allowed" : ""}`}
                 >
                   {isLoading ? "Scheduling..." : "Schedule Appointment"}
                 </button>

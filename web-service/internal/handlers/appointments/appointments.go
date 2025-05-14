@@ -62,6 +62,7 @@ func GetAppointments(c *fiber.Ctx) error {
 			   staff.first_name, staff.last_name, staff.phone_number, staff.photo, staff.department, staff.specialty, 
 			   staff.role, staff.email, staff.status, staff.experience
 		FROM appointments INNER JOIN staff ON appointments.staff_id = staff.id
+		ORDER BY appointments.created_at
 	`)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

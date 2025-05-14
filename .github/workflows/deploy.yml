@@ -1,5 +1,5 @@
 # .github/workflows/deploy.yml
-name: Deploy Web-Service & React App
+name: Deploy Web-Service & Triple-ts-mediclinic
 
 on:
   push:
@@ -26,9 +26,7 @@ jobs:
           git pull origin main
 
           cd ~/Triple-ts-mediclinic/web-service
-          docker-compose down
-          docker-compose build --no-cache
-          docker-compose up -d
+          docker-compose up -d --no-deps --build web-service
 
           # Navigate to React app repo, build, and deploy
           cd ~/Triple-ts-mediclinic/client
