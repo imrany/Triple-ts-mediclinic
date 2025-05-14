@@ -23,7 +23,7 @@ jobs:
         script: |
           # Pull latest code
           cd ~/Triple-ts-mediclinic
-          git pull git@github.com:imrany/Triple-mediclinic.git main
+          git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-mediclinic.git main
 
           # Stop & remove existing containers
           sudo docker stop web-service || true
@@ -39,7 +39,7 @@ jobs:
           sudo docker build -t web-service .
 
           #Running web-service image
-          sudo docker run -p 8000:8000 web-service
+          sudo docker run --name web-service -p 8000:8000 web-service
 
           # Deploy Triple-ts-mediclinic frontend
           cd ~/Triple-ts-mediclinic/client
