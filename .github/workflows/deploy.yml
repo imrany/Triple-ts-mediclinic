@@ -32,6 +32,8 @@ jobs:
 
           # Deploy frontend
           cd ~/Triple-ts-mediclinic/client
+          export NVM_DIR=~/.nvm
+          source ~/.nvm/nvm.sh
           make
 
           # Restart Nginx safely
