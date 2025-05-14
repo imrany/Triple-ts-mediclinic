@@ -436,4 +436,4 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
   );
 };
 
-export default NewAppointmentModal;
+export default NewAppointmentModal
