@@ -1,10 +1,9 @@
-# .github/workflows/deploy.yml
 name: Deploy Web-Service & Triple-ts-mediclinic
 
 on:
   push:
     branches:
-      - main  # Change to the branch that triggers deployment
+      - main
 
 jobs:
   deploy:
@@ -22,19 +21,35 @@ jobs:
         key: ${{ secrets.VPS_SSH_KEY }}
         passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }} 
         script: |
-          # Navigate to web-service repo & deploy
+          # Pull latest code
           cd ~/Triple-ts-mediclinic
-           git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-mediclinic.git main
+          git pull git@github.com:imrany/Triple-mediclinic.git main
 
+          # Stop & remove existing containers
+          sudo docker stop web-service || true
+          sudo docker rm web-service || true
+
+          # Remove old image
+          sudo docker rmi web-service || true
+
+          # Build new image
           cd ~/Triple-ts-mediclinic/web-service
-          sudo docker-compose up -d --no-deps --build web-service
+          
+          # Rebuild images and deploy multiple containers
+          sudo docker-compose up -d --scale web-service=3 --build
 
-          # Navigate to React app repo, build, and deploy
+          # Ensure Node.js & npm exist before frontend build
+          if ! command -v npm &> /dev/null; then
+            sudo apt update
+            sudo apt install nodejs npm -y
+          fi
+
+          # Deploy React frontend
           cd ~/Triple-ts-mediclinic/client
           npm install
           npm run build
           sudo rm -rf /var/www/triple-ts-mediclinic
           sudo mv dist /var/www/triple-ts-mediclinic
 
-          # Restart Nginx to apply changes
-          sudo systemctl restart nginx
+          # Restart Nginx safely
+          sudo systemctl restart nginx || sudo nginx -t
