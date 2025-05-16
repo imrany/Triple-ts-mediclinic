@@ -1,3 +1,4 @@
+import AlertBar from '@/components/AlertBar';
 import { useAppContext } from '@/context';
 import useIsMobile from '@/hooks/useIsMobile';
 import { ReactNode, useState } from 'react';
@@ -31,6 +32,7 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 font-[family-name:var(--font-geist-sans)] no-scrollbar">
       {/* Header */}
+      <AlertBar/>
       {isMobile && (
         <header className="bg-white shadow-md fixed top-0 left-0 right-0 z-10">
           <div className="flex items-center justify-between px-4 py-3 md:px-6">

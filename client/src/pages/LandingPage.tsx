@@ -12,7 +12,6 @@ import {
     Info,
     HelpCircle,
     LogIn,
-    AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
@@ -20,12 +19,11 @@ import { Staff } from "@/types"
 import { useAppContext } from "@/context";
 import NewAppointmentModal from "@/components/Modals/NewAppointment";
 import Hero from "@/components/Hero";
-import useIsMobile from "@/hooks/useIsMobile";
 import NavBar from "@/components/NavBar";
+import AlertBar from "@/components/AlertBar";
 
 export default function LandingPage() {
     const {doctors, departments }=useAppContext()
-    const isMobile=useIsMobile()
     async function fetchAppointments(){
 
     }
@@ -33,28 +31,7 @@ export default function LandingPage() {
         <div className="font-[family-name:var(--font-geist-sans)] bg-white min-h-screen">
             {/* Header with top navigation */}
             <header>
-                {/* Top Navigation - Dark pink */}
-                <div className="bg-white py-1">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-center">
-                            <div className="flex items-center space-x-4 text-sm">
-                                <div className="hover:text-pink-200 flex items-center gap-2">
-                                    <AlertTriangle width={16} height={16}/>
-                                    {!isMobile?(
-                                        <p className="text-center">
-                                            System service unavailable. If you are the owner for contract renegotiation, contact our developer <a className="text-blue-500 underline" href="mailto:imranmat254@gmail.com?subject=Triple TS MediClinic Service Inquiry">here</a>
-                                        </p>
-                                    ):(
-                                        <p className="text-sm text-center">
-                                            Service unavailable. contact our developer <a className="text-blue-500 underline" href="mailto:imranmat254@gmail.com?subject=Triple TS MediClinic Service Inquiry">here</a>
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <AlertBar/>
                 <div className="bg-pink-900 py-2">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between text-white">
