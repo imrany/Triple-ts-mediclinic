@@ -1,411 +1,3 @@
-// import { Link } from "react-router-dom";
-// import {
-//     Calendar,
-//     Users,
-//     PhoneCall,
-//     ArrowRight,
-//     Clock,
-//     Star,
-//     Shield,
-//     MapPin,
-//     Mail,
-// } from "lucide-react";
-// import { Button } from "@/components/ui/button";
-// import Footer from "@/components/Footer";
-// import NavBar from "@/components/NavBar";
-// import Hero from "@/components/Hero";
-// import { doctors } from "@/data";
-
-// type Doctor={
-//     id: string;
-//     name: string;
-//     specialization: string;
-//     bio: string;
-//     image: string;
-// }
-
-// export default function LandingPage() {
-//     return (
-//         <div className="font-[family-name:var(--font-geist-sans)] bg-pink-50 min-h-screen">
-//             <NavBar/>
-//             <Hero/>
-
-//             {/* Key Features */}
-//             <div id="services" className="py-16 bg-white">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                     <div className="text-center mb-12">
-//                         <h2 className="text-3xl font-bold text-gray-900">Our Services</h2>
-//                         <p className="mt-4 text-lg text-gray-600">
-//                             We offer a wide range of healthcare services tailored to meet your needs.
-//                         </p>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//                         {/* Feature 1 */}
-//                         {/* Sulturing - 1500, Suturing removal - 500, Implant - removal - 500,
-//                                 Wound Cleaning/dressing - minor 200 : extensive 500, implant insertatiion - 700, injections - 200, Circumcision - 2000. */}
-//                         <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-//                             <Calendar className="h-12 w-12 text-pink-800 mb-4" />
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Online Appointments</h3>
-//                             <p className="text-gray-600">
-//                                 Schedule appointments with ease through our intuitive online booking system.
-//                                 Choose your preferred doctor and time slot.
-//                             </p>
-//                         </div>
-
-//                         {/* Feature 2 */}
-//                         <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-//                             <Users className="h-12 w-12 text-pink-800 mb-4" />
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Expert Specialists</h3>
-//                             <p className="text-gray-600">
-//                                 Access to a diverse team of specialist doctors across various medical disciplines
-//                                 to provide the care you need.
-//                             </p>
-//                         </div>
-
-//                         {/* Feature 3 */}
-//                         <div className="bg-pink-50 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow">
-//                             <Shield className="h-12 w-12 text-pink-800 mb-4" />
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Digital Records</h3>
-//                             <p className="text-gray-600">
-//                                 Secure access to your medical history, test results, and
-//                                 prescriptions anytime, anywhere through our patient portal.
-//                             </p>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* How It Works */}
-//             <div className="py-16 bg-pink-50">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                     <div className="text-center mb-12">
-//                         <h2 className="text-3xl font-bold text-gray-900">How It Works</h2>
-//                         <p className="mt-4 text-lg text-gray-600">
-//                             Your journey to better health in three simple steps
-//                         </p>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//                         {/* Step 1 */}
-//                         <div className="flex flex-col items-center text-center">
-//                             <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-//                                 1
-//                             </div>
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Create Account</h3>
-//                             <p className="text-gray-600">
-//                                 Sign up and complete your profile with your medical history and insurance information.
-//                             </p>
-//                         </div>
-
-//                         {/* Step 2 */}
-//                         <div className="flex flex-col items-center text-center">
-//                             <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-//                                 2
-//                             </div>
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Book Appointment</h3>
-//                             <p className="text-gray-600">
-//                                 Browse through our specialists and book an appointment at your convenience.
-//                             </p>
-//                         </div>
-
-//                         {/* Step 3 */}
-//                         <div className="flex flex-col items-center text-center">
-//                             <div className="w-16 h-16 bg-pink-800 text-white rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-//                                 3
-//                             </div>
-//                             <h3 className="text-xl font-semibold text-gray-900 mb-2">Receive Care</h3>
-//                             <p className="text-gray-600">
-//                                 Visit our facility or connect through telehealth for your consultation and follow-up care.
-//                             </p>
-//                         </div>
-//                     </div>
-
-//                     <div className="mt-12 text-center">
-//                         <Link to="/signup">
-//                             <Button className="bg-pink-800 hover:bg-pink-700 text-white">
-//                                 Start Your Health Journey
-//                                 <ArrowRight className="ml-2 h-4 w-4" />
-//                             </Button>
-//                         </Link>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Doctors Section */}
-//             <div id="doctors" className="py-16 bg-white">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                     <div className="text-center mb-12">
-//                         <h2 className="text-3xl font-bold text-gray-900">Our Doctors</h2>
-//                         <p className="mt-4 text-lg text-gray-600">
-//                             Meet our team of experienced healthcare professionals
-//                         </p>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-//                         {doctors&&doctors.map((doctor:Doctor)=>(
-//                         <div className="bg-pink-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-//                             <img src={doctor.image} alt={doctor.name} className="w-full h-64 object-cover" />
-//                             <div className="p-4">
-//                                 <h3 className="text-xl font-semibold text-gray-900">{doctor.name}</h3>
-//                                 <p className="text-pink-800 font-medium">{doctor.specialization}</p>
-//                                 <p className="text-gray-600 mt-2">{doctor.bio}</p>
-//                             </div>
-//                         </div>
-//                         ))}
-//                     </div>
-
-//                     <div className="mt-12 text-center">
-//                         <Button variant="outline" className="border-pink-800 text-pink-800 hover:bg-pink-50">
-//                             View All Specialists
-//                             <ArrowRight className="ml-2 h-4 w-4" />
-//                         </Button>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Testimonials */}
-//             <div id="testimonials" className="py-16 bg-pink-50">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                     <div className="text-center mb-12">
-//                         <h2 className="text-3xl font-bold text-gray-900">Patient Testimonials</h2>
-//                         <p className="mt-4 text-lg text-gray-600">
-//                             Hear what our patients say about their experience
-//                         </p>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-//                         {/* Testimonial 1 */}
-//                         <div className="bg-white p-6 rounded-lg shadow">
-//                             <div className="flex items-center mb-4">
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                             </div>
-//                             <p className="text-gray-600 italic mb-4">
-//                                 "The online appointment system saved me so much time. Dr. Johnson was thorough and caring,
-//                                 and I had access to my test results the same day. Exceptional service!"
-//                             </p>
-//                             <div className="flex items-center">
-//                                 <div className="mr-4">
-//                                     <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
-//                                         RB
-//                                     </div>
-//                                 </div>
-//                                 <div>
-//                                     <h4 className="font-semibold text-gray-900">Robert Brown</h4>
-//                                     <p className="text-sm text-gray-500">Patient since 2023</p>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {/* Testimonial 2 */}
-//                         <div className="bg-white p-6 rounded-lg shadow">
-//                             <div className="flex items-center mb-4">
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                             </div>
-//                             <p className="text-gray-600 italic mb-4">
-//                                 "The medical team at MediCare truly listens. They took the time to understand my concerns
-//                                 and developed a treatment plan tailored specifically for me. I'm grateful for their care."
-//                             </p>
-//                             <div className="flex items-center">
-//                                 <div className="mr-4">
-//                                     <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
-//                                         LT
-//                                     </div>
-//                                 </div>
-//                                 <div>
-//                                     <h4 className="font-semibold text-gray-900">Lisa Thompson</h4>
-//                                     <p className="text-sm text-gray-500">Patient since 2022</p>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {/* Testimonial 3 */}
-//                         <div className="bg-white p-6 rounded-lg shadow">
-//                             <div className="flex items-center mb-4">
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                                 <Star className="h-5 w-5 text-yellow-400" />
-//                             </div>
-//                             <p className="text-gray-600 italic mb-4">
-//                                 "Having all my medical records in one secure place has been a game-changer.
-//                                 The doctors are excellent, and the staff is always helpful and friendly."
-//                             </p>
-//                             <div className="flex items-center">
-//                                 <div className="mr-4">
-//                                     <div className="h-10 w-10 rounded-full bg-pink-200 flex items-center justify-center text-pink-800 font-bold">
-//                                         MK
-//                                     </div>
-//                                 </div>
-//                                 <div>
-//                                     <h4 className="font-semibold text-gray-900">Mark Kim</h4>
-//                                     <p className="text-sm text-gray-500">Patient since 2021</p>
-//                                 </div>
-//                             </div>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Call to Action */}
-//             <div className="py-16 bg-pink-800 text-white">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-//                     <h2 className="text-3xl font-bold mb-4">Ready to prioritize your health?</h2>
-//                     <p className="text-lg mb-8 max-w-3xl mx-auto">
-//                         Join thousands of satisfied patients who have transformed their healthcare experience with MediCare.
-//                     </p>
-//                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-//                         {/* <Link to="/signup">
-//                             <Button className="bg-white text-pink-800 hover:bg-gray-100 px-6 py-3 text-lg">
-//                                 Create Account
-//                             </Button>
-//                         </Link> */}
-//                         <Link to="/learn-more">
-//                             <Button variant="outline" className="border-white bg-pink-700 text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-lg">
-//                                 Learn More
-//                             </Button>
-//                         </Link>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Contact Section */}
-//             <div id="contact" className="py-16 bg-white">
-//                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//                     <div className="text-center mb-12">
-//                         <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
-//                         <p className="mt-4 text-lg text-gray-600">
-//                             Have questions? Our team is here to help
-//                         </p>
-//                     </div>
-
-//                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-//                         {/* Contact Info */}
-//                         <div className="lg:col-span-1">
-//                             <div className="space-y-8">
-//                                 <div className="flex items-start">
-//                                     <div className="flex-shrink-0">
-//                                         <PhoneCall className="h-6 w-6 text-pink-800" />
-//                                     </div>
-//                                     <div className="ml-3">
-//                                         <h3 className="text-lg font-medium text-gray-900">Phone</h3>
-//                                         <p className="mt-1 text-gray-600">+0112782133</p>
-//                                         <p className="text-gray-600">Monday to Friday, 8am to 6pm</p>
-//                                     </div>
-//                                 </div>
-//                                 <div className="flex items-start">
-//                                     <div className="flex-shrink-0">
-//                                         <Mail className="h-6 w-6 text-pink-800" />
-//                                     </div>
-//                                     <div className="ml-3">
-//                                         <h3 className="text-lg font-medium text-gray-900">Email</h3>
-//                                         <p className="mt-1 text-gray-600">triple-ts-mediclinic@gmail.com</p>
-//                                         <p className="text-gray-600">We'll respond within 24 hours</p>
-//                                     </div>
-//                                 </div>
-//                                 <div className="flex items-start">
-//                                     <div className="flex-shrink-0">
-//                                         <Clock className="h-6 w-6 text-pink-800" />
-//                                     </div>
-//                                     <div className="ml-3">
-//                                         <h3 className="text-lg font-medium text-gray-900">Hours</h3>
-//                                         <p className="mt-1 text-gray-600">Monday - Friday: 8:00 AM - 8:00 PM</p>
-//                                         <p className="text-gray-600">Saturday: 9:00 AM - 5:00 PM</p>
-//                                         <p className="text-gray-600">Sunday: Closed</p>
-//                                     </div>
-//                                 </div>
-//                                 <div className="flex items-start">
-//                                     <div className="flex-shrink-0">
-//                                         <MapPin className="h-6 w-6 text-pink-800" />
-//                                     </div>
-//                                     <div className="ml-3">
-//                                         <h3 className="text-lg font-medium text-gray-900">Location</h3>
-//                                         <p className="mt-1 text-gray-600">P.O Box 302-60400. CHUKA PLOT 834</p>
-//                                         <p className="text-gray-600">Mitheru, Tharaka Nithi County</p>
-//                                     </div>
-//                                 </div>
-//                             </div>
-//                         </div>
-
-//                         {/* Contact Form */}
-//                         <div className="lg:col-span-2 bg-pink-50 p-6 rounded-lg shadow-sm">
-//                             <form className="space-y-6">
-//                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//                                     <div>
-//                                         <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-//                                             Full Name
-//                                         </label>
-//                                         <input
-//                                             type="text"
-//                                             id="name"
-//                                             name="name"
-//                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
-//                                             placeholder="John Doe"
-//                                         />
-//                                     </div>
-//                                     <div>
-//                                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-//                                             Email Address
-//                                         </label>
-//                                         <input
-//                                             type="email"
-//                                             id="email"
-//                                             name="email"
-//                                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
-//                                             placeholder="john@example.com"
-//                                         />
-//                                     </div>
-//                                 </div>
-//                                 <div>
-//                                     <label htmlFor="subject" className="block text-sm font-medium text-gray-700">
-//                                         Subject
-//                                     </label>
-//                                     <input
-//                                         type="text"
-//                                         id="subject"
-//                                         name="subject"
-//                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
-//                                         placeholder="How can we help?"
-//                                     />
-//                                 </div>
-//                                 <div>
-//                                     <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-//                                         Message
-//                                     </label>
-//                                     <textarea
-//                                         id="message"
-//                                         name="message"
-//                                         rows={4}
-//                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-800 focus:ring focus:ring-pink-200 focus:ring-opacity-50 p-2"
-//                                         placeholder="Tell us more about your inquiry..."
-//                                     />
-//                                 </div>
-//                                 <div>
-//                                     <Button type="submit" className="w-full bg-pink-800 hover:bg-pink-700 text-white py-2">
-//                                         Send Message
-//                                     </Button>
-//                                 </div>
-//                             </form>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-
-//            <Footer/>
-//         </div>
-//     )
-// }
-
-
 import { Link } from "react-router-dom";
 import {
     Calendar,
@@ -428,11 +20,15 @@ import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { Staff } from "@/types"
 import { useAppContext } from "@/context";
+import NewAppointmentModal from "@/components/Modals/NewAppointment";
 
 export default function LandingPage() {
-    const {doctors}=useAppContext()
+    const {doctors, setIsNewAppointmentModalOpen, departments }=useAppContext()
+    async function fetchAppointments(){
+
+    }
     return (
-        <div className="font-sans bg-white min-h-screen">
+        <div className="font-[family-name:var(--font-geist-sans)] bg-white min-h-screen">
             {/* Header with top navigation */}
             <header>
                 {/* Top Navigation - Dark pink */}
@@ -471,7 +67,7 @@ export default function LandingPage() {
                                                 TTS
                                             </div>
                                             <div>
-                                                <h1 className="text-xl font-bold text-pink-800">Triple-TS</h1>
+                                                <h1 className="text-xl font-bold text-pink-800">Triple TS</h1>
                                                 <p className="text-sm text-gray-600">MediClinic</p>
                                             </div>
                                         </div>
@@ -483,9 +79,9 @@ export default function LandingPage() {
                                 <a href="#services" className="font-medium text-gray-600 hover:text-pink-600">Services</a>
                                 <a href="#doctors" className="font-medium text-gray-600 hover:text-pink-600">Doctors</a>
                                 <a href="#contact" className="font-medium text-gray-600 hover:text-pink-600">Contact</a>
-                                <Link to="/appointment" className="bg-pink-800 text-white px-4 py-2 rounded hover:bg-pink-700 transition">
+                                <button onClick={()=>setIsNewAppointmentModalOpen(true)} className="bg-pink-800 text-white px-4 py-2 rounded hover:bg-pink-700 transition">
                                     Book Appointment
-                                </Link>
+                                </button>
                             </div>
                             <div className="md:hidden">
                                 <button className="text-gray-600 hover:text-pink-800">
@@ -501,19 +97,18 @@ export default function LandingPage() {
             <div className="bg-pink-900 py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="md:flex md:items-center md:justify-between">
-                        <div className="md:w-1/2 text-white">
-                            <h1 className="text-4xl font-bold mb-4">Welcome to Triple-TS MediClinic</h1>
-                            <p className="text-xl mb-8 text-pink-100">
+                        <div className="md:w-1/2 pr-2 text-white">
+                            <h1 className="text-4xl font-bold mb-4">Welcome to Triple TS MediClinic</h1>
+                            <p className="text-lg mb-8 text-pink-100">
                                 Your trusted partner for quality healthcare services in Tharaka Nithi County
                             </p>
                             <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                                <Link to="/appointment">
-                                    <Button className="bg-white text-pink-800 hover:bg-pink-50 px-6 py-3 text-base font-medium rounded">
-                                        Book Appointment
-                                    </Button>
-                                </Link>
+                                <Button onClick={()=>setIsNewAppointmentModalOpen(true)} className="bg-white text-pink-800 hover:bg-pink-50 px-6 py-3 text-base font-medium rounded">
+                                    Book Appointment
+                                </Button>
+                               
                                 <a href="#services">
-                                    <Button variant="outline" className="border-white text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-base font-medium rounded">
+                                    <Button variant="outline" className="bg-pink-800 text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-base font-medium rounded">
                                         Our Services
                                     </Button>
                                 </a>
@@ -961,6 +556,7 @@ export default function LandingPage() {
                 </div>
             </div>
             <Footer/>
+            <NewAppointmentModal departments={departments} doctors={doctors} actions={{fetchAppointments}} />
         </div>
     );
 };

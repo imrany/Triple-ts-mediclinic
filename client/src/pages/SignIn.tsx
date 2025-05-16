@@ -89,15 +89,16 @@ export default function SignIn() {
                 </div>
             ) : (
                 <div className="flex h-screen w-full">
-                    {!isMobile&&(<div
-                        className="hidden lg:block w-4/7"
-                        style={{
-                            backgroundImage: "url(/doctor.jpg)",
-                            backgroundRepeat: "no-repeat",
-                            backgroundSize: "cover",
-                            backgroundPosition: "center"
-                        }}
-                    ></div>)}
+                    {!isMobile&&(<img
+                        src="/doctor.jpg"
+                        className="hidden lg:block w-4/7 object-cover"
+                        // style={{
+                        //     backgroundImage: "url(/doctor.jpg)",
+                        //     backgroundRepeat: "no-repeat",
+                        //     backgroundSize: "cover",
+                        //     backgroundPosition: "center"
+                        // }}
+                    />)}
                     <div className="flex flex-col py-10 w-full lg:w-3/7 sm:px-4">
                         <div className="flex w-full items-center px-4">
                             {/* <Button title={"Return to Landing page"} className="ml-auto bg-white hover:bg-gray-50 rounded-[100px] h-[40px] w-[40px] shadow-md">

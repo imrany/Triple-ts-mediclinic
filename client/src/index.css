@@ -4,6 +4,16 @@
 /* @custom-variant dark (&:is(.dark *)); */
 
 @font-face {
+  font-family: Lexend;
+  src: url(/fonts/Lexend-VariableFont_wght.ttf);
+}
+
+@font-face {
+  font-family: Helvetic;
+  src: url(/fonts/HelveticaNeue-Medium.otf);
+}
+
+@font-face {
   font-family: font-geist-sans;
   src: url(/fonts/GeistVF.woff);
   font-weight:100 900;
@@ -50,6 +60,9 @@ button{
   --font-geist-sans:font-geist-sans;
   --font-geist-mono:font-geist-mono;
   --source-serif:source-serif;
+  --Lexend:Lexend;
+  --Helvetic:Helvetic;
+  
   line-height: 1.5;
   font-weight: 400;
 
