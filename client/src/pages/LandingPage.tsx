@@ -9,21 +9,23 @@ import {
     Shield,
     MapPin,
     Mail,
-    Search,
-    Menu,
     Info,
-    FileText,
     HelpCircle,
-    LogIn
+    LogIn,
+    AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/Footer";
 import { Staff } from "@/types"
 import { useAppContext } from "@/context";
 import NewAppointmentModal from "@/components/Modals/NewAppointment";
+import Hero from "@/components/Hero";
+import useIsMobile from "@/hooks/useIsMobile";
+import NavBar from "@/components/NavBar";
 
 export default function LandingPage() {
-    const {doctors, setIsNewAppointmentModalOpen, departments }=useAppContext()
+    const {doctors, departments }=useAppContext()
+    const isMobile=useIsMobile()
     async function fetchAppointments(){
 
     }
@@ -32,6 +34,27 @@ export default function LandingPage() {
             {/* Header with top navigation */}
             <header>
                 {/* Top Navigation - Dark pink */}
+                <div className="bg-white py-1">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-center">
+                            <div className="flex items-center space-x-4 text-sm">
+                                <div className="hover:text-pink-200 flex items-center gap-2">
+                                    <AlertTriangle width={16} height={16}/>
+                                    {!isMobile?(
+                                        <p className="text-center">
+                                            System service unavailable. If you are the owner for contract renegotiation, contact our developer <a className="text-blue-500 underline" href="mailto:imranmat254@gmail.com?subject=Triple TS MediClinic Service Inquiry">here</a>
+                                        </p>
+                                    ):(
+                                        <p className="text-sm text-center">
+                                            Service unavailable. contact our developer <a className="text-blue-500 underline" href="mailto:imranmat254@gmail.com?subject=Triple TS MediClinic Service Inquiry">here</a>
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="bg-pink-900 py-2">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="flex items-center justify-between text-white">
@@ -56,100 +79,11 @@ export default function LandingPage() {
                 </div>
                 
                 {/* Main Header - White */}
-                <div className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center">
-                                <div className="flex-shrink-0">
-                                    <Link to="/">
-                                        <div className="flex items-center">
-                                            <div className="h-12 w-12 bg-pink-800 rounded-lg flex items-center justify-center text-white font-bold text-xl mr-3">
-                                                TTS
-                                            </div>
-                                            <div>
-                                                <h1 className="text-xl font-bold text-pink-800">Triple TS</h1>
-                                                <p className="text-sm text-gray-600">MediClinic</p>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </div>
-                            </div>
-                            <div className="hidden md:flex items-center space-x-8">
-                                <Link to="/" className="font-medium text-pink-800 hover:text-pink-600">Home</Link>
-                                <a href="#services" className="font-medium text-gray-600 hover:text-pink-600">Services</a>
-                                <a href="#doctors" className="font-medium text-gray-600 hover:text-pink-600">Doctors</a>
-                                <a href="#contact" className="font-medium text-gray-600 hover:text-pink-600">Contact</a>
-                                <button onClick={()=>setIsNewAppointmentModalOpen(true)} className="bg-pink-800 text-white px-4 py-2 rounded hover:bg-pink-700 transition">
-                                    Book Appointment
-                                </button>
-                            </div>
-                            <div className="md:hidden">
-                                <button className="text-gray-600 hover:text-pink-800">
-                                    <Menu className="h-6 w-6" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <NavBar/>
             </header>
 
             {/* Hero Section */}
-            <div className="bg-pink-900 py-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="md:flex md:items-center md:justify-between">
-                        <div className="md:w-1/2 pr-2 text-white">
-                            <h1 className="text-4xl font-bold mb-4">Welcome to Triple TS MediClinic</h1>
-                            <p className="text-lg mb-8 text-pink-100">
-                                Your trusted partner for quality healthcare services in Tharaka Nithi County
-                            </p>
-                            <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                                <Button onClick={()=>setIsNewAppointmentModalOpen(true)} className="bg-white text-pink-800 hover:bg-pink-50 px-6 py-3 text-base font-medium rounded">
-                                    Book Appointment
-                                </Button>
-                               
-                                <a href="#services">
-                                    <Button variant="outline" className="bg-pink-800 text-white hover:text-white hover:bg-pink-800 px-6 py-3 text-base font-medium rounded">
-                                        Our Services
-                                    </Button>
-                                </a>
-                            </div>
-                        </div>
-                        <div className="mt-8 md:mt-0 md:w-1/2">
-                            <div className="bg-white p-6 rounded-lg shadow-lg">
-                                <h2 className="text-2xl font-bold text-pink-800 mb-4">Find Our Services</h2>
-                                <div className="flex mb-4">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search for services..." 
-                                        className="flex-grow px-4 py-2 border border-gray-300 rounded-l focus:outline-none focus:ring-2 focus:ring-pink-500" 
-                                    />
-                                    <button className="bg-pink-800 text-white px-4 py-2 rounded-r hover:bg-pink-700">
-                                        <Search className="h-5 w-5" />
-                                    </button>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-pink-50 p-3 rounded flex items-center text-pink-800 hover:bg-pink-100 cursor-pointer">
-                                        <Calendar className="h-5 w-5 mr-2" />
-                                        <span>Appointments</span>
-                                    </div>
-                                    <div className="bg-pink-50 p-3 rounded flex items-center text-pink-800 hover:bg-pink-100 cursor-pointer">
-                                        <Users className="h-5 w-5 mr-2" />
-                                        <span>Specialists</span>
-                                    </div>
-                                    <div className="bg-pink-50 p-3 rounded flex items-center text-pink-800 hover:bg-pink-100 cursor-pointer">
-                                        <FileText className="h-5 w-5 mr-2" />
-                                        <span>Medical Records</span>
-                                    </div>
-                                    <div className="bg-pink-50 p-3 rounded flex items-center text-pink-800 hover:bg-pink-100 cursor-pointer">
-                                        <MapPin className="h-5 w-5 mr-2" />
-                                        <span>Find Location</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+           <Hero/>
 
             {/* Quick Stats Section */}
             <div className="bg-pink-800 py-8 text-white">

@@ -194,7 +194,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
   }) : [];
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50"
       onClick={handleModalBackdropClick}
     >
