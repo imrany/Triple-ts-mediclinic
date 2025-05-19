@@ -23,8 +23,8 @@ import { fromSnakeCaseToCamelCase } from './lib/utils';
 function App() {
   const [orgName, setOrgName] = useState<string>('Triple Ts Mediclinic');
   const [staff, setStaff] = useState<Staff | null>(null);
-  const api_url = 'http://localhost:8000';
-  // const api_url ='https://api.triple-ts-mediclinic.com';
+  // const api_url = 'http://localhost:8000';
+  const api_url ='https://api.triple-ts-mediclinic.com';
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
