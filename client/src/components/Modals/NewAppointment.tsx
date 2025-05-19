@@ -162,6 +162,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
       const parseRes = await response.json();
 
       if (parseRes.error) {
+        console.log(parseRes)
         toast.error(parseRes.error, {
           action: {
             label: "Retry",

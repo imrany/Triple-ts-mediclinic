@@ -1,12 +1,10 @@
-goose.exe
 goose
-web-service
-web-service.exe~
 
 # Go build artifacts
 /bin/
 /pkg/
 /*.exe
+/*.exe~
 /*.out
 /*.test
 

@@ -33,6 +33,9 @@ CREATE TABLE patients (
     date_of_birth DATE NOT NULL,
     national_id INT NOT NULL UNIQUE,
     address TEXT NOT NULL,
+    gender TEXT NOT NULL,
+    status TEXT DEFAULT 'active',
+    department TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

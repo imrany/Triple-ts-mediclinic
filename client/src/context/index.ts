@@ -1,4 +1,4 @@
-import { AuthData, Staff } from '@/types';
+import { AuthData, Staff, Patient } from '@/types';
 import React, { createContext, useContext } from 'react';
 
 interface AppContextType {
@@ -7,8 +7,8 @@ interface AppContextType {
     api_url:string;
     isNewAppointmentModalOpen:boolean, 
     setIsNewAppointmentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    isNewDoctorModalOpen:boolean,
-    setIsNewDoctorModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    isNewStaffModalOpen:boolean,
+    setIsNewStaffModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isNewPatientModalOpen:boolean,
     setIsNewPatientModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     isNewMedicationModalOpen:boolean; 
@@ -18,7 +18,8 @@ interface AppContextType {
     staff:Staff | null,
     authData: AuthData | null,
     doctors: Staff[],
-    departments:string[]
+    departments:string[],
+    patients:Patient[]
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);

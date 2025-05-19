@@ -53,3 +53,31 @@ export type AuthData ={
     user_id:string,
     token:string,
 }
+
+
+export interface Patient {
+	id :string    
+	firstName:string 
+	lastName :string   
+	phoneNumber :string    
+	dateOfBirth: string   
+	nationalID: number       
+	address  :string    
+	gender   :string    
+	status   :string    
+	department: string   
+	email    :string    
+	createdAt:string    
+	updatedAt:string 
+    appointments?:any   
+}
+
+export interface MedicalRecord {
+  id: string;
+  patientId: string;
+  patientName: string;
+  date: string;
+  type: string;
+  diagnosis: string;
+  doctor: string;
+}

@@ -1,12 +1,12 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
-export function fromSnakeCaseToCamelCase(value: any) :any {
-  if (typeof value !== 'object' || value === null) {
+export function fromSnakeCaseToCamelCase(value: any): any {
+  if (typeof value !== "object" || value === null) {
     return value;
   }
 
@@ -15,8 +15,20 @@ export function fromSnakeCaseToCamelCase(value: any) :any {
   }
 
   return Object.keys(value).reduce((acc: any, key: string) => {
-    const camelCaseKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    const camelCaseKey = key.replace(/_([a-z])/g, (_, letter) =>
+      letter.toUpperCase()
+    );
     acc[camelCaseKey] = fromSnakeCaseToCamelCase(value[key]);
     return acc;
   }, {});
 }
+
+export const getInitials = (name: string) => {
+  if (!name) return "";
+  return name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+    .substring(0, 2);
+};

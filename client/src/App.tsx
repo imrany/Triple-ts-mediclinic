@@ -15,7 +15,7 @@ import Patients from './pages/Patients';
 import Settings from './pages/Settings';
 import CalendarPage from './pages/Calendar';
 import Pharmacy from './pages/Pharmacy';
-import { AuthData, Staff } from './types';
+import { AuthData, Patient, Staff } from './types';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { fromSnakeCaseToCamelCase } from './lib/utils';
@@ -23,17 +23,18 @@ import { fromSnakeCaseToCamelCase } from './lib/utils';
 function App() {
   const [orgName, setOrgName] = useState<string>('Triple Ts Mediclinic');
   const [staff, setStaff] = useState<Staff | null>(null);
-  // const api_url = 'http://localhost:8000';
-  const api_url ='https://api.triple-ts-mediclinic.com';
+  const api_url = 'http://localhost:8000';
+  // const api_url ='https://api.triple-ts-mediclinic.com';
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
-  const [isNewDoctorModalOpen, setIsNewDoctorModalOpen] = useState(false);
+  const [isNewStaffModalOpen, setIsNewStaffModalOpen] = useState(false);
   const [isNewPatientModalOpen, setIsNewPatientModalOpen] = useState(false);
   const [isNewMedicationModalOpen, setIsNewMedicationModalOpen] = useState(false);
   const [isNewTestModalOpen, setIsNewTestModalOpen] = useState(false);
   const [doctors, setDoctors] = useState<Staff[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
+  const [patients, setPatients] = useState<Patient[]>([])
 
   // Safely parse auth data
   const getAuthData = (): AuthData | null => {
@@ -48,7 +49,7 @@ function App() {
 
   const authData = getAuthData();
 
-  
+
 
   // Fetch user details
   const fetchUserData = async (token: string, userId: string) => {
@@ -66,7 +67,7 @@ function App() {
         throw new Error(parseRes.error);
       }
 
-      const userData= fromSnakeCaseToCamelCase(parseRes)
+      const userData = fromSnakeCaseToCamelCase(parseRes)
       setStaff(userData);
       setIsAuthenticated(true);
     } catch (error) {
@@ -110,6 +111,41 @@ function App() {
     }
   };
 
+  const fetchPatients = async (token: string) => {
+    try {
+      const response = await fetch(`${api_url}/api/patients`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+      const parseRes = await response.json()
+      if (parseRes.error) {
+        console.log(parseRes)
+        toast(`Something went wrong!`, {
+          description: `${parseRes.error}`,
+          action: {
+            label: "Retry",
+            onClick: () => fetchPatients(token)
+          },
+        });
+      } else {
+        const data = fromSnakeCaseToCamelCase(parseRes) as Patient[];
+        console.log(data);
+        setPatients(data);
+      }
+    } catch (error: any) {
+      toast(`Something went wrong!`, {
+        description: `${error.message}`,
+        action: {
+          label: "Retry",
+          onClick: () => fetchPatients(token)
+        },
+      });
+      console.error('Error fetching patients:', error);
+    }
+  };
+
   // Initial data fetch
   useEffect(() => {
     const initializeApp = async () => {
@@ -123,7 +159,8 @@ function App() {
         // Fetch user data and staff information
         await Promise.all([
           fetchUserData(authData.token, authData.user_id),
-          fetchStaffAndDepartments()
+          fetchStaffAndDepartments(),
+          fetchPatients(authData.token)
         ]);
       } catch (error) {
         console.error('Initialization failed:', error);
@@ -151,8 +188,8 @@ function App() {
       api_url,
       isNewAppointmentModalOpen,
       setIsNewAppointmentModalOpen,
-      isNewDoctorModalOpen,
-      setIsNewDoctorModalOpen,
+      isNewStaffModalOpen,
+      setIsNewStaffModalOpen,
       isNewPatientModalOpen,
       setIsNewPatientModalOpen,
       isNewMedicationModalOpen,
@@ -162,7 +199,8 @@ function App() {
       staff,
       authData,
       doctors,
-      departments
+      departments,
+      patients
     }}>
       <Router>
         <Routes>

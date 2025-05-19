@@ -1,7 +1,9 @@
 import NewAppointmentModal from '@/components/Modals/NewAppointment';
+import NewPatient from '@/components/Modals/NewPatient';
 import { useAppContext } from '@/context';
 import { fromSnakeCaseToCamelCase } from '@/lib/utils';
 import { Appointment, AppointmentData, DepartmentStats } from '@/types';
+import { User } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
@@ -52,15 +54,14 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
-  const { setIsNewAppointmentModalOpen, doctors, departments } = useAppContext();
+  const { setIsNewAppointmentModalOpen, api_url, staff, authData, setIsNewPatientModalOpen, doctors, departments, patients } = useAppContext();
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
   const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
   const [appointmentData, setAppointData] = useState<AppointmentData[]>([]);
   const [departmentStats, setDepartmentStats] = useState<DepartmentStats[]>([]);
-  const { api_url, authData } = useAppContext();
-  const navigate=useNavigate()
-  const [count, setCount]=useState(6)
+  const navigate = useNavigate()
+  const [count, setCount] = useState(6)
 
   async function fetchAppointments() {
     try {
@@ -83,7 +84,7 @@ export default function Dashboard() {
         const data = fromSnakeCaseToCamelCase(parseRes) as AppointmentWithStaff[];
         console.log(data);
         setAppointments(data);
-        
+
         // Process appointment data for chart
         const groupedAppointments = data.reduce((acc: Record<string, number>, item: AppointmentWithStaff) => {
           const day = new Date(item.appointment.appointmentDate).toLocaleDateString('en-US', {
@@ -111,7 +112,7 @@ export default function Dashboard() {
         )
           .map(([name, patients]) => ({ name, patients: patients as number }))
           .sort((a, b) => b.patients - a.patients);
-        
+
         setDepartmentStats(deptStats);
       }
     } catch (error: any) {
@@ -121,6 +122,40 @@ export default function Dashboard() {
         action: {
           label: "Retry",
           onClick: () => fetchAppointments()
+        },
+      });
+    }
+  }
+
+  async function fetchPatients() {
+    try {
+      const response = await fetch(`${api_url}/api/appointments`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${authData?.token || ''}`
+        }
+      });
+      const parseRes = await response.json();
+      if (parseRes.error) {
+        toast(`Something went wrong!`, {
+          description: `${parseRes.error}`,
+          action: {
+            label: "Retry",
+            onClick: () => fetchAppointments()
+          },
+        });
+      } else {
+        const data = fromSnakeCaseToCamelCase(parseRes) as AppointmentWithStaff[];
+        console.log(data);
+        setAppointments(data);
+      }
+    } catch (error: any) {
+      console.log(error.message);
+      toast(`Something went wrong!`, {
+        description: `${error.message}`,
+        action: {
+          label: "Retry",
+          onClick: () => fetchPatients()
         },
       });
     }
@@ -204,7 +239,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Patients"
-          value="1,245"
+          value={patients.length.toString()}
           description="+15% from last month"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>}
           color="bg-blue-500"
@@ -369,7 +404,7 @@ export default function Dashboard() {
         <div className="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-medium text-gray-800">Today's Appointments</h2>
-            <button onClick={()=>navigate("/dashboard/appointments")} className="text-sm text-blue-600 hover:text-blue-800">View All</button>
+            <button onClick={() => navigate("/dashboard/appointments")} className="text-sm text-blue-600 hover:text-blue-800">View All</button>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full table-auto">
@@ -383,11 +418,11 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {appointments.slice(0,count).map((item) => (
-                  <AppointmentRow 
-                    key={item.appointment.id} 
-                    appointment={item.appointment} 
-                    staff={item.staff} 
+                {appointments.slice(0, count).map((item) => (
+                  <AppointmentRow
+                    key={item.appointment.id}
+                    appointment={item.appointment}
+                    staff={item.staff}
                   />
                 ))}
               </tbody>
@@ -438,27 +473,31 @@ export default function Dashboard() {
             </div>
             <span className="text-sm font-medium">New Appointment</span>
           </button>
-          <button className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+          <button onClick={()=>setIsNewPatientModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
             <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
             </div>
             <span className="text-sm font-medium">Add Patient</span>
           </button>
-          <button className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+          {staff?.role==="admin"&&(
+            <button onClick={()=>alert("Cannot add staff, try again later")} className="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
+              <div className="w-10 text-white h-10 rounded-full bg-yellow-500 flex items-center justify-center mb-2">
+                <User/>
+              </div>
+              <span className="text-sm font-medium">Add Staff</span>
+            </button>
+          )}
+          <button onClick={()=>alert("Cannot Generate report, try again later")} className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
             <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
             <span className="text-sm font-medium">Generate Report</span>
           </button>
-          <button className="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
-            <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center mb-2">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            </div>
-            <span className="text-sm font-medium">Send Message</span>
-          </button>
+         
         </div>
       </div>
-      <NewAppointmentModal departments={departments} doctors={doctors} actions={{fetchAppointments}} />
+      <NewAppointmentModal departments={departments} doctors={doctors} actions={{ fetchAppointments }} />
+      <NewPatient departments={departments} actions={{ fetchPatients }} />
     </div>
   );
 }
