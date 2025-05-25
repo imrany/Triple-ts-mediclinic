@@ -19,7 +19,10 @@ interface AppContextType {
     authData: AuthData | null,
     doctors: Staff[],
     departments:string[],
-    patients:Patient[]
+    patients:Patient[],
+    roles:string[],
+    specialities:string[],
+    fetchStaffAndDepartments: ()=> Promise<void>
 }
 
 export const AppContext = createContext<AppContextType | undefined>(undefined);

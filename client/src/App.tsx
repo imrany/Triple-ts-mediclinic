@@ -35,6 +35,42 @@ function App() {
   const [doctors, setDoctors] = useState<Staff[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [patients, setPatients] = useState<Patient[]>([])
+  const roles = [
+    "Doctor",
+    "Admin",
+    "Technician",
+    "Nurse",
+    "Receptionist",
+    "Pharmacist",
+    "Lab Technician",
+    "Accountant",
+    "Radiologist"
+  ];
+
+  const specialities = [
+    "General Medicine",
+    "Pediatrics",
+    "Gynecology",
+    "Orthopedics",
+    "Cardiology",
+    "Dermatology",
+    "ENT",
+    "Ophthalmology",
+    "Dentistry",
+    "Radiology",
+    "Pathology",
+    "Anesthesiology",
+    "Surgery",
+    "Neurology",
+    "Psychiatry",
+    "Urology",
+    "Nephrology",
+    "Oncology",
+    "Endocrinology",
+    "Gastroenterology",
+    "Pulmonology",
+    "Software"
+  ];
 
   // Safely parse auth data
   const getAuthData = (): AuthData | null => {
@@ -186,6 +222,7 @@ function App() {
       orgName,
       setOrgName,
       api_url,
+      fetchStaffAndDepartments,
       isNewAppointmentModalOpen,
       setIsNewAppointmentModalOpen,
       isNewStaffModalOpen,
@@ -200,7 +237,9 @@ function App() {
       authData,
       doctors,
       departments,
-      patients
+      patients,
+      roles,
+      specialities,
     }}>
       <Router>
         <Routes>

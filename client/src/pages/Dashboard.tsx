@@ -1,5 +1,6 @@
 import NewAppointmentModal from '@/components/Modals/NewAppointment';
 import NewPatient from '@/components/Modals/NewPatient';
+import NewStaff from '@/components/Modals/NewStaff';
 import { useAppContext } from '@/context';
 import { fromSnakeCaseToCamelCase } from '@/lib/utils';
 import { Appointment, AppointmentData, DepartmentStats } from '@/types';
@@ -54,7 +55,7 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
-  const { setIsNewAppointmentModalOpen, api_url, staff, authData, setIsNewPatientModalOpen, doctors, departments, patients } = useAppContext();
+  const { setIsNewAppointmentModalOpen, setIsNewStaffModalOpen, roles, specialities, api_url, staff, authData, setIsNewPatientModalOpen, doctors, departments, patients } = useAppContext();
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
   const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
@@ -467,37 +468,38 @@ export default function Dashboard() {
       <div className="bg-white rounded-xl shadow-md p-6 mb-6">
         <h2 className="text-lg font-medium text-gray-800 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <button onClick={() => setIsNewAppointmentModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
+          {(staff?.role.toLowerCase()==="admin"||staff?.role==="Nurse"||staff?.role==="Receptionist")&&(<button onClick={() => setIsNewAppointmentModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition">
             <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
             </div>
             <span className="text-sm font-medium">New Appointment</span>
-          </button>
-          <button onClick={()=>setIsNewPatientModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
+          </button>)}
+          {(staff?.role.toLowerCase()==="admin"||staff?.role==="Doctor"||staff?.role==="Nurse"||staff?.role==="Receptionist")&&(<button onClick={()=>setIsNewPatientModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition">
             <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
             </div>
             <span className="text-sm font-medium">Add Patient</span>
-          </button>
-          {staff?.role==="admin"&&(
-            <button onClick={()=>alert("Cannot add staff, try again later")} className="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
+          </button>)}
+          {(staff?.role.toLowerCase()==="admin"||staff?.role==="Receptionist"||staff?.role==="Technician")&&(
+            <button onClick={()=>setIsNewStaffModalOpen(true)} className="flex flex-col items-center justify-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition">
               <div className="w-10 text-white h-10 rounded-full bg-yellow-500 flex items-center justify-center mb-2">
                 <User/>
               </div>
               <span className="text-sm font-medium">Add Staff</span>
             </button>
           )}
-          <button onClick={()=>alert("Cannot Generate report, try again later")} className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
+          {/* <button onClick={()=>alert("Cannot Generate report, try again later")} className="flex flex-col items-center justify-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition">
             <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center mb-2">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
             </div>
             <span className="text-sm font-medium">Generate Report</span>
-          </button>
+          </button> */}
          
         </div>
       </div>
       <NewAppointmentModal departments={departments} doctors={doctors} actions={{ fetchAppointments }} />
       <NewPatient departments={departments} actions={{ fetchPatients }} />
+      <NewStaff departments={departments} roles={roles} specialties={specialities}/>
     </div>
   );
 }

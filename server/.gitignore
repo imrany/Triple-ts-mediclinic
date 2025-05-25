@@ -1,8 +1,0 @@
-node_modules
-build
-deploy
-.env
-src/lib/google-apis/key
-package-lock.json
-subscriptions.db
-villebiz-session
