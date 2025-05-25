@@ -61,7 +61,7 @@ func AuthMiddleware(c *fiber.Ctx) error {
 
     // Validate Role
     role, ok := claims["role"].(string)
-    if !ok || (role != "user" && role != "admin") {
+    if !ok || (role == "") {
         return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
             "error": "Unauthorized role",
         })
