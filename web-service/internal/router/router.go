@@ -19,6 +19,7 @@ func SetupRoutes(app *fiber.App) {
 
 	api.Post("/signin", staff.Login)
 	api.Get("/staff", staff.GetAllStaff)
+	api.Post("/staff", middleware.AuthMiddleware, staff.AddStaff)
 	api.Get("/staff/:id", middleware.AuthMiddleware,staff.GetStaffByID)
 	api.Patch("/staff/:id", middleware.AuthMiddleware, staff.UpdateStaff)
 	api.Delete("/staff/:id", middleware.AuthMiddleware, staff.DeleteStaff)
@@ -31,10 +32,7 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/patients/:id", middleware.AuthMiddleware, patients.GetPatient)
 	api.Patch("/patients/:id", middleware.AuthMiddleware, patients.EditPatient)
 	api.Post("/patients", patients.AddPatient)
-	
-	admin.Get("/staff/:id", middleware.AuthMiddleware, staff.GetStaffByID)
-	admin.Post("/staff", middleware.AuthMiddleware, staff.AddStaff)
-	admin.Patch("/staff/:id", middleware.AuthMiddleware, staff.UpdateStaff)
+
 	admin.Delete("/staff", middleware.AuthMiddleware, staff.DeleteAllStaff)
 }
 
