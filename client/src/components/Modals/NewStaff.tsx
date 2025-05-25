@@ -12,7 +12,7 @@ interface NewStaffProps {
 const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) => {
   const { api_url, authData, isNewStaffModalOpen, setIsNewStaffModalOpen, fetchStaffAndDepartments } = useAppContext();
   const [activeTab, setActiveTab] = useState<'first' | 'second'>('first');
-  
+
   // Form state
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
@@ -203,8 +203,8 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
         biography: biography.trim() || undefined,
         photo: photo.trim() || undefined,
         status: status,
-        start_date: startDate,
-        end_date: endDate || undefined,
+        start_date: new Date(startDate).toISOString(),
+        end_date: new Date(endDate).toISOString() || new Date().toISOString(),
         password: password,
         experience: experience.trim() || undefined,
         created_at: currentDate.toISOString(),
@@ -221,9 +221,9 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
       });
 
       const parseRes = await response.json();
-
       if (parseRes.error) {
         toast.error(parseRes.error, {
+          description:parseRes.details?parseRes.details:"",
           action: {
             label: "Retry",
             onClick: () => handleSubmitStaff(e)
@@ -252,7 +252,7 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
   return (
     <div
       className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center z-50"
-      onClick={handleModalBackdropClick}
+      onDoubleClick={handleModalBackdropClick}
     >
       <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-6">
@@ -419,7 +419,6 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
                   type="date"
                   className={`w-full border ${!isValidAge && dateOfBirth ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2`}
                   value={dateOfBirth}
-                  max={new Date().toISOString().split('T')[0]}
                   required
                   onChange={(e) => setDateOfBirth(e.target.value)}
                 />
@@ -515,6 +514,7 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
                     id="start-date"
                     type="date"
                     className="w-full border border-gray-300 rounded-lg px-3 py-2"
+                    min={new Date().toISOString().split('T')[0]}
                     value={startDate}
                     required
                     onChange={(e) => setStartDate(e.target.value)}
