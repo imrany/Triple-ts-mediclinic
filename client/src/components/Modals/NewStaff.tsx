@@ -536,16 +536,21 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
                 </div>
               </div>
 
-              <div>
+                <div>
                 <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
-                <textarea
+                <select
                   id="experience"
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 h-20"
-                  placeholder="Enter relevant work experience"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2"
                   value={experience}
                   onChange={(e) => setExperience(e.target.value)}
-                />
-              </div>
+                >
+                  <option value="">Select experience range</option>
+                  <option value="0-5 years">0-5 years</option>
+                  <option value="6-10 years">6-10 years</option>
+                  <option value="11-15 years">11-15 years</option>
+                  <option value="16+ years">16+ years</option>
+                </select>
+                </div>
 
               <div>
                 <label htmlFor="biography" className="block text-sm font-medium text-gray-700 mb-1">Biography</label>
