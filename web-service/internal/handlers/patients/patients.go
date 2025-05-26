@@ -48,7 +48,6 @@ func GetPatient(c *fiber.Ctx) error {
 		LEFT JOIN appointments a
 			ON p.id = a.id OR p.email = a.patient_email
 		WHERE p.id = $1
-		ORDER BY p.created_at
 	`, id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

@@ -128,7 +128,7 @@ const NewPatient: React.FC<NewPatientProps> = ({ departments, actions }) => {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
           phone_number: phoneNumber,
-          date_of_birth: dateOfBirth,
+          date_of_birth: dateOfBirth ? new Date(`${dateOfBirth}T00:00:00Z`).toISOString() : undefined,
           national_id: nationalId,
           address: address.trim(),
           gender: gender,
@@ -144,6 +144,8 @@ const NewPatient: React.FC<NewPatientProps> = ({ departments, actions }) => {
 
       if (parseRes.error) {
         toast.error(parseRes.error, {
+          description:parseRes.details?parseRes.details:"An error occurred while adding the patient.",
+          duration: 5000,
           action: {
             label: "Retry",
             onClick: () => handleSubmitPatient(e)
