@@ -134,7 +134,7 @@ export default function Settings() {
 
                 <div className="text-gray-700 text-sm">
                   <label className="block font-medium mb-1">
-                    Bio
+                    Biography
                   </label>
                   <textarea
                     defaultValue={staff.biography}
