@@ -7,11 +7,13 @@ import useIsMobile from "@/hooks/useIsMobile";
 import { useAppContext } from "@/context";
 import { Staff } from "@/types";
 import { getInitials } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function Settings() {
   const { staff } = useAppContext() as {
     staff: Staff
   }
+  const { api_url, authData } = useAppContext()
   const [activeTab, setActiveTab] = useState("profile");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isMobile = useIsMobile()
@@ -21,7 +23,7 @@ export default function Settings() {
     name: "Jane Doe",
     email: "jane.doe@example.com",
     password: "••••••••••",
-    biography:"",
+    biography: "",
     notifications: {
       email: true,
       push: false,
@@ -42,11 +44,39 @@ export default function Settings() {
     // In a real app, you would save the changes to the backend
   };
 
-  const handleDeleteAccount = () => {
-    setShowDeleteConfirm(false);
-    alert("Account deleted successfully!");
-    // In a real app, you would handle account deletion logic here
-  };
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch(`${api_url}/api/staff/${staff.id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${authData?.token}`
+        }
+      })
+      const parseRes = await response.json()
+      if (parseRes.error) {
+        toast.error(parseRes.error, {
+          description: parseRes.details ? parseRes.details : "Failed to delete account, try again",
+          action: {
+            label: "Retry",
+            onClick: () => handleDeleteAccount()
+          },
+        });
+      } else {
+        toast.success(parseRes.message);
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      toast.error("Something went wrong!", {
+        description: errorMessage,
+        action: {
+          label: "Retry",
+          onClick: () => handleDeleteAccount()
+        },
+      });
+    } finally {
+      setShowDeleteConfirm(false);
+    }
+  }
 
   return (
     <div className={`font-[family-name:var(--font-geist-sans)] ${isMobile ? "py-6" : "pb-6"}`}>
@@ -174,7 +204,7 @@ export default function Settings() {
               )}
             </div>
           )}
- 
+
           {activeTab === "security" && (
             <div className="bg-white rounded-xl shadow-md p-6">
               <h2 className="text-lg font-medium mb-4">Security Settings</h2>
@@ -221,7 +251,7 @@ export default function Settings() {
           <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-md border-[1px]">
             <h3 className="text-lg font-semibold text-red-600 mb-2">Delete Account</h3>
             <p className="mb-4 text-gray-800">
-              Are you sure you want to delete your account? <br/> This action cannot be undone and all your data will be permanently lost.
+              Are you sure you want to delete your account? <br /> This action cannot be undone and all your data will be permanently lost.
             </p>
             <div className="flex justify-end space-x-3">
               <button

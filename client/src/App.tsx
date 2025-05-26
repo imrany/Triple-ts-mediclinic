@@ -9,7 +9,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Layout from './layout/Layout';
 import { Toaster } from "@/components/ui/sonner";
 import Laboratory from './pages/Laboratory';
-import Doctors from './pages/Doctors';
+import StaffsPage from './pages/Staffs';
 import Appointments from './pages/Appointments';
 import Patients from './pages/Patients';
 import Settings from './pages/Settings';
@@ -35,6 +35,8 @@ function App() {
   const [doctors, setDoctors] = useState<Staff[]>([]);
   const [departments, setDepartments] = useState<string[]>([]);
   const [patients, setPatients] = useState<Patient[]>([])
+  const [staffs, setStaffs]=useState<Staff[]>([])
+
   const roles = [
     "Doctor",
     "Admin",
@@ -127,6 +129,7 @@ function App() {
         throw new globalThis.Error(parseRes.error);
       }
 
+      const allStaffs = fromSnakeCaseToCamelCase(parseRes)
       const medicalStaff = fromSnakeCaseToCamelCase(parseRes.filter((member: Staff) =>
         member.role?.toLowerCase().includes('doctor')
       ));
@@ -139,6 +142,7 @@ function App() {
 
       setDepartments(allDepartments as string[]);
       setDoctors(medicalStaff);
+      setStaffs(allStaffs)
     } catch (error) {
       console.error('Failed to fetch staff:', error instanceof Error ? error.message : error);
       toast.error('Failed to load staff data', {
@@ -234,6 +238,7 @@ function App() {
       isNewTestModalOpen,
       setIsNewTestModalOpen,
       staff,
+      staffs,
       authData,
       doctors,
       departments,
@@ -265,7 +270,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="patients" element={<Patients />} />
             <Route path="appointments" element={<Appointments />} />
-            <Route path="doctors" element={<Doctors />} />
+            <Route path="staffs" element={<StaffsPage />} />
             <Route path="pharmacy" element={<Pharmacy />} />
             <Route path="laboratory" element={<Laboratory />} />
             <Route path="settings" element={<Settings />} />

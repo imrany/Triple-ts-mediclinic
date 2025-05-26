@@ -201,7 +201,7 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
         role: role,
         specialty: specialty,
         biography: biography.trim() || undefined,
-        photo: photo.trim() || undefined,
+        photo: photo.trim() || "no image",
         status: status,
         start_date: startDate ? new Date(`${startDate}T00:00:00Z`).toISOString() : undefined,
         end_date: endDate ? new Date(`${endDate}T00:00:00Z`).toISOString() : undefined,
@@ -563,7 +563,7 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-1">Photo URL</label>
                 <input
                   id="photo"
@@ -573,7 +573,7 @@ const NewStaff: React.FC<NewStaffProps> = ({ departments, roles, specialties }) 
                   value={photo}
                   onChange={(e) => setPhoto(e.target.value)}
                 />
-              </div>
+              </div> */}
 
               <div className="pt-4 flex justify-end space-x-2">
                 <button

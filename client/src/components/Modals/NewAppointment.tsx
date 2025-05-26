@@ -164,6 +164,7 @@ const NewAppointmentModal: React.FC<NewAppointmentModalProps> = ({ departments, 
       if (parseRes.error) {
         console.log(parseRes)
         toast.error(parseRes.error, {
+          description: parseRes.details? parseRes.details:"Failed to create appointment, try again",
           action: {
             label: "Retry",
             onClick: () => handleSubmitAppointment(e)

@@ -17,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/dashboard", label: "Dashboard" },
     { path: "/dashboard/appointments", label: "Appointments" },
     { path: "/dashboard/patients", label: "Patients" },
-    { path: "/dashboard/doctors", label: "Doctors" },
+    { path: "/dashboard/staffs", label: "Staffs" },
     { path: "/dashboard/calendar", label: "Calendar" },
     { path: "/dashboard/pharmacy", label: "Pharmacy" },
     { path: "/dashboard/laboratory", label: "Laboratory" },

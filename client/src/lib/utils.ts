@@ -32,3 +32,7 @@ export const getInitials = (name: string) => {
     .toUpperCase()
     .substring(0, 2);
 };
+
+export function maskEmail(email:string): string{
+  return email.replace(/(.{3}).+(@.+)/, '$1***$2')
+}

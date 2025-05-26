@@ -1,6 +1,7 @@
+import NewStaff from '@/components/Modals/NewStaff';
 import { useAppContext } from '@/context';
 import useIsMobile from '@/hooks/useIsMobile';
-import { getInitials } from '@/lib/utils';
+import { getInitials, maskEmail } from '@/lib/utils';
 import { Staff } from '@/types';
 import { Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -10,14 +11,14 @@ import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Leg
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 // Create departmental statistics based on doctor data
-const getDepartmentStats = (doctorsList: Staff[]) => {
+const getDepartmentStats = (staffsList: Staff[]) => {
   const deptCounts: Record<string, number> = {};
 
-  doctorsList.forEach((doctor: Staff) => {
-    if (!deptCounts[doctor.department]) {
-      deptCounts[doctor.department] = 0;
+  staffsList.forEach((staff: Staff) => {
+    if (!deptCounts[staff.department]) {
+      deptCounts[staff.department] = 0;
     }
-    deptCounts[doctor.department]++;
+    deptCounts[staff.department]++;
   });
 
   return Object.keys(deptCounts).map(dept => ({
@@ -64,8 +65,8 @@ const getExperienceStats = (doctorsList: Staff[]) => {
   return experienceCounts;
 };
 
-export default function DoctorsPage() {
-  const { setIsNewStaffModalOpen, staff, doctors, departments } = useAppContext();
+export default function StaffPage() {
+  const { setIsNewStaffModalOpen, staff, doctors, departments, staffs, roles, specialities } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('All');
   const [filteredDoctors, setFilteredDoctors] = useState<Staff[]>([]);
@@ -75,31 +76,31 @@ export default function DoctorsPage() {
   const isMobile = useIsMobile();
 
   // Calculate experience statistics
-  const experienceStats = getExperienceStats(doctors);
+  const experienceStats = getExperienceStats(staffs ?? []);
 
   // Filter and sort doctors
   useEffect(() => {
-    let result = [...doctors];
+    let result = [...(staffs ?? [])];
 
     // Apply search filter
     if (searchTerm) {
-      result = result.filter(doctor =>
-        doctor.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        doctor.email.toLowerCase().includes(searchTerm.toLowerCase())
+      result = result.filter(staff =>
+        staff.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        staff.email.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply department filter
     if (selectedDepartment !== 'All') {
-      result = result.filter(doctor => doctor.department === selectedDepartment);
+      result = result.filter(staff => staff.department === selectedDepartment);
     }
 
     // Apply availability filter
     if (availabilityFilter === 'Available') {
-      result = result.filter(doctor => doctor.status === "active");
+      result = result.filter(staff => staff.status === "active");
     } else if (availabilityFilter === 'Unavailable') {
-      result = result.filter(doctor => doctor.status !== "active");
+      result = result.filter(staff => staff.status !== "active");
     }
 
     // Apply sorting
@@ -117,10 +118,10 @@ export default function DoctorsPage() {
     });
 
     setFilteredDoctors(result);
-  }, [searchTerm, selectedDepartment, availabilityFilter, sortBy, sortOrder, doctors]);
+  }, [searchTerm, selectedDepartment, availabilityFilter, sortBy, sortOrder, doctors, staffs]);
 
   // Calculate statistics
-  const departmentStats = getDepartmentStats(doctors);
+  const departmentStats = getDepartmentStats(staffs ?? []);
   const availabilityStats = getAvailabilityStats(doctors);
 
   const handleSort = (field: string) => {
@@ -156,7 +157,7 @@ export default function DoctorsPage() {
       <div className="bg-white rounded-xl shadow-md p-4 flex flex-col h-full">
         <div className="flex items-start justify-between w-full">
           {doctor.photo && doctor.photo.length !== 0 && doctor.photo !== "no image" ? (
-            <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+            <div className="w-16 h-16 mr-2 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
               <img src={doctor.photo} alt={`${doctor.firstName} ${doctor.lastName}`} className="w-full h-full object-cover" />
             </div>
           ) : (
@@ -165,7 +166,7 @@ export default function DoctorsPage() {
             </div>
           )}
           <div className="flex-1">
-            <h3 className="font-medium text-gray-800">{`${doctor.firstName} ${doctor.lastName}`}</h3>
+            <h3 className="font-medium text-gray-800 capitalize">{`${doctor.firstName} ${doctor.lastName}`}</h3>
             <p className="text-sm text-gray-500">{doctor.department}</p>
             <div className="flex items-center mt-1">
               <span className={`inline-block w-2 h-2 rounded-full ${isAvailable ? 'bg-green-500' : 'bg-red-500'} mr-1`}></span>
@@ -177,7 +178,7 @@ export default function DoctorsPage() {
         <div className="mt-4 text-sm space-y-2 flex-grow">
           <div className="flex justify-between">
             <span className="text-gray-500">Email:</span>
-            <span className="text-gray-800">{doctor.email}</span>
+            <span>{maskEmail(doctor.email)}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">Experience:</span>
@@ -189,7 +190,9 @@ export default function DoctorsPage() {
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between">
-          <button className="text-sm px-3 py-1 bg-pink-50 text-pink-600 rounded-md hover:bg-pink-100">Schedule</button>
+          {(doctor.role==="Doctor"||doctor.role==="Nurse")&&(
+            <button className="text-sm px-3 py-1 bg-pink-50 text-pink-600 rounded-md hover:bg-pink-100">Schedule</button>
+          )}
           <button className="text-sm px-3 py-1 bg-green-50 text-green-600 rounded-md hover:bg-green-100">Message</button>
           <button className="text-sm px-3 py-1 bg-gray-50 text-gray-600 rounded-md hover:bg-gray-100">View</button>
         </div>
@@ -202,27 +205,24 @@ export default function DoctorsPage() {
       {/* Page Header */}
       <div className="mb-6 flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800">Doctors</h1>
-          <p className="text-sm text-gray-500">Manage your medical center's doctors and specialists</p>
+          <h1 className="text-2xl font-bold text-gray-800">Staffs</h1>
+          <p className="text-sm text-gray-500">Manage your medical center's staffs and specialists</p>
         </div>
-        {staff?.role==="admin"&&(<button
-          onClick={() => {
-            setIsNewStaffModalOpen(true)
-            alert("Cannot add new doctor")
-          }}
+        {(staff?.role==="Admin"||staff?.role==="Receptionist"||staff?.role==="Technician")&&(<button
+          onClick={()=>setIsNewStaffModalOpen(true)}
           className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 flex items-center"
         >
           <Plus className="w-4 h-4 mr-1" />
-          {!isMobile && (<p>Add New Doctor</p>)}
+          {!isMobile && (<p>Add New Staff</p>)}
         </button>)}
       </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
-          title="Total Doctors"
-          value={doctors.length}
-          description="All registered specialists"
+          title="Total Staff"
+          value={staffs?.length ?? 0}
+          description="All registered staffs"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>}
           color="bg-pink-500"
         />
@@ -236,7 +236,7 @@ export default function DoctorsPage() {
         <StatCard
           title="Departments"
           value={departments.length}
-          description="Active medical specialties"
+          description="Active departments"
           icon={<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>}
           color="bg-purple-500"
         />
@@ -252,8 +252,8 @@ export default function DoctorsPage() {
       {/* Charts & Analytics Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Department Distribution */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-medium text-gray-800 mb-6">Department Distribution</h2>
+        <div className="bg-white rounded-xl shadow-md">
+          <h2 className="text-lg font-medium text-gray-800 m-6">Department Distribution</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -271,7 +271,7 @@ export default function DoctorsPage() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} doctors`, '']} />
+                <Tooltip formatter={(value) => [`${value} staffs`, '']} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -315,7 +315,7 @@ export default function DoctorsPage() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="range" />
                 <YAxis />
-                <Tooltip formatter={(value) => [`${value} doctors`, '']} />
+                <Tooltip formatter={(value) => [`${value} staffs`, '']} />
                 <Bar dataKey="count" fill="#8884d8">
                   {experienceStats.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -342,7 +342,7 @@ export default function DoctorsPage() {
                 type="text"
                 id="search"
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm"
-                placeholder="Search doctors by name or email"
+                placeholder="Search staff by name or email"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -381,7 +381,7 @@ export default function DoctorsPage() {
       {/* Sort Options */}
       <div className="flex justify-between items-center mb-4">
         <div className="text-sm text-gray-500">
-          Showing <span className="font-medium">{filteredDoctors.length}</span> doctors
+          Showing <span className="font-medium">{filteredDoctors.length}</span> staffs
         </div>
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-500">Sort by:</span>
@@ -444,6 +444,7 @@ export default function DoctorsPage() {
           </button>
         </div>
       )}
+      <NewStaff departments={departments} roles={roles} specialties={specialities}/>
     </div>
   );
 }

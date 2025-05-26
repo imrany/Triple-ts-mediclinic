@@ -22,6 +22,7 @@ interface AppContextType {
     patients:Patient[],
     roles:string[],
     specialities:string[],
+    staffs:Staff[] | null,
     fetchStaffAndDepartments: ()=> Promise<void>
 }
 

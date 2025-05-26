@@ -301,8 +301,8 @@ export default function PatientsPage() {
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Gender Distribution */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-medium text-gray-800 mb-6">Gender Distribution</h2>
+        <div className="bg-white rounded-xl shadow-md">
+          <h2 className="text-lg font-medium text-gray-800 m-6">Gender Distribution</h2>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -327,10 +327,10 @@ export default function PatientsPage() {
         </div>
 
         {/* Age Distribution */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-          <h2 className="text-lg font-medium text-gray-800 mb-6">Age Distribution</h2>
+        <div className="bg-white rounded-xl shadow-md">
+          <h2 className="text-lg font-medium text-gray-800 m-6">Age Distribution</h2>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="110%" height="100%">
               <PieChart>
                 <Pie
                   data={calculatePatientsByAge()}
@@ -612,7 +612,7 @@ export default function PatientsPage() {
       {showDeleteConfirm && (
         <div onDoubleClick={() => setShowDeleteConfirm(false)} className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-md border-[1px]">
-            <h3 className="text-lg font-semibold text-red-600 mb-2">Delete Account</h3>
+            <h3 className="text-lg font-semibold text-red-600 mb-2">Delete Patient</h3>
             <p className="mb-4 text-gray-800">
               Are you sure you want to remove this patient? <br/> This action cannot be undone and all your data will be permanently lost.
             </p>

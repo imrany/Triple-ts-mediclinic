@@ -182,7 +182,8 @@ func DeleteStaff(c *fiber.Ctx) error {
 	_, err := db.Exec(context.Background(), "DELETE FROM staff WHERE id = $1", id)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err,
+			"error": "Failed to delete staff",
+			"details": err.Error(),
 		})
 	}
 
