@@ -55,7 +55,7 @@ const notifications = [
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#a64dff'];
 
 export default function Dashboard() {
-  const { setIsNewAppointmentModalOpen, setIsNewStaffModalOpen, roles, specialities, api_url, staff, authData, setIsNewPatientModalOpen, doctors, departments, patients } = useAppContext();
+  const { setIsNewAppointmentModalOpen, setIsNewStaffModalOpen, fetchStaffAndDepartments, roles, specialities, api_url, staff, authData, setIsNewPatientModalOpen, doctors, departments, patients } = useAppContext();
   const [timeframe, setTimeframe] = useState('week');
   const [notificationCount, setNotificationCount] = useState(4);
   const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
@@ -163,6 +163,8 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
+    fetchStaffAndDepartments()
+    fetchPatients()
     fetchAppointments();
   }, []);
 
