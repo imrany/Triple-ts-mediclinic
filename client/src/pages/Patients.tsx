@@ -13,11 +13,13 @@ export default function PatientsPage() {
   const { api_url, setIsNewPatientModalOpen, departments, authData, staff } = useAppContext()
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm]=useState(false)
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [patientsPerPage] = useState(5);
+  const [patientId,setPatientId]=useState("")
   const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>([]);
   const [stats, setStats] = useState({
     totalPatients: 0,
@@ -200,40 +202,32 @@ export default function PatientsPage() {
     // Implement edit functionality
   };
 
-  const handleDeletePatient = (patientId: string) => {
-    console.log(`Delete patient with ID: ${patientId}`);
-    // Implement delete functionality with confirmation
-    if (confirm("Are you sure you want to delete this patient?")) {
-      // Replace axios.delete with fetch
-      fetch(`${api_url}/api/patients/${patientId}`, {
-        method: 'DELETE',
-        headers: {
-          "Authorization": `Bearer ${authData?.token}`
+  const handleDeletePatient = async() => {
+    try{
+      const response=await fetch(`${api_url}/api/patients/${patientId}`,{
+        method:"DELETE",
+        headers:{
+          "Authorization":`Bearer ${authData?.token}`
         }
       })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Failed to delete patient");
-          }
-          return response.json();
-        })
-        .then(() => {
-          // Remove patient from state
-          setPatients(patients.filter(patient => patient.id !== patientId));
-          toast("Patient deleted successfully", {
-            description: "The patient record has been removed.",
-          });
-        })
-        .catch((err) => {
-          console.error("Error deleting patient:", err);
-          toast("Failed to delete patient", {
-            description: "Please try again.",
-            action: {
-              label: "Retry",
-              onClick: () => handleDeletePatient(patientId)
-            },
-          });
+      const parseRes=await response.json()
+      if(parseRes.error){
+        toast.error(parseRes.error, {
+          description:parseRes.details?parseRes.details:"An error occurred while deleting the patient.",
+          duration: 5000,
+          action: {
+            label: "Retry",
+            onClick: () => handleDeletePatient()
+          },
         });
+      }else{
+        toast.success(parseRes.message);
+        fetchPatients()
+        setShowDeleteConfirm(false)
+      }
+    }catch(err){
+      const error =err as Error
+      console.log(error.message)
     }
   };
 
@@ -483,7 +477,10 @@ export default function PatientsPage() {
                           </svg>
                         </button>)}
                         {(staff?.role.toLowerCase()=="admin"||staff?.role==="Nurse"||staff?.role==="Receptionist")&&(<button
-                          onClick={() => handleDeletePatient(patient.id)}
+                          onClick={() => {
+                            setShowDeleteConfirm(true)
+                            setPatientId(patient.id)
+                          }}
                           className="p-1 text-red-600 hover:text-red-800"
                         >
                           <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -611,6 +608,31 @@ export default function PatientsPage() {
       </div>
 
       <NewPatient departments={departments} actions={{ fetchPatients }} />
+      {/* Delete Account Confirmation Modal */}
+      {showDeleteConfirm && (
+        <div onDoubleClick={() => setShowDeleteConfirm(false)} className="fixed inset-0 bg-transparent bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-md border-[1px]">
+            <h3 className="text-lg font-semibold text-red-600 mb-2">Delete Account</h3>
+            <p className="mb-4 text-gray-800">
+              Are you sure you want to remove this patient? <br/> This action cannot be undone and all your data will be permanently lost.
+            </p>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeletePatient}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete Patient
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

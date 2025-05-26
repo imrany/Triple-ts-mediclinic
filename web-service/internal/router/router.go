@@ -31,7 +31,8 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/patients", middleware.AuthMiddleware, patients.GetAllPatients)
 	api.Get("/patients/:id", middleware.AuthMiddleware, patients.GetPatient)
 	api.Patch("/patients/:id", middleware.AuthMiddleware, patients.EditPatient)
-	api.Post("/patients", patients.AddPatient)
+	api.Post("/patients", middleware.AuthMiddleware, patients.AddPatient)
+	api.Delete("/patients/:id", middleware.AuthMiddleware, patients.DeletePatient)
 
 	admin.Delete("/staff", middleware.AuthMiddleware, staff.DeleteAllStaff)
 }
