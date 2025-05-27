@@ -28,7 +28,7 @@ jobs:
         script: |
           # Pull latest code
           cd ~/Triple-ts-mediclinic
-          git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-mediclinic.git main
+          git pull https://imrany:${{ secrets.ACCESS_TOKEN }}@github.com/imrany/Triple-ts-mediclinic.git main
 
           # Deploy frontend
           cd ~/Triple-ts-mediclinic/client
