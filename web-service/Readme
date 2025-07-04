@@ -29,5 +29,5 @@ docker build -t web-service .
 ```
 
 ```bash
-docker run -p 8000:8000 web-service
+docker run -p 127.0.0.1:8000:8000 -d web-service
 ```
