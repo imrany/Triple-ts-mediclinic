@@ -1,192 +1,90 @@
-import { useNavigate, Link } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { Loader2, Lock, Eye, EyeOff, X } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-} from "@/components/ui/card";
-import useIsMobile from "@/hooks/useIsMobile";
-import { useState } from "react";
-import { useAppContext } from "@/context";
-import { toast } from "sonner";
-
-type FormValues = {
-    email: string;
-    password: string;
-};
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Activity, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SignIn() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-    const isMobile=useIsMobile()
-    const { api_url }=useAppContext()
-    const {
-        register,
-        handleSubmit,
-        formState: { errors }
-    } = useForm<FormValues>();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-    const onSubmit = async(data: FormValues) => {
-        try{
-            setLoading(true);
-            const response=await fetch(`${api_url}/api/signin`,{
-                method:"POST",
-                headers:{
-                    "content-type":"application/json"
-                },
-                body:JSON.stringify({
-                    email:data.email,
-                    password:data.password
-                })
-            })
-            const parseRes=await response.json()
-            if(parseRes.error){
-                console.log(parseRes.error)
-                setLoading(false);
-                toast(`Something went wrong!`, {
-                    description: `${parseRes.error}`,
-                    action: {
-                        label: "Retry",
-                        onClick: () => onSubmit(data)
-                    },
-                })
-            }else{
-                const authData={
-                    email:parseRes.email,
-                    token:parseRes.token,
-                    user_id:parseRes.user_id
-                }
-                localStorage.setItem('authData',JSON.stringify(authData))
-                window.location.href=(`/dashboard`);
-            }
-        }catch(error:any){
-            console.log(error.message)
-            setLoading(false);
-            toast(`Something went wrong!`, {
-                description: `${error.message}`,
-                action: {
-                    label: "Retry",
-                    onClick: () => onSubmit(data)
-                },
-            })
-        }
-    };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigate("/dashboard", { replace: true });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Login failed",
+        description: err.message || "Invalid credentials. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return (
-        <div className="font-[family-name:var(--font-geist-sans)]">
-            {loading ? (
-                <div className="flex flex-col h-screen items-center justify-center bg-gradient-to-b from-pink-50 to-white ">
-                    <Loader2 className="animate-spin w-12 h-12 text-pink-500" />
-                    <p className="mt-4 text-lg font-medium">Verifying credentials...</p>
-                </div>
-            ) : (
-                <div className="flex h-screen w-full">
-                    {!isMobile&&(<img
-                        src="/doctor.jpg"
-                        className="hidden lg:block w-4/7 object-cover"
-                        // style={{
-                        //     backgroundImage: "url(/doctor.jpg)",
-                        //     backgroundRepeat: "no-repeat",
-                        //     backgroundSize: "cover",
-                        //     backgroundPosition: "center"
-                        // }}
-                    />)}
-                    <div className="flex flex-col py-10 w-full lg:w-3/7 sm:px-4">
-                        <div className="flex w-full items-center px-4">
-                            {/* <Button title={"Return to Landing page"} className="ml-auto bg-white hover:bg-gray-50 rounded-[100px] h-[40px] w-[40px] shadow-md">
-                                <X width={25} height={25} className="text-red-500 cursor-pointer" onClick={()=>navigate("/")}/>
-                            </Button> */}
-                            <X width={25} height={25} className="ml-auto text-red-500 cursor-pointer" onClick={()=>navigate("/")}/>
-                        </div>
-                        <div className="flex flex-col flex-grow justify-center items-center w-full">
-                            <Card className="w-full shadow-none rounded-none bg-transparent border-none">
-                                <CardHeader>
-                                    <div className="flex items-center justify-center">
-                                        <div className="bg-pink-800 p-3 rounded-full shadow-md">
-                                            <Lock className="text-white w-6 h-6" />
-                                        </div>
-                                    </div>
-                                    <CardTitle className="text-center mt-4 text-2xl font-bold text-gray-800">
-                                        Sign in
-                                    </CardTitle>
-                                    <CardDescription className="text-center">Welcome to Triple TS Mediclinic for better healthcare</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                                        <div className="flex flex-col gap-1">
-                                            <Label htmlFor="email">Email Address</Label>
-                                            <Input
-                                                id="email"
-                                                type="email"
-                                                placeholder="test@test.com"
-                                                {...register("email", { required: "Email is required" })}
-                                                className={errors.email ? "border-red-500" : ""}
-                                            />
-                                            {errors.email && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {errors.email.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="flex flex-col gap-1">
-                                            <Label htmlFor="password">Password</Label>
-                                            <div className="relative">
-                                                <Input
-                                                    id="password"
-                                                    type={showPassword ? "text" : "password"}
-                                                    placeholder="••••••••"
-                                                    minLength={8}
-                                                    maxLength={24}
-                                                    {...register("password", { required: "Password is required" })}
-                                                    className={errors.password ? "border-red-500" : ""}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="absolute inset-y-0 right-3 flex items-center"
-                                                    onClick={() => setShowPassword(!showPassword)}
-                                                >
-                                                    {showPassword ? <EyeOff /> : <Eye />}
-                                                </button>
-                                            </div>
-                                            {errors.password && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {errors.password.message}
-                                                </p>
-                                            )}
-                                        </div>
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex gap-2">
-                                                <Checkbox id="remember" />
-                                                <Label htmlFor="remember">Remember me</Label>
-                                            </div>
-                                            <Link to="/forgot-password" className="text-sm text-pink-800 hover:underline">
-                                                Forgot password?
-                                            </Link>
-                                        </div>
-                                        <Button type="submit" className="w-full bg-pink-800 hover:bg-pink-700">
-                                            {loading ? <Loader2 className="animate-spin" /> : "Sign In"}
-                                        </Button>
-                                    </form>
-                                    
-                                    <p className="text-center text-xs mt-2">
-                                        By continuing, you agree to our{" "}
-                                        <span className="text-pink-800">Terms of Service</span> and{" "}
-                                        <span className="text-pink-800">Privacy Policy</span>.
-                                    </p>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md animate-fade-in">
+        <CardHeader className="text-center space-y-3">
+          <div className="flex justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+              <Activity className="h-6 w-6" />
+            </div>
+          </div>
+          <CardTitle className="font-display text-2xl">Welcome back</CardTitle>
+          <CardDescription>Sign in to Triple TS Mediclinic</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="doctor@mediclinic.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full font-semibold" disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Sign In
+            </Button>
+          </form>
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            <Link to="/" className="hover:text-primary hover:underline">← Back to homepage</Link>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
