@@ -23,7 +23,8 @@ func main() {
     // Middleware configuration
     app.Use(logger.New())
     app.Use(cors.New(cors.Config{
-        AllowOrigins: "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com",
+        // AllowOrigins: "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com",
+        AllowOrigins: "*"
         AllowMethods: "GET,POST,PUT,DELETE,PATCH",
         AllowHeaders: "Origin, Content-Type, Accept, Authorization",
     }))
