@@ -1,4 +1,4 @@
-name: Deploy Web-Service & Triple-ts-mediclinic
+name: Deploy Web-Service & triple-ts-mediclinic
 
 on:
   push:
@@ -10,47 +10,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18  
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: SSH into VPS & Deploy
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.VPS_SSH_KEY }}
-        passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }} 
-        script: |
-          # Pull latest code
-          cd ~/Triple-ts-mediclinic
-          git pull https://imrany:${{ secrets.GITHUB_TOKEN }}@github.com/imrany/Triple-ts-mediclinic.git main
+      - name: SSH into VPS & Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_KEY_PASSPHRASE }}
+          script: |
+            # Pull latest code
+            cd ~/triple-ts-mediclinic
+            git pull https://imrany:${{ secrets.GITHUB_TOKEN }}@github.com/imrany/triple-ts-mediclinic.git main
 
-          # Deploy frontend
-          cd ~/Triple-ts-mediclinic/client
-          export NVM_DIR=~/.nvm
-          source ~/.nvm/nvm.sh
-          make
+            # Deploy frontend
+            cd ~/triple-ts-mediclinic/client
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
+            make
 
-          # Restart Nginx safely
-          sudo systemctl restart nginx || sudo nginx -t
+            # Restart Nginx safely
+            sudo systemctl restart nginx || sudo nginx -t
 
-          # Stop & remove existing containers
-          sudo docker stop web-service || true
-          sudo docker rm web-service || true
+            # Stop & remove existing containers
+            sudo docker stop web-service || true
+            sudo docker rm web-service || true
 
-          # Remove old image
-          sudo docker rmi web-service || true
+            # Remove old image
+            sudo docker rmi web-service || true
 
-          # Build new image
-          cd ~/Triple-ts-mediclinic/web-service
-          
-          # Rebuild image
-          sudo docker build -t web-service .
+            # Build new image
+            cd ~/triple-ts-mediclinic/web-service
 
-          #Running web-service image
-          sudo docker run -d --name web-service -p 8000:8000 web-service
+            # Rebuild image
+            sudo docker build -t web-service .
+
+            #Running web-service image
+            sudo docker run -d --name web-service -p 8000:8000 web-service
