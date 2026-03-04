@@ -23,9 +23,10 @@ func main() {
 	// Middleware configuration
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://id-preview--e0f43afa-baf6-4434-ad70-3ee25981e65b.lovable.app",
-		AllowMethods: "GET,POST,PUT,DELETE,PATCH",
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowOrigins:     "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://id-preview--e0f43afa-baf6-4434-ad70-3ee25981e65b.lovable.app",
+		AllowMethods:     "GET,POST,PUT,DELETE,PATCH",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true, // Added to resolve CORS preflight issues when Authorization header is sent
 	}))
 
 	// Routes
