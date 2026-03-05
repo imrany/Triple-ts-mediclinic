@@ -10,7 +10,6 @@ goose
 
 # Dependencies
 /vendor/
-/go.sum
 
 # Secrets & Configuration
 .env
