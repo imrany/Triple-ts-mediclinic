@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Search, Trash2, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { usePatients, useCreatePatient, useDeletePatient, useUpdatePatient } from "@/hooks/use-api";
+import { api } from "@/lib/api";
 import type { Patient } from "@/lib/types";
 import { format } from "date-fns";
 
@@ -16,25 +16,31 @@ export default function Patients() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [editPatient, setEditPatient] = useState<Patient | null>(null);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
   const { toast } = useToast();
 
-  const { data: patients = [], isLoading, error, refetch } = usePatients();
-  const createMutation = useCreatePatient();
-  const deleteMutation = useDeletePatient();
-  const updateMutation = useUpdatePatient();
+  const fetchPatients = async () => {
+    setIsLoading(true);
+    try {
+      const data = await api.get<Patient[]>("/patients");
+      setPatients(data || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const filtered = patients.filter((p) => {
-    const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
-    const matchSearch = fullName.includes(search.toLowerCase()) || p.phone_number.includes(search) || p.email.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" || p.status?.toLowerCase() === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  useEffect(() => {
+    fetchPatients();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const now = new Date().toISOString();
     const payload = {
       first_name: form.get("first_name") as string,
       last_name: form.get("last_name") as string,
@@ -46,19 +52,18 @@ export default function Patients() {
       status: form.get("status") as string || "active",
       department: form.get("department") as string || "General",
       email: form.get("email") as string,
-      created_at: now,
-      updated_at: now,
     };
     try {
       if (editPatient) {
-        await updateMutation.mutateAsync({ id: editPatient.id, data: { ...payload, updated_at: now } });
+        await api.patch(`/patients/${editPatient.id}`, payload);
         toast({ title: "Patient updated successfully" });
       } else {
-        await createMutation.mutateAsync(payload);
+        await api.post("/patients", { ...payload, id: `pat-${Date.now()}` });
         toast({ title: "Patient added successfully" });
       }
       setSheetOpen(false);
       setEditPatient(null);
+      fetchPatients();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     }
@@ -66,8 +71,9 @@ export default function Patients() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteMutation.mutateAsync(id);
+      await api.delete(`/patients/${id}`);
       toast({ title: "Patient deleted" });
+      fetchPatients();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     }
@@ -212,7 +218,7 @@ export default function Patients() {
         data={filtered}
         loading={isLoading}
         error={error ? "Failed to load patients" : null}
-        onRetry={() => refetch()}
+        onRetry={() => fetchPatients()}
         emptyMessage="No patients found"
       />
     </div>

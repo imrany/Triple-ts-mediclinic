@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useAppointments, useCreateAppointment, useStaffList } from "@/hooks/use-api";
-import type { AppointmentWithStaff } from "@/lib/types";
+import { api } from "@/lib/api";
+import type { AppointmentWithStaff, Staff as StaffType } from "@/lib/types";
 import { format } from "date-fns";
 
 const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
@@ -22,27 +22,36 @@ const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
 export default function Appointments() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
+  const [staffList, setStaffList] = useState<StaffType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
   const { toast } = useToast();
 
-  const { data: appointments = [], isLoading, error, refetch } = useAppointments();
-  const { data: staffList = [] } = useStaffList();
-  const createMutation = useCreateAppointment();
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [appts, staff] = await Promise.all([
+        api.get<AppointmentWithStaff[]>("/appointments"),
+        api.get<StaffType[]>("/staff")
+      ]);
+      setAppointments(appts || []);
+      setStaffList(staff || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const filtered = appointments.filter((item) => {
-    const a = item.appointment;
-    const staffName = `${item.staff.first_name} ${item.staff.last_name}`.toLowerCase();
-    const matchSearch =
-      a.patient_name?.toLowerCase().includes(search.toLowerCase()) ||
-      staffName.includes(search.toLowerCase());
-    const matchStatus = statusFilter === "all" || a.status?.toLowerCase() === statusFilter;
-    return matchSearch && matchStatus;
-  });
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const now = new Date().toISOString();
     const payload = {
       patient_national_id: parseInt(form.get("patient_national_id") as string),
       patient_name: form.get("patient_name") as string,
@@ -55,13 +64,12 @@ export default function Appointments() {
       staff_id: form.get("staff_id") as string,
       notes: form.get("notes") as string || undefined,
       status: "scheduled",
-      created_at: now,
-      updated_at: now,
     };
     try {
-      await createMutation.mutateAsync(payload);
+      await api.post("/appointments", { ...payload, id: `appt-${Date.now()}` });
       toast({ title: "Appointment scheduled successfully" });
       setSheetOpen(false);
+      fetchData();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     }
@@ -197,7 +205,7 @@ export default function Appointments() {
         data={filtered}
         loading={isLoading}
         error={error ? "Failed to load appointments" : null}
-        onRetry={() => refetch()}
+        onRetry={() => fetchData()}
         emptyMessage="No appointments found"
       />
     </div>

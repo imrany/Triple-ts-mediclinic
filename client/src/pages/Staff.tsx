@@ -1,16 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Search, Mail, Phone, Trash2, Edit, AlertCircle, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useStaffList, useCreateStaff, useDeleteStaff, useUpdateStaff } from "@/hooks/use-api";
+import { api } from "@/lib/api";
 import type { Staff as StaffType } from "@/lib/types";
 
 export default function Staff() {
@@ -18,12 +17,27 @@ export default function Staff() {
   const [roleFilter, setRoleFilter] = useState("all");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editStaff, setEditStaff] = useState<StaffType | null>(null);
+  const [staffList, setStaffList] = useState<StaffType[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
   const { toast } = useToast();
 
-  const { data: staffList = [], isLoading, error, refetch } = useStaffList();
-  const createMutation = useCreateStaff();
-  const deleteMutation = useDeleteStaff();
-  const updateMutation = useUpdateStaff();
+  const fetchStaff = async () => {
+    setIsLoading(true);
+    try {
+      const data = await api.get<StaffType[]>("/staff");
+      setStaffList(data || []);
+      setError(null);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
 
   const filtered = staffList.filter((s) => {
     const fullName = `${s.first_name} ${s.last_name}`.toLowerCase();
@@ -35,7 +49,6 @@ export default function Staff() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const now = new Date().toISOString();
     const payload = {
       first_name: form.get("first_name") as string,
       last_name: form.get("last_name") as string,
@@ -49,21 +62,20 @@ export default function Staff() {
       status: form.get("status") as string || "active",
       role: form.get("role") as string,
       email: form.get("email") as string,
-      password: form.get("password") as string || "",
+      password: form.get("password") as string || "default_password",
       experience: form.get("experience") as string || "",
-      created_at: now,
-      updated_at: now,
     };
     try {
       if (editStaff) {
-        await updateMutation.mutateAsync({ id: editStaff.id, data: { ...payload, updated_at: now } });
+        await api.patch(`/staff/${editStaff.id}`, payload);
         toast({ title: "Staff updated successfully" });
       } else {
-        await createMutation.mutateAsync(payload);
+        await api.post("/staff", { ...payload, id: `staff-${Date.now()}` });
         toast({ title: "Staff added successfully" });
       }
       setSheetOpen(false);
       setEditStaff(null);
+      fetchStaff();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     }
@@ -71,8 +83,9 @@ export default function Staff() {
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteMutation.mutateAsync(id);
+      await api.delete(`/staff/${id}`);
       toast({ title: "Staff member deleted" });
+      fetchStaff();
     } catch (err: any) {
       toast({ variant: "destructive", title: "Error", description: err.message });
     }
@@ -93,7 +106,7 @@ export default function Staff() {
       <div className="flex flex-col items-center justify-center py-12 text-center">
         <AlertCircle className="h-10 w-10 text-destructive mb-3" />
         <p className="text-sm text-muted-foreground mb-3">Failed to load staff</p>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
+        <Button variant="outline" size="sm" onClick={() => fetchStaff()}>
           <RefreshCw className="h-4 w-4 mr-2" /> Retry
         </Button>
       </div>
@@ -201,7 +214,7 @@ export default function Staff() {
                   <Input name="password" type="password" required />
                 </div>
               )}
-              <Button type="submit" className="w-full" disabled={createMutation.isPending || updateMutation.isPending}>
+              <Button type="submit" className="w-full">
                 {editStaff ? "Update Staff" : "Save Staff"}
               </Button>
             </form>
@@ -243,7 +256,7 @@ export default function Staff() {
                       <Button variant="ghost" size="sm" onClick={() => openEdit(s)}>
                         <Edit className="h-3.5 w-3.5" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)} disabled={deleteMutation.isPending}>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(s.id)}>
                         <Trash2 className="h-3.5 w-3.5 text-destructive" />
                       </Button>
                     </div>
