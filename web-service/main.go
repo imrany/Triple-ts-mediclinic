@@ -22,11 +22,17 @@ func main() {
 
 	// Middleware configuration
 	app.Use(logger.New())
+
+	clientURL := config.GetVal("CLIENT_URL")
+	if clientURL == "" {
+		clientURL = "http://localhost:5000"
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://triple-ts-mediclinic.lovable.app, https://www.triple-ts-mediclinic.lovable.app",
+		AllowOrigins:     clientURL + ", http://localhost:5000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://triple-ts-mediclinic.lovable.app",
 		AllowMethods:     "GET,POST,PUT,DELETE,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowCredentials: true, // Added to resolve CORS preflight issues when Authorization header is sent
+		AllowCredentials: true,
 	}))
 
 	// Routes
@@ -38,7 +44,7 @@ func main() {
 		if port == "" {
 			port = "8000"
 		}
-		if err := app.Listen("0.0.0.0:" + port); err != nil {
+		if err := app.Listen("localhost:" + port); err != nil {
 			log.Fatalf("Server error: %v\n", err)
 		}
 	}()
