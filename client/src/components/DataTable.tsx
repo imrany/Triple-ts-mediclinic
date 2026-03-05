@@ -21,7 +21,7 @@ interface DataTableProps<T> {
   emptyMessage?: string;
 }
 
-export function DataTable<T extends { id?: string | number }>({
+export function DataTable<T extends Record<string, any>>({
   columns, data, loading, error, onRetry, emptyMessage = "No data found",
 }: DataTableProps<T>) {
   if (error) {

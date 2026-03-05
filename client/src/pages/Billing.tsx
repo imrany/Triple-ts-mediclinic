@@ -4,9 +4,9 @@ import { StatCard } from "@/components/StatCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Search, DollarSign, TrendingUp, Clock, AlertCircle, Printer } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Plus, Search, DollarSign, Clock, AlertCircle, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Invoice {
@@ -35,6 +35,7 @@ const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
 
 export default function Billing() {
   const [search, setSearch] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { toast } = useToast();
 
   const filtered = mockInvoices.filter((inv) =>
@@ -79,11 +80,13 @@ export default function Billing() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search invoices..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
-        <Dialog>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" /> New Invoice</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle className="font-display">Create Invoice</DialogTitle></DialogHeader>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); toast({ title: "Invoice created (demo)" }); }}>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-2" /> New Invoice</Button>
+          </SheetTrigger>
+          <SheetContent className="sm:max-w-lg overflow-y-auto">
+            <SheetHeader><SheetTitle className="font-display">Create Invoice</SheetTitle></SheetHeader>
+            <form className="space-y-4 mt-6" onSubmit={(e) => { e.preventDefault(); toast({ title: "Invoice created (demo)" }); setSheetOpen(false); }}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Patient</Label><Input required /></div>
                 <div className="space-y-1.5"><Label>Amount (KES)</Label><Input type="number" required /></div>
@@ -91,8 +94,8 @@ export default function Billing() {
               <div className="space-y-1.5"><Label>Items / Services</Label><Input placeholder="Consultation, Lab Test, etc." required /></div>
               <Button type="submit" className="w-full">Create Invoice</Button>
             </form>
-          </DialogContent>
-        </Dialog>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <DataTable columns={columns} data={filtered} emptyMessage="No invoices found" />

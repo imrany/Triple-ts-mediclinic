@@ -3,8 +3,8 @@ import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Search, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +29,7 @@ const mockMedications: Medication[] = [
 
 export default function Pharmacy() {
   const [search, setSearch] = useState("");
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { toast } = useToast();
 
   const filtered = mockMedications.filter((m) =>
@@ -66,11 +67,13 @@ export default function Pharmacy() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search medications..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
-        <Dialog>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" /> Add Medication</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle className="font-display">Add Medication</DialogTitle></DialogHeader>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); toast({ title: "Medication added (demo)" }); }}>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-2" /> Add Medication</Button>
+          </SheetTrigger>
+          <SheetContent className="sm:max-w-lg overflow-y-auto">
+            <SheetHeader><SheetTitle className="font-display">Add Medication</SheetTitle></SheetHeader>
+            <form className="space-y-4 mt-6" onSubmit={(e) => { e.preventDefault(); toast({ title: "Medication added (demo)" }); setSheetOpen(false); }}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Name</Label><Input required /></div>
                 <div className="space-y-1.5"><Label>Category</Label><Input required /></div>
@@ -81,8 +84,8 @@ export default function Pharmacy() {
               </div>
               <Button type="submit" className="w-full">Save</Button>
             </form>
-          </DialogContent>
-        </Dialog>
+          </SheetContent>
+        </Sheet>
       </div>
       <DataTable columns={columns} data={filtered} emptyMessage="No medications found" />
     </div>

@@ -3,9 +3,9 @@ import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Plus, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -36,6 +36,7 @@ const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
 export default function Laboratory() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sheetOpen, setSheetOpen] = useState(false);
   const { toast } = useToast();
 
   const filtered = mockTests.filter((t) => {
@@ -77,11 +78,13 @@ export default function Laboratory() {
             </SelectContent>
           </Select>
         </div>
-        <Dialog>
-          <DialogTrigger asChild><Button><Plus className="h-4 w-4 mr-2" /> New Lab Test</Button></DialogTrigger>
-          <DialogContent>
-            <DialogHeader><DialogTitle className="font-display">Order Lab Test</DialogTitle></DialogHeader>
-            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); toast({ title: "Lab test ordered (demo)" }); }}>
+        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+          <SheetTrigger asChild>
+            <Button><Plus className="h-4 w-4 mr-2" /> New Lab Test</Button>
+          </SheetTrigger>
+          <SheetContent className="sm:max-w-lg overflow-y-auto">
+            <SheetHeader><SheetTitle className="font-display">Order Lab Test</SheetTitle></SheetHeader>
+            <form className="space-y-4 mt-6" onSubmit={(e) => { e.preventDefault(); toast({ title: "Lab test ordered (demo)" }); setSheetOpen(false); }}>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Patient</Label><Input required /></div>
                 <div className="space-y-1.5"><Label>Test Name</Label><Input required /></div>
@@ -89,8 +92,8 @@ export default function Laboratory() {
               <div className="space-y-1.5"><Label>Ordered By</Label><Input required /></div>
               <Button type="submit" className="w-full">Order Test</Button>
             </form>
-          </DialogContent>
-        </Dialog>
+          </SheetContent>
+        </Sheet>
       </div>
       <DataTable columns={columns} data={filtered} emptyMessage="No lab tests found" />
     </div>
