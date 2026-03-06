@@ -17,7 +17,7 @@ async function request<T>(
 
   const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
 
-  if (res.status === 401) {
+  if (res.status === 401 && !endpoint.includes("/signin") && !endpoint.includes("/setup-check") && endpoint !== "/staff") {
     localStorage.removeItem("auth_token");
     window.location.href = "/sign-in";
     throw new Error("Unauthorized");

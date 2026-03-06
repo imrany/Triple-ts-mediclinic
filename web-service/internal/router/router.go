@@ -20,9 +20,10 @@ func SetupRoutes(app *fiber.App) {
                 return c.SendString("welcome to Triple Ts Mediclinic API!")
         })
 
+        api.Get("/setup-check", staff.SetupCheck)
         api.Post("/signin", staff.Login)
         api.Get("/staff", staff.GetAllStaff)
-        api.Post("/staff", middleware.AuthMiddleware, staff.AddStaff)
+        api.Post("/staff", staff.AddStaff) // Public for first-time admin setup
         api.Get("/staff/:id", middleware.AuthMiddleware,staff.GetStaffByID)
         api.Patch("/staff/:id", middleware.AuthMiddleware, staff.UpdateStaff)
         api.Delete("/staff/:id", middleware.AuthMiddleware, staff.DeleteStaff)

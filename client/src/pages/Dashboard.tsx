@@ -21,23 +21,25 @@ export default function Dashboard() {
 
   // Compute stats
   const today = format(new Date(), "yyyy-MM-dd");
-  const todayAppointments = appointments.filter((a) => {
+  const todayAppointments = (appointments || []).filter((a) => {
     try {
+      if (!a || !a.appointment) return false;
       return format(new Date(a.appointment.appointment_date), "yyyy-MM-dd") === today;
     } catch { return false; }
   });
 
-  const activeStaff = staff.filter((s) => s.status?.toLowerCase() === "active");
+  const activeStaff = (staff || []).filter((s) => s && s.status?.toLowerCase() === "active");
 
   // Compute appointment status distribution
   const statusCounts = { completed: 0, scheduled: 0, cancelled: 0 };
-  appointments.forEach((a) => {
+  (appointments || []).forEach((a) => {
+    if (!a || !a.appointment) return;
     const s = a.appointment.status?.toLowerCase();
     if (s === "completed") statusCounts.completed++;
     else if (s === "cancelled") statusCounts.cancelled++;
     else statusCounts.scheduled++;
   });
-  const total = Math.max(appointments.length, 1);
+  const total = Math.max((appointments || []).length, 1);
   const statusData = [
     { name: "Completed", value: Math.round((statusCounts.completed / total) * 100) },
     { name: "Scheduled", value: Math.round((statusCounts.scheduled / total) * 100) },
@@ -46,14 +48,15 @@ export default function Dashboard() {
 
   // Compute department distribution
   const deptMap: Record<string, number> = {};
-  appointments.forEach((a) => {
+  (appointments || []).forEach((a) => {
+    if (!a || !a.appointment) return;
     const d = a.appointment.department || "Other";
     deptMap[d] = (deptMap[d] || 0) + 1;
   });
   const deptData = Object.entries(deptMap).map(([dept, count]) => ({ dept, count })).slice(0, 6);
 
   // Recent patients
-  const recentPatients = patients.slice(0, 5);
+  const recentPatients = (patients || []).slice(0, 5);
 
   return (
     <div className="space-y-6">

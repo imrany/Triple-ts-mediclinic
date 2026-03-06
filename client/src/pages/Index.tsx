@@ -28,14 +28,14 @@ const Index = () => {
     const fetchStats = async () => {
       try {
         const [patients, appointments, staff] = await Promise.all([
-          api.get<any[]>("/patients"),
-          api.get<any[]>("/appointments"),
-          api.get<any[]>("/staff")
+          api.get<any[]>("/patients").catch(() => []),
+          api.get<any[]>("/appointments").catch(() => []),
+          api.get<any[]>("/staff").catch(() => [])
         ]);
         setStats({
-          patients: patients.length,
-          appointments: appointments.length,
-          staff: staff.length
+          patients: (patients || []).length,
+          appointments: (appointments || []).length,
+          staff: (staff || []).length
         });
       } catch (err) {
         console.error("Failed to fetch stats", err);

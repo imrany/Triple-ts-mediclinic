@@ -8,7 +8,6 @@ import (
 
         "web-service/config"
         "web-service/database"
-        "web-service/internal/handlers/staff"
         "web-service/internal/router"
 
         "github.com/gofiber/fiber/v2"
@@ -19,7 +18,6 @@ import (
 func main() {
         // Database connection
         database.Connect()
-        staff.EnsureAdminExists()
         app := fiber.New()
 
         // Middleware configuration
