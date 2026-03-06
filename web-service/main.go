@@ -1,60 +1,62 @@
 package main
 
 import (
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
+        "log"
+        "os"
+        "os/signal"
+        "syscall"
 
-	"web-service/config"
-	"web-service/database"
-	"web-service/internal/router"
+        "web-service/config"
+        "web-service/database"
+        "web-service/internal/handlers/staff"
+        "web-service/internal/router"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+        "github.com/gofiber/fiber/v2"
+        "github.com/gofiber/fiber/v2/middleware/cors"
+        "github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 func main() {
-	// Database connection
-	database.Connect()
-	app := fiber.New()
+        // Database connection
+        database.Connect()
+        staff.EnsureAdminExists()
+        app := fiber.New()
 
-	// Middleware configuration
-	app.Use(logger.New())
+        // Middleware configuration
+        app.Use(logger.New())
 
-	clientURL := config.GetVal("CLIENT_URL")
-	if clientURL == "" {
-		clientURL = "http://localhost:5000"
-	}
+        clientURL := config.GetVal("CLIENT_URL")
+        if clientURL == "" {
+                clientURL = "http://localhost:5000"
+        }
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     clientURL + ", http://localhost:5000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://triple-ts-mediclinic.lovable.app",
-		AllowMethods:     "GET,POST,PUT,DELETE,PATCH",
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-		AllowCredentials: true,
-	}))
+        app.Use(cors.New(cors.Config{
+                AllowOrigins:     clientURL + ", http://localhost:5000, https://triple-ts-mediclinic.com, https://www.triple-ts-mediclinic.com, https://triple-ts-mediclinic.lovable.app",
+                AllowMethods:     "GET,POST,PUT,DELETE,PATCH",
+                AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+                AllowCredentials: true,
+        }))
 
-	// Routes
-	router.SetupRoutes(app)
+        // Routes
+        router.SetupRoutes(app)
 
-	// Graceful shutdown handling
-	go func() {
-		port := config.GetVal("PORT")
-		if port == "" {
-			port = "8000"
-		}
-		if err := app.Listen("localhost:" + port); err != nil {
-			log.Fatalf("Server error: %v\n", err)
-		}
-	}()
+        // Graceful shutdown handling
+        go func() {
+                port := config.GetVal("PORT")
+                if port == "" {
+                        port = "8000"
+                }
+                if err := app.Listen("localhost:" + port); err != nil {
+                        log.Fatalf("Server error: %v\n", err)
+                }
+        }()
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	<-quit
+        quit := make(chan os.Signal, 1)
+        signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+        <-quit
 
-	log.Println("Shutting down server...")
-	if err := app.Shutdown(); err != nil {
-		log.Fatalf("Error shutting down: %v\n", err)
-	}
+        log.Println("Shutting down server...")
+        if err := app.Shutdown(); err != nil {
+                log.Fatalf("Error shutting down: %v\n", err)
+        }
 }
