@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DataTable } from "@/components/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import type { AppointmentWithStaff, Staff as StaffType } from "@/lib/types";
 import { format } from "date-fns";
+import { useMutation } from "@tanstack/react-query"
 
 const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
   scheduled: "default",
@@ -22,12 +23,18 @@ const statusColors: Record<string, "default" | "secondary" | "destructive"> = {
 export default function Appointments() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [sheetOpen, setSheetOpen]=useState(false)
+  const [filtered, setFiltered] = useState<AppointmentWithStaff[]>([])
   const [appointments, setAppointments] = useState<AppointmentWithStaff[]>([]);
   const [staffList, setStaffList] = useState<StaffType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<any>(null);
   const { toast } = useToast();
 
+
+  const createMutation = useMutation({
+    mutationFn: (data: any) => api.post("/appointments", data),
+  })
   const fetchData = async () => {
     setIsLoading(true);
     try {
