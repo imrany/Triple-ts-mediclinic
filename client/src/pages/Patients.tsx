@@ -19,7 +19,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Plus, Search, Trash2, Edit } from "lucide-react";
+import { Plus, Search, Trash2, CreditCard as Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { api } from "@/lib/api";
 import type { Patient } from "@/lib/types";
@@ -70,6 +70,16 @@ export default function Patients() {
   useEffect(() => {
     fetchPatients();
   }, []);
+
+  useEffect(() => {
+    const result = patients.filter((p) => {
+      const fullName = `${p.first_name} ${p.last_name}`.toLowerCase();
+      const matchSearch = fullName.includes(search.toLowerCase()) || p.email.toLowerCase().includes(search.toLowerCase());
+      const matchStatus = statusFilter === "all" || p.status?.toLowerCase() === statusFilter.toLowerCase();
+      return matchSearch && matchStatus;
+    });
+    setFiltered(result);
+  }, [patients, search, statusFilter]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
