@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "https://api.triple-ts-mediclinic.com/api";
 
 function getToken(): string | null {
   return localStorage.getItem("auth_token");
@@ -17,7 +17,12 @@ async function request<T>(
 
   const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
 
-  if (res.status === 401 && !endpoint.includes("/signin") && !endpoint.includes("/setup-check") && endpoint !== "/staff") {
+  if (
+    res.status === 401 &&
+    !endpoint.includes("/signin") &&
+    !endpoint.includes("/setup-check") &&
+    endpoint !== "/staff"
+  ) {
     localStorage.removeItem("auth_token");
     window.location.href = "/sign-in";
     throw new Error("Unauthorized");
